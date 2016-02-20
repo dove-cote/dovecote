@@ -31,9 +31,11 @@ var PROD_PLUGINS = [
 
 var PLUGINS = IS_PROD ? PROD_PLUGINS : DEV_PLUGINS;
 
+var JS_LOADERS = IS_PROD ? ['babel'] : ['react-hot', 'babel'];
+
 module.exports = {
-    devtool: 'eval',
-    entry: [
+    devtool: IS_PROD ? 'source-map' : 'eval',
+    entry: IS_PROD ? './src/index' : [
         'webpack-dev-server/client?http://localhost:3000',
         'webpack/hot/only-dev-server',
         './src/index'
@@ -53,7 +55,7 @@ module.exports = {
             ]
         },{
             test: /\.js$/,
-            loaders: ['react-hot', 'babel'],
+            loaders: JS_LOADERS,
             include: path.join(__dirname, 'src')
         }]
     }
