@@ -15,6 +15,10 @@ var PromptDialog = React.createClass({
         
         this.props.onSubmit(this.state.text);
         this.props.onClose();
+
+        this.setState({
+          text: null
+        });
     },
 
     render() {
