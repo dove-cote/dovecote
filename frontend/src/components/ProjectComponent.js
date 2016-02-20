@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import styles from './ProjectComponent.module.css';
 import Codemirror from 'react-codemirror';
 
-require('codemirror/mode/javascript/javascript');
+import 'codemirror/mode/javascript/javascript';
+
 
 var ProjectComponent = React.createClass({
 
