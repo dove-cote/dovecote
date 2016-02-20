@@ -6,7 +6,7 @@
             "watch"     : true,
             "env_production": {
                 "NODE_ENV"  : "production",
-                "port"      : 80
+                "PORT"      : 80
             }
         }
     ]
