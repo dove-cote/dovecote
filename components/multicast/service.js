@@ -36,3 +36,14 @@ module.exports.reserve = function(projectId) {
 
     return Multicast.reserve(projectId);
 };
+
+
+
+/**
+ * Release an ip address
+ * @param {string} ip
+ * @returns {Promise}
+ */
+module.exports.release = function(ip) {
+    return Multicast.release(ip);
+};

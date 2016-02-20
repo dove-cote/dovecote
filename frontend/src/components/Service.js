@@ -67,6 +67,12 @@ var Service = React.createClass({
                 <ul className={styles.componentList}>
                     {components.map((component) => <ServiceItem component={component} />)}
                 </ul>
+                {!components.length && (
+                    <div className={styles.empty}>
+                        You should drop a component
+                        to here.
+                    </div>
+                )}
             </div>
         );
 

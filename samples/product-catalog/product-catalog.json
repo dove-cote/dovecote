@@ -14,6 +14,10 @@
             "name": "catalog-service",
             "script": "services/catalog-service.js",
             "watch": true
+        },
+        {
+            "name": "monitor",
+            "script": "services/monitor.js"
         }
     ]
 }

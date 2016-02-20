@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 
 import Service from './Service';
+import PromptDialog from './PromptDialog';
 import styles from './Canvas.module.css';
 
 var Canvas = React.createClass({
-
     getInitialState() {
         return {
             isDragging: false,
             draggingObjectIndex: null,
             startPoint: null,
-            selectedComponent: null
+            selectedComponent: null,
+            showComponentCreationDialog: false
         };
     },
 
@@ -65,6 +66,7 @@ var Canvas = React.createClass({
         });
 
         this.props.onClearSelection();
+        this.props.onSync();
     },
 
     dropComponent(serviceIndex, event) {
@@ -74,17 +76,31 @@ var Canvas = React.createClass({
             return;
         }
 
-        let name = window.prompt('Component Name?', 'My component');
+        this.setState({
+            showComponentCreationDialog: true,
+            droppedServiceId: serviceIndex,
+            droppedComponent: this.props.selectedComponent
+        });
+    },
 
+    toggleState(key) {
+        this.setState({
+            [key]: !this.state[key]
+        });
+    },
+
+    createNewComponent(name) {
         if (name) {
             this.props.store.addComponent(
                 this.props.project._id,
-                serviceIndex,
+                this.state.droppedServiceId,
                 {
-                    type: this.props.selectedComponent,
+                    type: this.state.droppedComponent,
                     name
                 }
             );
+
+            this.props.onSync();
         }
     },
 
@@ -100,6 +116,11 @@ var Canvas = React.createClass({
                     <Service service={service}
                              onMouseUp={this.dropComponent.bind(this, index)}
                              onMouseDown={this.startDrag.bind(this, index)}/>)}
+                <PromptDialog 
+                    title="Enter a component name"
+                    isOpen={this.state.showComponentCreationDialog}
+                    onSubmit={this.createNewComponent}
+                    onClose={this.toggleState.bind(this, 'showComponentCreationDialog')} />
             </div>
         );
     }

@@ -10,6 +10,8 @@
     -webkit-user-select: none;   
     -moz-user-select: none;      
     user-select: none;
+
+    transition: transform 0.1s ease-in-out;
 }
 
 .currentService {
@@ -41,4 +43,12 @@
 .componentLabel {
     font-size: 0.8em;
     color: gray;
+}
+
+.empty {
+    color: #b7b7b7;
+    background: #eaeaea;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
 }

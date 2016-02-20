@@ -21,13 +21,35 @@ multicastSchema.statics.reserve = function(projectId) {
     return this
         .findOneAndUpdate(
             {active: false},
-            {$set: {project: projectId, active: true}},
+            {project: projectId, active: true},
             {new: true}
         )
         .exec()
         .then(multicast => {
             if (!multicast)
                 throw new Error('Could not find an available ip address');
+
+            return multicast.ip;
+        });
+}
+
+
+/**
+ * Reserves an ip address.
+ * @param {string} ip
+ * @returns {Promise}
+ */
+multicastSchema.statics.release = function(ip) {
+    return this
+        .findOneAndUpdate(
+            {active: true, ip},
+            {project: null, active: false},
+            {new: true}
+        )
+        .exec()
+        .then(multicast => {
+            if (!multicast)
+                throw new Error('Could not find record');
 
             return multicast.ip;
         });

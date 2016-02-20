@@ -20,6 +20,7 @@
     "express-session": "^1.13.0",
     "jade": "~1.11.0",
     "lodash": "^4.5.0",
+    "mkdirp": "^0.5.1",
     "mongoose": "^4.4.4",
     "mongoose-deep-populate": "^2.0.3",
     "morgan": "~1.6.1",

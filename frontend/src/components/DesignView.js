@@ -1,25 +1,40 @@
 import React, { Component } from 'react';
 
 import Canvas from './Canvas';
+import PromptDialog from './PromptDialog';
 import Palette from './Palette';
 
 import styles from './DesignView.module.css';
 
-
 var Toolbar = React.createClass({
+    getInitialState() {
+        return {
+            showDialog: false
+        };
+    },
 
-    addService() {
-        let name = window.prompt('Service name?', 'My Service');
+    toggleDialog() {
+        this.setState({
+            showDialog: !this.state.showDialog
+        })
+    },
+
+    newService(name) {
         if (name) {
             this.props.onAddService(name);
         }
+
+        this.toggleDialog();
     },
 
     render() {
         return (
             <div>
-                <button onClick={this.addService}>Add a Service</button>
-                Deploy
+                <PromptDialog isOpen={this.state.showDialog}
+                              onSubmit={this.newService}
+                              onClose={this.toggleDialog}
+                              title="Service name?" />
+                <button onClick={this.toggleDialog}>Add a Service</button>
             </div>
         );
 
@@ -38,6 +53,8 @@ var DesignView = React.createClass({
     addService(name) {
         let {store, projectId} = this.props;
         store.addService(projectId, name);
+
+        this.sync();
     },
 
     selectComponent(componentKey) {
@@ -50,26 +67,44 @@ var DesignView = React.createClass({
         this.setState({
             selectedComponent: null
         });
+    },
 
+    sync() {
+        let {store, projectId} = this.props;
+        let project = store.getProjectById(projectId)
+        this.props.onSync(project);
     },
 
     render() {
         let {store, projectId} = this.props;
         let {selectedComponent} = this.state;
 
-        let project = store.getProjectById(projectId);
-        let palette = store.getPalette();
-        
+        let project = store.getProjectById(projectId)
+        let palette = store.getPalette().toJS();
+
+        if (!project) {
+            console.log(projectId, project)
+             return <div>Loading</div>;
+        } else {
+                project = project.toJS();
+        }
+
+
         return (
             <div className={styles.designView}>
                 <div className={styles.canvasArea}>
-                    <Canvas project={project} 
+                    <Canvas project={project}
+                            onSync={this.sync}
                             selectedComponent={selectedComponent}
                             onClearSelection={this.clearSelection}
                             store={store} />
                 </div>
                 <div className={styles.paletteArea}>
                     <Palette data={palette}
+                             onUndo={store.undo}
+                             onRedo={store.redo}
+                             canUndo={store.canUndo()}
+                             canRedo={store.canRedo()}
                              onClearSelection={this.clearSelection}
                              onComponentSelect={this.selectComponent} />
                 </div>

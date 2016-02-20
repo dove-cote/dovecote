@@ -9,6 +9,10 @@
             "name": "addition-service",
             "script": "services/addition-service.js",
             "watch": true
+        },
+        {
+            "name": "monitor",
+            "script": "services/monitor.js"
         }
     ]
 }

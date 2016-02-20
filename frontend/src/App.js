@@ -31,8 +31,7 @@ var App = React.createClass({
 	},
 
 	componentDidMount() {
-		this.updateCallback = this.update.bind(this);
-		store.addListener(this.updateCallback);
+		store.addListener(this.update);
         store.fetchUser();
 	},
 

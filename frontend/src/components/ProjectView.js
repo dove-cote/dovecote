@@ -5,6 +5,7 @@ import DesignView from './DesignView';
 import MonitorView from './MonitorView';
 
 import styles from './ProjectView.module.css';
+import { browserHistory } from 'react-router';
 
 
 var ProjectView = React.createClass({
@@ -22,7 +23,9 @@ var ProjectView = React.createClass({
                     <a onClick={this.backToProjects}>Back to Projects</a>
                 </div>
                 <div className={styles.designArea}>
-                    <DesignView store={store} projectId={projectId} />
+                    <DesignView store={store} 
+                                onSync={this.props.onSync}
+                                projectId={projectId} />
                 </div>
             </div>
         );

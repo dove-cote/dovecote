@@ -1,0 +1,19 @@
+.title {
+	font-size: 1em;
+	margin: 2px 0 0;
+}
+
+.input {
+	padding: 5px 5px;
+	width: calc(100% - 10px);
+	font-size: 1em;
+}
+
+.form {
+	padding: 15px 0;
+}
+
+.submit {
+	margin-top: 10px;
+	font-size: 1em;
+}
