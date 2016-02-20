@@ -15,18 +15,23 @@ const APIError = require('dovecote/lib/apierror');
  * @param {Object} service
  * @returns {Promise}
  */
-module.exports.upsert = function(service) {
+module.exports.upsert = function(service, projectId) {
     if (!_.isObject(service))
         return Promise.reject(new APIError('service must be an object', 400));
 
     if (!_.isArray(service.components))
         return Promise.reject(new APIError('service.components must be an array', 400));
 
+    const updateData = _.pick(service, ['name', 'instance', 'code', 'meta']);
+    const serviceKey = projectId + '/' + updateData.name;
+    if (updateData.name)
+        updateData.key = serviceKey;
+
     return async
-        .eachSeries(service.components, ComponentService.upsert)
+        .eachSeries(service.components, component => ComponentService.upsert(component, serviceKey))
         .then(components => {
-            const updateData = _.pick(service, ['name', 'instance', 'code', 'meta']);
             updateData.components = _.map(components, component => component._id);
+
             if (service._id) {
                 let serviceId = service._id;
 

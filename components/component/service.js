@@ -13,17 +13,20 @@ const APIError = require('dovecote/lib/apierror');
  * @param {Object} component
  * @returns {Promise}
  */
-module.exports.upsert = function(component) {
+module.exports.upsert = function(component, serviceKey) {
     if (!_.isObject(component))
         return Promise.reject(new APIError('component must be an object', 400));
 
     const updateData = _.pick(component, ['name', 'type', 'namespace', 'external']);
+
+    if (updateData.name)
+        updateData.key = serviceKey + '/' + updateData.name;
+
     if (component._id) {
         let componentId = component._id;
 
         if (!(componentId instanceof ObjectId))
             componentId = new ObjectId(componentId);
-
 
         return Component
             .findOneAndUpdate(

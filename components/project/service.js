@@ -1,39 +1,48 @@
 'use strict';
 
 const _ = require('lodash');
+const async = require('async-q');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Project = require('dovecote/components/project/model');
+const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
 
 
-/**
- * Save project.
+module.exports.create = function(rawProject) {
+    if (!_.isObject(rawProject))
+        return Promise.reject(new APIError('project must be an object', 400));
 
- * @param {Object} component
+    const project = new Project(_.pick(rawProject, ['name', 'owner']));
+    return project.save();
+}
+
+/**
+ * Save project
+ * @param {string} id
+ * @param {Object} project
  * @returns {Promise}
  */
-module.exports.save = function(id, component) {
-    if (!_.isObject(component))
-        return Promise.reject(new APIError('component must be an object', 400));
+module.exports.save = function(projectId, rawProject) {
+    if (!_.isObject(rawProject))
+        return Promise.reject(new APIError('project must be an object', 400));
 
-    const updateData = _.pick(component, ['name', 'type', 'namespace', 'external']);
-    if (component._id) {
-        let componentId = component._id;
+    const rawServices = rawProject.services;
+    if (!_.isArray(rawServices))
+        return Promise.reject(new APIError('project.services must be an array', 400));
 
-        if (!(componentId instanceof ObjectId))
-            componentId = new ObjectId(componentId);
+    return async
+        .eachSeries(rawServices, service => ServiceService.upsert(service, projectId))
+        .then(services => {
+            const updateData = _.pick(rawProject, ['name']);
+            updateData.services = _.map(services, service => service._id);
 
-
-        return Component
-            .findOneAndUpdate(
-                {_id: componentId},
-                updateData,
-                {upsert: false, new: true}
-            )
-            .exec();
-    } else {
-        const newComponent = new Component(updateData);
-        return newComponent.save();
-    }
+            return Project
+                .findOneAndUpdate(
+                    {_id: projectId},
+                    updateData,
+                    {upsert: false, new: true}
+                )
+                .exec();
+        });
 };

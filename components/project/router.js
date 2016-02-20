@@ -10,7 +10,7 @@ const Project = require('dovecote/components/project/model');
 const Component = require('dovecote/components/component/model');
 const auth = require('dovecote/lib/middlewares/auth');
 const APIError = require('dovecote/lib/apierror');
-const ServiceService = require('dovecote/components/service/service');
+const ProjectService = require('dovecote/components/project/service');
 
 
 router.get('/', auth.ensureAuthentication, function(req, res, next) {
@@ -49,45 +49,19 @@ router.get('/:projectId', auth.ensureAuthentication, function(req, res, next) {
 
 router.post('/', auth.ensureAuthentication, function(req, res, next) {
     const rawProject = req.body.project;
-    if (!_.isObject(rawProject))
-        return next(new APIError('project must be an object', 400));
-
-    const raw = _.pick(rawProject, ['name']);
-    raw.owner = req.user._id;
-
-    const project = new Project(raw);
-    project
-        .save()
+    ProjectService
+        .create(_.assign(rawProject, {owner: req.user._id}))
         .then(project => res.json(project))
         .catch(next);
 });
 
 
 router.put('/:projectId', auth.ensureAuthentication, function(req, res, next) {
-    const projectId = new ObjectId(req.params.projectId);
-    const rawProject = req.body.project;
-    if (!_.isObject(rawProject))
-        return next(new APIError('project must be an object', 400));
-
-    const rawServices = rawProject.services;
-    if (!_.isArray(rawServices))
-        return next(new APIError('project.services must be an array', 400));
-
-    async
-        .eachSeries(rawServices, ServiceService.upsert)
-        .then(services => {
-            const updateData = _.pick(rawProject, ['name']);
-            updateData.services = _.map(services, service => service._id);
-
-            return Project
-                .findOneAndUpdate(
-                    {_id: projectId},
-                    updateData,
-                    {upsert: false, new: true}
-                )
-                .exec();
-        })
+    const projectId = req.params.projectId;
+    ProjectService
+        .save(projectId, req.body.project)
         .then(project => {
+            console.log('project created', project);
             return Project
                 .findOne({_id: projectId})
                 .populate({
@@ -98,10 +72,10 @@ router.put('/:projectId', auth.ensureAuthentication, function(req, res, next) {
                 .deepPopulate('services.components')
                 .exec((err, project) => {
                     if (err)
-                        throw new APIError(`Could not get project with id ${req.params.projectId}`, 500);
+                        throw new APIError(`Could not get project with id ${projectId}`, 500);
 
                     if (!project)
-                        throw new APIError(`Project with id ${req.params.projectId} is not defined`, 404);
+                        throw new APIError(`Project with id ${projectId} is not defined`, 404);
 
                     res.json(project);
                 })
