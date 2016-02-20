@@ -11,6 +11,7 @@ router.get('/', function(req, res) {
 
 // TODO: a single array of public urls
 router.get('/login', renderApp);
+router.get('/logout', renderApp);
 router.get('/register', renderApp);
 
 

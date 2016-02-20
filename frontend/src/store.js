@@ -1,4 +1,7 @@
 import _ from 'lodash';
+import Immutable from 'Immutable';
+const {fromJS, Map, List} = Immutable;
+import $ from 'jquery';
 
 var project = {
     _id: 234,
@@ -20,7 +23,7 @@ var project = {
                     type: "res",
                     name: "Stock Responder",
                     createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'                    
+                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
                 }
             ]
         },
@@ -39,17 +42,17 @@ var project = {
                     type: "req",
                     name: "Catalog Requester",
                     createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'                      
+                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
                 },
                 {
                     type: "pub",
                     name: "Catalog Publisher",
                     createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'                      
+                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
                 }
             ],
             createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-            updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'              
+            updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
         },
         {
             name: "Sockend",
@@ -66,11 +69,11 @@ var project = {
                     type: "sockend",
                     name: "Sockend",
                     createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'                      
+                    updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
                 }
             ],
             createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
-            updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'  
+            updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
         }
     ]
 };
@@ -84,7 +87,20 @@ var app = {
         {type: 'sub', icon: 'foo.png', name: 'Subscriber'},
         {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ],
-    projects: [project]
+    projects: [project],
+
+    user: fromJS({initialized: false, inProgress: false, data: {}, error: false}),
+
+    projectSummaries:  Immutable.fromJS({
+        initialized: false,
+        data: [],
+        inProgress: false,
+        latestFetch: null,
+        error: false,
+        errorMessage: null
+    })
+
+
 };
 
 let listeners = [];
@@ -111,16 +127,111 @@ const setServicePosition = (projectId, serviceIndex, position) => {
 };
 
 const getProjects = () => app.projects;
+const getProjectSummaries = () => app.projectSummaries;
 const getProjectById = (_id) => _.find(app.projects, {_id});
 const getPalette = () => app.palette;
+const getUser = () => app.user;
+
+const fetchProjectSummaries = function () {
+
+    if (app.projectSummaries.inProgress) {
+        return;
+    }
+
+    app.projectSummaries = app.projectSummaries.set('inProgress', true);
+
+    triggerChange();
+
+    const successFn = function (data) {
+        const newData = Map({inProgress: false,
+                             error: false,
+                             errorText: null,
+                             data: data});
+
+        app.projectSummaries = app.projectSummaries.merge(newData);;
+
+        triggerChange();
+
+    }.bind(this);
+
+    const errorFn = function () {
+        app.projectSummaries = app.projectSummaries.merge(Map({error: true, errorText: 'an error occurred'}));
+
+        console.error('an error occurred');
+
+    }.bind(this);
+
+    var mock = true;
+
+    if (mock) {
+        setTimeout(function () {
+            var mockData = [{id: 234, name: 'my first microservice example', lastUpdated: new Date()}];
+            successFn(mockData)
+        }, 2000);
+    } else {
+        $.ajax({
+            url: '/api/projects/',
+            success: successFn,
+            error: errorFn
+        });
+    }
+};
+
+const fetchProjectById = function (_id) {
+
+    console.log('fetching project by id', id);
+
+    const successFn = function () {
+
+    }.bind(this);
+
+
+    const errorFn = function () {
+
+    }.bind(this);
+
+    $.ajax({
+        url: '/api/projects/',
+        success: successFn,
+        error: errorFn
+    });
+}
+
+
+const setUser = function (userDetails) {
+    app.user = Map({initialized: true, inProgress: false}).merge(fromJS(userDetails));
+    triggerChange();
+};
+
+const fetchUser = function () {
+
+    $.ajax({
+        url: '/api/users/me',
+        success: function (data) {
+            setUser(data);
+        },
+        error: function () {
+            setUser({});
+        }
+    });
+
+};
+
+
+
 
 export default {
+    getProjectSummaries,
     getProjects,
     getProjectById,
     getPalette,
+    getUser,
 
     addListener,
     removeListener,
 
-    setServicePosition
+    setServicePosition,
+
+    fetchProjectSummaries,
+    fetchUser,
 };

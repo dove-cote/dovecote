@@ -2,6 +2,11 @@ import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
 
+import { browserHistory } from 'react-router'
+
+var store = require('../store');
+
+
 var Login = React.createClass({
 
 
@@ -19,20 +24,21 @@ var Login = React.createClass({
 
         this.setState({inProgress: true});
 
+        var email = this.state.email;
         $.ajax({
             type: 'POST',
             url: '/api/users/login',
             data: {email: this.state.email, password: this.state.password},
             success: function () {
                 this.setState({inProgress: false, error: false});
-                // redirect
-                alert('you logged in ')
+                browserHistory.push('/projects');
+                window.location = '/projects'; // hack for now to trigger proper user data
 
             }.bind(this),
             error: function () {
 
                 this.setState({inProgress: false, error: true});
-                alert('error logging in')
+                console.error('error logging in')
 
             }.bind(this)
 

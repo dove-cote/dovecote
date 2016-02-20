@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
-
+import { browserHistory } from 'react-router'
 
 var Register = React.createClass({
 
@@ -16,7 +16,6 @@ var Register = React.createClass({
             return;
         }
 
-
         this.setState({inProgress: true});
 
         $.ajax({
@@ -26,16 +25,13 @@ var Register = React.createClass({
             success: function () {
                 this.setState({inProgress: false, error: false});
                 // redirect
-                alert('you registered')
-
+                // TODO: we should autologin and redirect to dashboard.
+                browserHistory.push('/login');
             }.bind(this),
             error: function () {
-
                 this.setState({inProgress: false, error: true});
-                alert('error registering')
-
+                console.error('error registering');
             }.bind(this)
-
         })
     },
 
