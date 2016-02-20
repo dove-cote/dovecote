@@ -1,0 +1,13 @@
+{
+    "apps": [
+        {
+            "name"      : "dovecote",
+            "script"    : "server.js",
+            "watch"     : true,
+            "env_production": {
+                "NODE_ENV"  : "production",
+                "port"      : 80
+            }
+        }
+    ]
+}
