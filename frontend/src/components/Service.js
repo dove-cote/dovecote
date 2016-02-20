@@ -31,16 +31,19 @@ var Service = React.createClass({
         console.log('updating code');
     },
 
-    onMouseOver() {
+    onMouseOver(event) {
         this.setState({
             isCurrent: true
         });
+
+        this.props.onMouseOver(event);
     },
 
-    onMouseOut() {
+    onMouseOut(event) {
         this.setState({
             isCurrent: false
         });
+        
     },
 
     render() {
@@ -53,6 +56,10 @@ var Service = React.createClass({
         var options = {mode: 'javascript'};
         var editor = <Codemirror value={code} onChange={this.updateCode} options={options} />;
 
+        let showPlaceholder = (
+            components.length > 0 && this.props.isTarget
+        );
+
         return (
             <div className={classNames({
                 [styles.service]: true,
@@ -61,11 +68,16 @@ var Service = React.createClass({
                  style={style}
                  onMouseOver={this.onMouseOver}
                  onMouseOut={this.onMouseOut}
+                 onMouseLeave={this.props.onMouseLeave}
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
                 {name}
                 <ul className={styles.componentList}>
-                    {components.map((component) => <ServiceItem component={component} />)}
+                    {components.map((component, index) => <ServiceItem key={index} 
+                                                                       component={component} />)}
+                    {showPlaceholder && (
+                        <div className={styles.componentPlaceholder}></div>
+                    )}
                 </ul>
                 {!components.length && (
                     <div className={styles.empty}>

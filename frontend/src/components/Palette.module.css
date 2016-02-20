@@ -9,15 +9,15 @@
     width: 80px;
     text-align: center;
     display: inline-block;
-
-    -webkit-user-select: none;   
-    -moz-user-select: none;      
-    user-select: none;
 }
 
 .palette {
     text-align: center;
     width: 100%;
+
+    -webkit-user-select: none;   
+    -moz-user-select: none;      
+    user-select: none;
 }
 
 .paletteItemName {

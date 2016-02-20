@@ -1,7 +1,7 @@
 var sources = require('./sources');
 
 module.exports = {
-    name: 'product-catalog',
+    name: 'addition',
     project: {
         services: [
             {

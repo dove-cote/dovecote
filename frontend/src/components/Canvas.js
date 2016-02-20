@@ -104,9 +104,23 @@ var Canvas = React.createClass({
         }
     },
 
+    setTargetComponent(key) {
+        if (this.props.selectedComponent) {
+            this.setState({
+                targetComponent: key
+            });
+        }
+    },
+
+    clearTargetComponent(key) {
+        this.setState({
+            targetComponent: null
+        });
+    },
+
     render() {
         let {project} = this.props;
-        
+        console.log(this.state.targetComponent,)
         return (
             <div className={styles.canvas}
                  ref={(ref) => this.canvasElement = ref}
@@ -114,6 +128,9 @@ var Canvas = React.createClass({
                  onMouseUp={this.stopDrag}>
                  {project.services.map((service, index) => 
                     <Service service={service}
+                             isTarget={this.state.targetComponent === index}
+                             onMouseOver={this.setTargetComponent.bind(this, index)}
+                             onMouseLeave={this.clearTargetComponent.bind(this, index)}
                              onMouseUp={this.dropComponent.bind(this, index)}
                              onMouseDown={this.startDrag.bind(this, index)}/>)}
                 <PromptDialog 

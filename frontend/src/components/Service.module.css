@@ -29,11 +29,18 @@
     list-style: none;
     float: left;
     width: 70px;
+    height: 2.7em;
     text-align: center;
     padding: 5px;
     margin: 5px;
     background: #ebebeb;
     border-radius: 5px;
+}
+
+.componentPlaceholder {
+    composes: component;
+    color: #b7b7b7;
+    background: #fff7d7;
 }
 
 .component path {
@@ -48,7 +55,11 @@
 .empty {
     color: #b7b7b7;
     background: #eaeaea;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     border-radius: 5px;
+}
+
+.currentService .empty {
+    background: #fff7d7;
 }
