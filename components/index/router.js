@@ -9,7 +9,9 @@ router.get('/', function(req, res) {
 });
 
 
+// TODO: a single array of public urls
 router.get('/login', renderApp);
+router.get('/register', renderApp);
 
 
 router.get('/dashboard',
@@ -17,14 +19,30 @@ router.get('/dashboard',
     renderApp);
 
 
-function renderApp(req, res) {
-    var bundle = 'bundle.js';
+router.get('/projects',
+    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
+    renderApp);
 
-    try {
-        var stats = JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
-        bundle = stats.assetsByChunkName.main[0];
-    } catch(e) {
-        console.log(e);
+router.get('/project/:id',
+    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
+    renderApp);
+
+
+function renderApp(req, res) {
+
+    var bundle = '/bundle.js';
+
+    var isProd = process.env.NODE_ENV === 'production';
+
+    if (isProd) {
+        try {
+            var stats = JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
+            bundle = '/' + stats.assetsByChunkName.main[0];
+        } catch(e) {
+            console.log('error', e);
+        }
+    } else {
+        bundle = 'http://localhost:3000/static/bundle.js';
     }
 
     res.render('dashboard', {

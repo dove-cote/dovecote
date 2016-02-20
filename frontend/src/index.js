@@ -7,8 +7,10 @@ import { Router, Route, Link, browserHistory } from 'react-router'
 
 
 import Projects from './components/Projects';
+import Dashboard from './components/Dashboard';
 import Project from './components/Project';
 import Login from './components/Login';
+import Register from './components/Register';
 import Logout from './components/Logout';
 
 
@@ -35,9 +37,11 @@ var NoMatch = React.createClass({
 render((
   <Router history={browserHistory}>
     <Route path="/" component={App}>
+    <Route path="dashboard" component={Dashboard}/>
     <Route path="projects" component={Projects}/>
     <Route path="project/:id" component={Project}/>
     <Route path="login" component={Login}/>
+    <Route path="register" component={Register}/>
     <Route path="logout" component={Logout}/>
     <Route path="*" component={NoMatch}/>
     </Route>

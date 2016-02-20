@@ -2,8 +2,8 @@ import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
 
-var Login = React.createClass({
 
+var Register = React.createClass({
 
     handleFieldChange(fieldName, e) {
         this.setState({[fieldName]: e.target.value});
@@ -21,18 +21,18 @@ var Login = React.createClass({
 
         $.ajax({
             type: 'POST',
-            url: '/api/users/login',
-            data: {email: this.state.email, password: this.state.password},
+            url: '/api/users/register',
+            data: {username: this.state.username, email: this.state.email, password: this.state.password},
             success: function () {
                 this.setState({inProgress: false, error: false});
                 // redirect
-                alert('you logged in ')
+                alert('you registered')
 
             }.bind(this),
             error: function () {
 
                 this.setState({inProgress: false, error: true});
-                alert('error logging in')
+                alert('error registering')
 
             }.bind(this)
 
@@ -40,19 +40,19 @@ var Login = React.createClass({
     },
 
     getInitialState() {
-        return {email: '', password: '', error: false, inProgress: false};
+        return {email: '', password: '', username: '', error: false, inProgress: false};
     },
 
     render() {
         return <div className="">
 
         <form onSubmit={this.submitForm}>
-
+            <input type='username' placeholder='username' onChange={_.partial(this.handleFieldChange, 'username')}/>
             <input type='email' placeholder='email' onChange={_.partial(this.handleFieldChange, 'email')}/>
             <input type='password' placeholder='Password'  onChange={_.partial(this.handleFieldChange, 'password')}/>
-            {this.state.error && <div>An error occurred!!!</div>}
+            {this.state.error && <div>An error occurred</div>}
 
-            <button>{this.state.inProgress ? "Please wait..." : "Loginsssss"}</button>
+            <button>{this.state.inProgress ? "Please wait..." : "Registersssssfsdfsd"}</button>
         </form>
 
         </div>;
@@ -62,4 +62,4 @@ var Login = React.createClass({
 });
 
 
-export default Login;
+export default Register;
