@@ -33,7 +33,7 @@ var PaletteItem = React.createClass({
             cloned,
             element.nextSibling
         );
-        
+
         let ghostUpdateCallback = this.updateGhost.bind(this, cloned);
         let removeGhostCallback = () => {
             window.document.removeEventListener('mousemove', ghostUpdateCallback);
@@ -73,9 +73,15 @@ var Palette = React.createClass({
     render() {
         return (
             <div className={styles.palette}>
+
+              <button onClick={this.props.onUndo} disabled={!this.props.canUndo} style={{fontStyle: this.props.canUndo ? 'normal' : 'italic', color: this.props.canUndo ? 'black' : 'grey'}}>Undo</button>
+              <button onClick={this.props.onRedo} disabled={!this.props.canRedo} style={{color: this.props.canRedo ? 'black' : 'grey'}}>Redo</button>
+
+
+
                 {this.props.data.map(
                     (item) => (
-                        <PaletteItem 
+                        <PaletteItem
                             onClearSelection={this.props.onClearSelection}
                             onComponentSelect={this.props.onComponentSelect}
                             item={item} />

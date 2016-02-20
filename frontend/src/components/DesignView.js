@@ -30,10 +30,10 @@ var Toolbar = React.createClass({
     render() {
         return (
             <div>
-                <PromptDialog isOpen={this.state.showDialog} 
+                <PromptDialog isOpen={this.state.showDialog}
                               onSubmit={this.newService}
                               onClose={this.toggleDialog}
-                              title="Service name?" /> 
+                              title="Service name?" />
                 <button onClick={this.toggleDialog}>Add a Service</button>
             </div>
         );
@@ -72,13 +72,16 @@ var DesignView = React.createClass({
         let {store, projectId} = this.props;
         let {selectedComponent} = this.state;
 
-        let project = store.getProjectById(projectId);
-        let palette = store.getPalette();
+        let project = store.getProjectById(projectId)
+        let palette = store.getPalette().toJS();
 
         if (!project) {
             console.log(projectId, project)
              return <div>Loading</div>;
+        } else {
+                project = project.toJS();
         }
+
 
         return (
             <div className={styles.designView}>
@@ -90,6 +93,10 @@ var DesignView = React.createClass({
                 </div>
                 <div className={styles.paletteArea}>
                     <Palette data={palette}
+                             onUndo={store.undo}
+                             onRedo={store.redo}
+                             canUndo={store.canUndo()}
+                             canRedo={store.canRedo()}
                              onClearSelection={this.clearSelection}
                              onComponentSelect={this.selectComponent} />
                 </div>
