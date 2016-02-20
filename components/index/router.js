@@ -21,9 +21,11 @@ function renderApp(req, res) {
     var bundle = 'bundle.js';
 
     try {
-        JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
+        var stats = JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
         bundle = stats.assetsByChunkName.main[0];
-    } catch(e) {}
+    } catch(e) {
+        console.log(e);
+    }
 
     res.render('dashboard', {
         bundle: bundle
