@@ -21,7 +21,7 @@ multicastSchema.statics.reserve = function(projectId) {
     return this
         .findOneAndUpdate(
             {active: false},
-            {$set: {project: projectId, active: true}},
+            {project: projectId, active: true},
             {new: true}
         )
         .exec()
