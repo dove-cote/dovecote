@@ -76,4 +76,13 @@ router.put('/:projectId', auth.ensureAuthentication, function(req, res, next) {
 });
 
 
+
+router.post('/:projectId/deploy', auth.ensureAuthentication, function(req, res, next) {
+    ProjectService
+        .deploy(req.params.projectId, req.user._id)
+        .then(() => res.status(200).end())
+        .catch(next);
+});
+
+
 module.exports = router;

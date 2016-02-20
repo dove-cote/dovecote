@@ -5,6 +5,7 @@ const async = require('async-q');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Project = require('dovecote/components/project/model');
+const MulticastService = require('dovecote/components/multicast/service');
 const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
 
@@ -69,4 +70,28 @@ module.exports.save = function(projectId, rawProject) {
                 )
                 .exec();
         });
+};
+
+
+/**
+ * Deploys a project
+ * @param {string|ObjectId} id
+ * @returns {Promise}
+ */
+module.exports.deploy = function(projectId, ownerId) {
+    let project = null;
+    return get(projectId, ownerId)
+        .then(project_ => {
+            project = project_;
+            if (!project)
+                throw new APIError(`Project with id ${req.params.projectId} is not defined`, 404);
+
+            return MulticastService
+                .reserve(project._id)
+                .then(ip => {
+                    project.multicastIP_ = ip;
+                    return project.save();
+                });
+        })
+
 };
