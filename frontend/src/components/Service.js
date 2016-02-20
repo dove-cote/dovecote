@@ -8,7 +8,7 @@ var ServiceItem = ({data}) => (
     <li><strong>{data.type}:</strong> {data.name}</li>
 );
 
-var ProjectComponent = React.createClass({
+var Service = React.createClass({
 
     getInitialState() {
 
@@ -18,7 +18,6 @@ var ProjectComponent = React.createClass({
 
     toggleEdit() {
         this.setState({edit: !this.state.edit});
-
     },
 
     updateCode() {
@@ -48,4 +47,4 @@ var ProjectComponent = React.createClass({
 
 });
 
-export default ProjectComponent
+export default Service;
