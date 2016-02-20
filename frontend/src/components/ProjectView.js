@@ -8,12 +8,19 @@ import styles from './ProjectView.module.css';
 
 
 var ProjectView = React.createClass({
+    backToProjects(event) {
+        event.preventDefault();
+
+        browserHistory.push('/projects/');
+    },
 
     render() {
         var {projectId, store} = this.props;
         return (
             <div className={styles.projectView}>
-                <div className={styles.sidebar}>Sidebar</div>
+                <div className={styles.sidebar}>
+                    <a onClick={this.backToProjects}>Back to Projects</a>
+                </div>
                 <div className={styles.designArea}>
                     <DesignView store={store} projectId={projectId} />
                 </div>
