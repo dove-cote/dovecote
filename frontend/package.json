@@ -52,11 +52,16 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
+    "css-loader": "^0.23.1",
     "immutable": "^3.7.6",
     "jquery": "^2.2.0",
+    "less": "^2.6.0",
+    "less-loader": "^2.2.2",
     "moment": "^2.11.2",
+    "postcss-loader": "^0.8.1",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
-    "react-router": "^2.0.0"
+    "react-router": "^2.0.0",
+    "style-loader": "^0.13.0"
   }
 }

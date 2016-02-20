@@ -6,9 +6,11 @@ import classNames from 'classnames';
 import styles from './Service.module.css';
 import Icon from './Icon';
 
+require('./code_mirror.less');
+
 var ServiceItem = ({component}) => (
     <li className={styles.component}>
-        <Icon icon={component.type} /> 
+        <Icon icon={component.type} />
         <div className={styles.componentLabel}>{component.name}</div>
     </li>
 );
@@ -27,7 +29,10 @@ var Service = React.createClass({
         this.setState({edit: !this.state.edit});
     },
 
-    updateCode() {
+    updateCode(code) {
+        //debugger
+        console.log("update code called");
+        this.props.store.addCode(this.props.projectId, this.props.serviceId, code);
         console.log('updating code');
     },
 
@@ -54,7 +59,9 @@ var Service = React.createClass({
         var style = {left: x, top: y};
 
         var options = {mode: 'javascript'};
-        var editor = <Codemirror value={code} onChange={this.updateCode} options={options} />;
+        var editor = <Codemirror value={code} onChange={this.updateCode} options={options}
+                      style={{position: 'absolute', right: 300, width: 280}}
+            />;
 
         let showPlaceholder = (
             components.length > 0 && this.props.isTarget
@@ -72,6 +79,9 @@ var Service = React.createClass({
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
                 {name}
+
+                <button onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.edit ? "Hide Code" : "Edit Code"}</button>
+                {this.state.edit && editor}
                 <ul className={styles.componentList}>
                     {components.map((component, index) => <ServiceItem key={index} 
                                                                        component={component} />)}

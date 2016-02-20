@@ -193,9 +193,24 @@ const setServicePosition = (projectId, serviceIndex, position) => {
     let project = getProjectById(projectId);
     project = project.setIn(['services', serviceIndex, 'meta', 'position'], position);
 
-    updateProject(project);
+    updateProject(project, false);
 
     // triggerChange();
+};
+
+const snapshotState = function () {
+
+    console.log("snapshotting");
+
+    atom.swap(atom.getApp());
+};
+
+const addCode = function (projectId, serviceId, code, pushToHistory=true) {
+    var project = getProjectById(projectId);
+
+
+    updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+
 };
 
 const addService = (projectId, name, position = {x: 100, y: 100}) => {
@@ -240,7 +255,7 @@ const getProjectById = function (_id) {
     });
 };
 
-const updateProject = function (newProject) {
+const updateProject = function (newProject, pushToHistory=true) {
 
     atom.swap(
         atom.getApp().update('projects', function (projects) {
@@ -251,7 +266,8 @@ const updateProject = function (newProject) {
                     return project;
                 }
             })
-        })
+        }),
+        pushToHistory
     );
 
 
@@ -450,6 +466,7 @@ var store = {
     getPalette,
     getUser,
 
+    addCode,
     addService,
     addComponent,
 
@@ -472,7 +489,7 @@ var store = {
     redo: atom.redo.bind(atom),
     canUndo: atom.canUndo.bind(atom),
     canRedo: atom.canRedo.bind(atom),
-
+    snapshotState,
     // atom
 
     atom

@@ -32,7 +32,8 @@ var Projects = React.createClass({
 
     render() {
         var renderProjectSummary = function (projectSummary) {
-            return <li style={{cursor: 'pointer'}} key={projectSummary._id} onClick={_.partial(this.navigateToProject, projectSummary._id)}>{projectSummary.name} {moment().fromNow(projectSummary.lastUpdated)}</li>;
+            return <li style={{cursor: 'pointer'}} key={projectSummary._id} onClick={_.partial(this.navigateToProject, projectSummary._id)}>
+                {projectSummary.name} Last updated: {moment(projectSummary.updatedAt).fromNow()} ago Created: {moment(projectSummary.createdAt).fromNow()}</li>;
         }.bind(this);
         const projectSummaries = this.props.store.getProjectSummaries().toJS();
         const projectCreation = this.props.store.getProjectCreation().toJS();
@@ -40,7 +41,7 @@ var Projects = React.createClass({
         return (
             <div className={''}>
                 <h2>My Projects</h2>
-                {projectSummaries.inProgress ? 
+                {projectSummaries.inProgress ?
                     'loading' : (
                         <ul>
                             {projectSummaries.data.map(renderProjectSummary)}
