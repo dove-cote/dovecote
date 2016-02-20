@@ -18,7 +18,7 @@ var Canvas = React.createClass({
     getMouseCoords(event) {
         let container = this.canvasElement.getBoundingClientRect();
         let {startOffset} = this.state;
-        
+
         return {
             x: event.clientX - container.left,
             y: event.clientY - container.top
@@ -27,7 +27,7 @@ var Canvas = React.createClass({
 
     onMouseMove(event) {
         if (this.state.isDragging) {
-            
+
             // todo: update dom object instantly instead
             // of virtual-dom update
 
@@ -42,15 +42,17 @@ var Canvas = React.createClass({
             );
         }
     },
-    
+
     startDrag(index, event) {
         let service = this.props.project.services[index];
         let client = this.getMouseCoords(event);
-        
+
         let startOffset = {
             x: client.x - service.meta.position.x,
             y: client.y - service.meta.position.y,
         };
+
+        this.props.store.snapshotState();
 
         this.setState({
             isDragging: true,
@@ -65,6 +67,7 @@ var Canvas = React.createClass({
             draggingObjectIndex: null
         });
 
+        this.props.store.snapshotState();
         this.props.onClearSelection();
         this.props.onSync();
     },
@@ -120,20 +123,22 @@ var Canvas = React.createClass({
 
     render() {
         let {project} = this.props;
-        console.log(this.state.targetComponent,)
         return (
             <div className={styles.canvas}
                  ref={(ref) => this.canvasElement = ref}
                  onMouseMove={this.onMouseMove}
                  onMouseUp={this.stopDrag}>
-                 {project.services.map((service, index) => 
+                 {project.services.map((service, index) =>
                     <Service service={service}
-                             isTarget={this.state.targetComponent === index}
-                             onMouseOver={this.setTargetComponent.bind(this, index)}
-                             onMouseLeave={this.clearTargetComponent.bind(this, index)}
-                             onMouseUp={this.dropComponent.bind(this, index)}
+                                 isTarget={this.state.targetComponent === index}
+                                 onMouseOver={this.setTargetComponent.bind(this, index)}
+                                 onMouseLeave={this.clearTargetComponent.bind(this, index)}
+                                 serviceId={index}
+                                 store={this.props.store}
+                                 projectId={this.props.project._id}
+                                 onMouseUp={this.dropComponent.bind(this, index)}
                              onMouseDown={this.startDrag.bind(this, index)}/>)}
-                <PromptDialog 
+                <PromptDialog
                     title="Enter a component name"
                     isOpen={this.state.showComponentCreationDialog}
                     onSubmit={this.createNewComponent}

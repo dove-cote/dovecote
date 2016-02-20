@@ -32,6 +32,7 @@ var PROD_PLUGINS = [
 var PLUGINS = IS_PROD ? PROD_PLUGINS : DEV_PLUGINS;
 
 var JS_LOADERS = IS_PROD ? ['babel'] : ['react-hot', 'babel'];
+var enableExtractTextPlugin = false;
 
 module.exports = {
     devtool: IS_PROD ? 'source-map' : 'eval',
@@ -57,6 +58,13 @@ module.exports = {
             test: /\.js$/,
             loaders: JS_LOADERS,
             include: path.join(__dirname, 'src')
-        }]
+        },
+
+            {test: /\.less$/, loader: enableExtractTextPlugin ? ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!less-loader!') : 'style-loader!css-loader!postcss-loader!less-loader'},
+
+
+
+
+]
     }
 };
