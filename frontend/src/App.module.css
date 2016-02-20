@@ -1,5 +1,9 @@
+body {
+	font-family: Helvetica;
+	margin: 0;
+}
+
 .container {
-	width: 700px;
+	width: 100%;
 	margin: auto;
-	background: red;
 }

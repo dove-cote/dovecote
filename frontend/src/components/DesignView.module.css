@@ -1,0 +1,14 @@
+.canvasArea {
+	width: 85%;
+	height: calc(100% - 50px);
+	float: left;
+}
+
+.paletteArea {
+	width: 15%;
+	float: left;
+}
+
+.toolbarArea {
+	clear: left;
+}

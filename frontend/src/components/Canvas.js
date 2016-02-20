@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import ProjectComponent from './ProjectComponent';
+import styles from './Canvas.module.css';
 
 var Canvas = React.createClass({
 
@@ -9,10 +10,10 @@ var Canvas = React.createClass({
             return <ProjectComponent data={item} />;
         };
 
-        return <div className="">
+        return <div className={styles.canvas}>
 
         {this.props.data.map(renderProjectComponent)}
-            this is the canvas
+            
         </div>;
 
     }

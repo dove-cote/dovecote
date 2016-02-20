@@ -14,7 +14,7 @@ var screen1 = {
          meta: {
              position: {
                  x: 10,
-                 y: 240
+                 y: 100
              }
          },
 
@@ -32,8 +32,8 @@ module.exports = function (aReq, aRes) { return 3};
         {name: 'Gateway',
          meta: {
              position: {
-                 x: 100,
-                 y: 240
+                 x: 320,
+                 y: 40
              }
          },
 code: `
@@ -50,8 +50,8 @@ module.exports = function (aReq, aRes) { return 3};
          `,
          meta: {
              position: {
-                 x: 100,
-                 y: 340
+                 x: 300,
+                 y: 240
              }
          },
 code: `

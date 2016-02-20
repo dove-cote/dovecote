@@ -1,0 +1,13 @@
+.projectView {
+	overflow: hidden;
+}
+
+.sidebar {
+	float: left;
+	width: 150px;
+}
+
+.designArea {
+	width: calc(100% - 150px);
+	float: left;
+}
