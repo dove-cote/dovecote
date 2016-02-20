@@ -102,7 +102,7 @@ var app = {
         {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ],
 
-    projects: [project],
+    projects: [],
 
     user: initialUserData,
 
@@ -228,7 +228,7 @@ const fetchProjectSummaries = function () {
 
     }.bind(this);
 
-    var mock = true;
+    var mock = false;
 
     if (mock) {
         setTimeout(function () {
@@ -237,7 +237,7 @@ const fetchProjectSummaries = function () {
         }, 2000);
     } else {
         $.ajax({
-            url: URLS.projectSummaries,
+            url: URLS.projects,
             success: successFn,
             error: errorFn
         });
@@ -258,7 +258,18 @@ const fetchProjectById = function (id) {
 
     console.log('fetching project by id', id);
 
-    const successFn = function () {
+    const successFn = function (response) {
+
+        if (getProjectById(id)) {
+            // remove if it's already loaded
+            app.projects = app.projects.filter(
+                ({_id}) => id !== id
+            );
+        }
+
+        app.projects.push(response);
+        console.log(app.projects.length)
+        triggerChange();
 
     }.bind(this);
 
@@ -267,7 +278,7 @@ const fetchProjectById = function (id) {
 
     }.bind(this);
 
-    var isMock = true;
+    var isMock = false;
 
     if (isMock) {
         var mockData = generateMockProjectData(id);
@@ -276,7 +287,7 @@ const fetchProjectById = function (id) {
 
     } else {
         $.ajax({
-            url: URLS.project,
+            url: URLS.projects + id,
             success: successFn,
             error: errorFn
         });

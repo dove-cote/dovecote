@@ -3,7 +3,7 @@ const URLS = {
     // projects api
 
     projectSummaries: '/api/services/summaries',
-    project: '/api/projects/',
+    projects: '/api/projects/',
 
     // users api
     register: '/api/users/register',

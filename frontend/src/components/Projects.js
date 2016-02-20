@@ -20,7 +20,7 @@ var Projects = React.createClass({
 
     render() {
         var renderProjectSummary = function (projectSummary) {
-            return <li style={{cursor: 'pointer'}} key={projectSummary.id} onClick={_.partial(this.navigateToProject, projectSummary.id)}>{projectSummary.id} {projectSummary.name} {moment().fromNow(projectSummary.lastUpdated)}</li>;
+            return <li style={{cursor: 'pointer'}} key={projectSummary._id} onClick={_.partial(this.navigateToProject, projectSummary._id)}>{projectSummary.name} {moment().fromNow(projectSummary.lastUpdated)}</li>;
         }.bind(this);
         const projectSummaries = this.props.store.getProjectSummaries().toJS();
         const projectCreation = this.props.store.getProjectCreation().toJS();

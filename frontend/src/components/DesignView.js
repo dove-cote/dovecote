@@ -76,7 +76,8 @@ var DesignView = React.createClass({
         let palette = store.getPalette();
 
         if (!project) {
-             return <div>Project not found</div>;
+            console.log(projectId, project)
+             return <div>Loading</div>;
         }
 
         return (
