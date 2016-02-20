@@ -8,6 +8,8 @@ const Project = require('dovecote/components/project/model');
 const MulticastService = require('dovecote/components/multicast/service');
 const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
+const ProjectGenerator = require('dovecote/components/project/generator');
+
 
 
 /**
@@ -91,6 +93,10 @@ module.exports.deploy = function(projectId, ownerId) {
                 .then(ip => {
                     project.multicastIP_ = ip;
                     return project.save();
+                })
+                .then(() => {
+                    const generator = new ProjectGenerator(project);
+                    return generator.run();
                 });
         })
 
