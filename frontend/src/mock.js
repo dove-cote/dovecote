@@ -137,4 +137,4 @@ var screen2 = {
 
 
 
-module.exports = {screen1, screen2};
+export {screen1, screen2};
