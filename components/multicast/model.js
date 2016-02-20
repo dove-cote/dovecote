@@ -34,4 +34,26 @@ multicastSchema.statics.reserve = function(projectId) {
 }
 
 
+/**
+ * Reserves an ip address.
+ * @param {string} ip
+ * @returns {Promise}
+ */
+multicastSchema.statics.release = function(ip) {
+    return this
+        .findOneAndUpdate(
+            {active: true, ip},
+            {project: null, active: false},
+            {new: true}
+        )
+        .exec()
+        .then(multicast => {
+            if (!multicast)
+                throw new Error('Could not find record');
+
+            return multicast.ip;
+        });
+}
+
+
 module.exports = mongoose.model('Multicast', multicastSchema);
