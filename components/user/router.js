@@ -13,6 +13,10 @@ router.get('/', function(req, res, next) {
 
 router.post('/login', passport.authenticate('local'), function(req, res, next) {
     res.json(req.user);
+
+    // Update last login date
+    req.user.lastLoginDate = new Date();
+    req.user.save();
 });
 
 
