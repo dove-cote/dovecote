@@ -1,15 +1,38 @@
 import React, { Component } from 'react';
-import {screen1, screen2} from './mock';
+import ProjectView from './components/ProjectView';
+
+import store from './store';
 import styles from './App.module.css';
+
+window.__STORE__ = store;
 
 
 var App = React.createClass({
 
+	update() {
+		this.setState({
+			projects: store.getProjects()
+		});
+	},
+
+	componentDidMount() {
+		this.updateCallback = this.update.bind(this);
+		store.addListener(this.updateCallback);
+	},
+
+	componentWillUnmount() {
+		store.removeListener(this.updateCallback);
+	},
+
     render() {
-    	let {palette, projects} = screen1;
-        return (
+    	return (
             <div className={styles.container}>
-              {this.props.children}
+              {React.cloneElement(
+              	this.props.children,
+              	{
+              		store
+              	}
+              )}
             </div>
         );
     }

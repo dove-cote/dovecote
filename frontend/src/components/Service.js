@@ -4,8 +4,10 @@ import 'codemirror/mode/javascript/javascript';
 
 import styles from './Service.module.css';
 
-var ServiceItem = ({data}) => (
-    <li><strong>{data.type}:</strong> {data.name}</li>
+var ServiceItem = ({component}) => (
+    <li className={styles.component}>
+        <strong>{component.type}:</strong> {component.name}
+    </li>
 );
 
 var Service = React.createClass({
@@ -25,7 +27,7 @@ var Service = React.createClass({
 
     },
     render() {
-        var {name, meta, code, components} = this.props.data;
+        var {name, meta, code, components} = this.props.service;
 
         var {x, y} = meta.position;
 
@@ -35,10 +37,13 @@ var Service = React.createClass({
         var editor = <Codemirror value={code} onChange={this.updateCode} options={options} />;
 
         return (
-            <div className={styles.service} style={style}>
+            <div className={styles.service}
+                 style={style}
+                 onMouseDown={this.props.onMouseDown}
+                 onMouseUp={this.props.onMouseUp}>
                 {name}
                 <ul>
-                    {components.map((component) => <ServiceItem data={component} />)}
+                    {components.map((component) => <ServiceItem component={component} />)}
                 </ul>
             </div>
         );

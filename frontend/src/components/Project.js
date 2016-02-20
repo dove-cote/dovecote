@@ -1,15 +1,17 @@
 
 import React from 'react';
 
-import {screen1, screen2} from '../mock';
 import ProjectView from './ProjectView';
 
 var Project = React.createClass({
 
     render() {
-  	let {palette, projects} = screen1;
+    	let {store, params} = this.props;
 
-        return <ProjectView palette={palette} project={projects[0]} />;
+    	return (
+        	<ProjectView store={store}
+                	     projectId={parseInt(params.id)} />
+        );
     }
 
 });

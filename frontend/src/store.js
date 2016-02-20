@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 var project = {
     _id: 234,
     name: "e-store",
@@ -76,22 +78,50 @@ var project = {
 var app = {
 
     palette: [
-        {type: 'req', icon: 'foo.png'},
-        {type: 'res', icon: 'foo.png'},
-        {type: 'pub', icon: 'foo.png'},
-        {type: 'sub', icon: 'foo.png'},
-        {type: 'sockend', icon: 'foo.png'}
+        {type: 'req', icon: 'foo.png', name: 'Requester'},
+        {type: 'res', icon: 'foo.png', name: 'Responder'},
+        {type: 'pub', icon: 'foo.png', name: 'Publisher'},
+        {type: 'sub', icon: 'foo.png', name: 'Subscriber'},
+        {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ],
     projects: [project]
 };
 
+let listeners = [];
 
-var screen1 = {
-    ...app
+const addListener = (callback) => {
+    listeners.push(callback);
 };
 
-var screen2 = {
-    ...app
+const removeListener = (callback) => {
+    listeners.splice(listeners.indexOf(callback), 1);
 };
 
-export {screen1, screen2};
+
+const triggerChange = () => {
+    listeners.forEach(listener => listener(app));
+};
+
+const setServicePosition = (projectId, serviceIndex, position) => {
+    let project = getProjectById(projectId);
+    let service = project.services[serviceIndex];
+    console.log(position, serviceIndex, projectId, project, service)
+    service.meta.position = position;
+
+    triggerChange();
+};
+
+const getProjects = () => app.projects;
+const getProjectById = (_id) => _.find(app.projects, {_id});
+const getPalette = () => app.palette;
+
+export default {
+    getProjects,
+    getProjectById,
+    getPalette,
+
+    addListener,
+    removeListener,
+
+    setServicePosition
+};
