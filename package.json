@@ -4,16 +4,25 @@
   "private": true,
   "scripts": {
     "postinstall": "rm -f node_modules/dovecote && ln -s ../ node_modules/dovecote",
-    "start": "node server.js"
+    "start": "node server.js",
+    "add-initial-data": "DEBUG=\"dovecote:ficture\" node scripts/fixture --reset",
+    "fe_clean": "rm -f public/bundle.*.js public/stats.json",
+    "fe_build": "cd frontend && npm run package"
   },
   "dependencies": {
+    "async-q": "^0.3.1",
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
     "express": "~4.13.1",
+    "express-session": "^1.13.0",
     "jade": "~1.11.0",
+    "lodash": "^4.5.0",
     "mongoose": "^4.4.4",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "serve-favicon": "~2.3.0",
+    "validator": "^4.9.0"
   }
 }
