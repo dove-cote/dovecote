@@ -1,5 +1,7 @@
 'use strict';
 
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const Multicast = require('dovecote/components/multicast/model');
 
 
@@ -25,20 +27,12 @@ module.exports.create = function(ip, opt_projectId) {
 
 /**
  * Reserves the next available ip address to a project.
- * @param {string} projectId
+ * @param {string|ObjectId} projectId
  * @returns {Promise}
  */
 module.exports.reserve = function(projectId) {
-    Multicast
-        .findOne({active: false})
-        .exec()
-        .then(multicast => {
-            if (!multicast)
-                throw new Error('Could not find an available ip address');
+    if (!(projectId instanceof ObjectId))
+        projectId = new ObjectId(projectId);
 
-            multicast.project = projectId;
-            multicast.active = true;
-
-            return multicast.save();
-        });
+    return Multicast.reserve(projectId);
 };

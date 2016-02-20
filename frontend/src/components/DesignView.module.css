@@ -1,14 +1,19 @@
+.designView {
+    width: 100%;
+    height: 100%;
+}
+
 .canvasArea {
-	width: 85%;
-	height: calc(100% - 50px);
-	float: left;
+    width: calc(100% - 140px);
+    height: calc(100% - 50px);
+    float: left;
 }
 
 .paletteArea {
-	width: 15%;
-	float: left;
+    width: 140px;
+    float: left;
 }
 
 .toolbarArea {
-	clear: left;
+    clear: left;
 }

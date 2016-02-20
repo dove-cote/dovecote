@@ -5,14 +5,20 @@ import Palette from './Palette';
 
 import styles from './DesignView.module.css';
 
-var icon = <g><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6h-2v-13h-6v-2h18v2z"></path></g>
 
 var Toolbar = React.createClass({
+
+    addService() {
+        let name = window.prompt('Service name?', 'My Service');
+        if (name) {
+            this.props.onAddService(name);
+        }
+    },
 
     render() {
         return (
             <div>
-                Add a Service <svg viewBox="0 0 24 24" width="24" preserveAspectRatio="xMidYMid meet" fit>{icon}</svg>
+                <button onClick={this.addService}>Add a Service</button>
                 Deploy
             </div>
         );
@@ -23,19 +29,52 @@ var Toolbar = React.createClass({
 
 var DesignView = React.createClass({
 
-    render() {
-        var {palette, project} = this.props;
+    getInitialState() {
+        return {
+            selectedComponent: null
+        };
+    },
 
+    addService(name) {
+        let {store, projectId} = this.props;
+        store.addService(projectId, name);
+    },
+
+    selectComponent(componentKey) {
+        this.setState({
+            selectedComponent: componentKey
+        });
+    },
+
+    clearSelection() {
+        this.setState({
+            selectedComponent: null
+        });
+
+    },
+
+    render() {
+        let {store, projectId} = this.props;
+        let {selectedComponent} = this.state;
+
+        let project = store.getProjectById(projectId);
+        let palette = store.getPalette();
+        
         return (
-            <div>
+            <div className={styles.designView}>
                 <div className={styles.canvasArea}>
-                    <Canvas project={project}/>
+                    <Canvas project={project} 
+                            selectedComponent={selectedComponent}
+                            onClearSelection={this.clearSelection}
+                            store={store} />
                 </div>
                 <div className={styles.paletteArea}>
-                    <Palette data={palette}/>
+                    <Palette data={palette}
+                             onClearSelection={this.clearSelection}
+                             onComponentSelect={this.selectComponent} />
                 </div>
                 <div className={styles.toolbarArea}>
-                    <Toolbar />
+                    <Toolbar onAddService={this.addService} />
                 </div>
             </div>
         );

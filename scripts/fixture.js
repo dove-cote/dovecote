@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const debug = require('debug')('dovecote:ficture');
+const debug = require('debug')('dovecote:fixture');
 const async = require('async-q');
 const mongo = require('dovecote/lib/mongo');
 const Multicast = require('dovecote/components/multicast/model');

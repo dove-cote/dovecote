@@ -9,20 +9,19 @@
 <script>
     var catalog = io.connect('localhost:5555/catalog');
 
-        catalog.emit('add product', {
-            product: {
-                id: 'goodProduct',
-                stock: 3
-            }
-        }, function() {});
+    catalog.emit('add product', {
+        product: {
+            id: 'goodProduct',
+            stock: 3
+        }
+    }, function() {
+    });
 
-        catalog.on('update', function() {
-            catalog.emit('get catalog', function(err, catalog) {
-                console.log('catalog', catalog);
-            });
+    catalog.on('update', function() {
+        catalog.emit('get catalog', function(err, catalog) {
+            console.log('catalog', catalog);
         });
-
-
+    });
 </script>
 </body>
 </html>

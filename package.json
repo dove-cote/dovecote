@@ -5,7 +5,9 @@
   "scripts": {
     "postinstall": "rm -f node_modules/dovecote && ln -s ../ node_modules/dovecote",
     "start": "node server.js",
-    "add-initial-data": "DEBUG=\"dovecote:ficture\" node scripts/fixture --reset",
+    "production_start": "NODE_ENV=production node server.js",
+    "add-initial-data": "DEBUG=\"dovecote:fixture\" node scripts/fixture --reset",
+    "repl": "node scripts/repl.js",
     "fe_clean": "rm -f public/bundle.*.js public/stats.json",
     "fe_build": "cd frontend && npm run package"
   },
@@ -19,6 +21,7 @@
     "jade": "~1.11.0",
     "lodash": "^4.5.0",
     "mongoose": "^4.4.4",
+    "mongoose-deep-populate": "^2.0.3",
     "morgan": "~1.6.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",

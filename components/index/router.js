@@ -9,22 +9,35 @@ router.get('/', function(req, res) {
 });
 
 
-router.get('/login', renderApp);
+const URLS_LOGGED_OUT = ['/login', '/register'];
+
+URLS_LOGGED_OUT.forEach(function (url) {
+    router.get(url, auth.ensureNoAuthentication, renderApp);
+})
 
 
-router.get('/dashboard',
-    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
-    renderApp);
+const URLS_LOGGED_IN = ['/logout', '/projects', 'project/:id', '/dashboard'];
+
+URLS_LOGGED_IN.forEach(function (url) {
+    router.get(url, auth.ensureAuthenticationOrRedirect, renderApp);
+})
 
 
 function renderApp(req, res) {
-    var bundle = 'bundle.js';
 
-    try {
-        var stats = JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
-        bundle = stats.assetsByChunkName.main[0];
-    } catch(e) {
-        console.log(e);
+    var bundle = '/bundle.js';
+
+    var isProd = process.env.NODE_ENV === 'production';
+
+    if (isProd) {
+        try {
+            var stats = JSON.parse(fs.readFileSync(__dirname + '/../../public/stats.json'));
+            bundle = '/' + stats.assetsByChunkName.main[0];
+        } catch(e) {
+            console.log('error', e);
+        }
+    } else {
+        bundle = 'http://localhost:3000/static/bundle.js';
     }
 
     res.render('dashboard', {

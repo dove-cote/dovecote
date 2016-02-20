@@ -16,7 +16,7 @@ var PROD_PLUGINS = [
     }),
     new webpack.optimize.UglifyJsPlugin({
         compress:{
-            warnings: true
+            warnings: false
         }
     }),
 
@@ -37,7 +37,7 @@ module.exports = {
     devtool: IS_PROD ? 'source-map' : 'eval',
     entry: IS_PROD ? './src/index' : [
         'webpack-dev-server/client?http://localhost:3000',
-        'webpack/hot/only-dev-server',
+        'webpack/hot/only-dev-server?http://localhost:3000',
         './src/index'
     ],
     output: {

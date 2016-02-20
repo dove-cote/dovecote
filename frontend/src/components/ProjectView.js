@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 
 import DesignView from './DesignView';
 import MonitorView from './MonitorView';
@@ -7,18 +8,24 @@ import styles from './ProjectView.module.css';
 
 
 var ProjectView = React.createClass({
+    backToProjects(event) {
+        event.preventDefault();
+
+        browserHistory.push('/projects/');
+    },
 
     render() {
-	    var {palette, project} = this.props;
-	    return (
-	    	<div className={styles.projectView}>
-		        <div className={styles.sidebar}>Sidebar</div>
-		    	<div className={styles.designArea}>
-		    		<DesignView palette={palette}
-		    					project={project} />
-		    	</div>
-		    </div>
-	    );
+        var {projectId, store} = this.props;
+        return (
+            <div className={styles.projectView}>
+                <div className={styles.sidebar}>
+                    <a onClick={this.backToProjects}>Back to Projects</a>
+                </div>
+                <div className={styles.designArea}>
+                    <DesignView store={store} projectId={projectId} />
+                </div>
+            </div>
+        );
     }
 
 });

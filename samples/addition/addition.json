@@ -1,0 +1,14 @@
+{
+    "apps": [
+        {
+            "name": "addition",
+            "script": "services/sockend.js",
+            "watch": true
+        },
+        {
+            "name": "addition-service",
+            "script": "services/addition-service.js",
+            "watch": true
+        }
+    ]
+}
