@@ -47,6 +47,3 @@ render((
     </Route>
   </Router>
 ), document.getElementById('root'))
-
-
-ReactDOM.render(<App />, );

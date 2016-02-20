@@ -1,14 +1,10 @@
 import _ from 'lodash';
-import Immutable from 'Immutable';
+import Immutable from 'immutable';
 const {fromJS, Map, List} = Immutable;
 import $ from 'jquery';
 import URLS from './urls';
 
-var project = {
-    _id: 234,
-    name: "e-store",
-    multicastIP_: '239.1.0.17',
-    services: [
+var services = [
         {
             name: "Stock Service",
             instance: 1,
@@ -76,9 +72,26 @@ var project = {
             createdAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)',
             updatedAt: 'Sat Feb 20 2016 11:33:42 GMT+0200 (EET)'
         }
-    ]
+    ];
+
+var project = {
+    _id: 234,
+    name: "e-store",
+    multicastIP_: '239.1.0.17',
+    services: services
 };
 
+
+var initialProjectSummaries = Immutable.fromJS({
+    initialized: false,
+    data: [],
+    inProgress: false,
+    latestFetch: null,
+    error: false,
+    errorMessage: null
+});
+
+var initialUserData = fromJS({initialized: false, inProgress: false, data: {}, error: false});
 var app = {
 
     palette: [
@@ -88,19 +101,14 @@ var app = {
         {type: 'sub', icon: 'foo.png', name: 'Subscriber'},
         {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ],
+
     projects: [project],
 
-    user: fromJS({initialized: false, inProgress: false, data: {}, error: false}),
+    user: initialUserData,
 
-    projectSummaries:  Immutable.fromJS({
-        initialized: false,
-        data: [],
-        inProgress: false,
-        latestFetch: null,
-        error: false,
-        errorMessage: null
-    })
+    projectSummaries: initialProjectSummaries,
 
+    projectCreation: Map({inProgress: false, error: false, errorText: null})
 
 };
 
@@ -129,7 +137,7 @@ const setServicePosition = (projectId, serviceIndex, position) => {
 
 const addService = (projectId, name, position = {x: 100, y: 100}) => {
     let project = getProjectById(projectId);
-    
+
     project.services.push({
         name,
         instance: 1,
@@ -150,9 +158,48 @@ const addComponent = (projectId, serviceIndex, component) => {
 
 const getProjects = () => app.projects;
 const getProjectSummaries = () => app.projectSummaries;
+const getProjectCreation = () => app.projectCreation;
+
 const getProjectById = (_id) => _.find(app.projects, {_id});
+
+const updateProject = function (newProject) {
+
+    return app.projects.map(function (project) {
+        if (project._id === newProject._id) {
+            return newProject;
+        } else {
+            return project;
+        }
+    });
+
+};
+
+const createProject = function (newProject) {
+    app.projects.push(newProject);
+};
+
+
+const createOrUpdateProject = function (newProject) {
+
+    if (_.find(app.projects, {_id: newProject._id}).length === 0) {
+        createProject(newProject);
+    } else {
+        updateProject(newProject);
+    }
+
+
+    triggerChange();
+};
+
+
+
 const getPalette = () => app.palette;
 const getUser = () => app.user;
+
+const setProjectSummaries = function (data) {
+    app.projectSummaries = data;
+    triggerChange();
+};
 
 const fetchProjectSummaries = function () {
 
@@ -170,9 +217,7 @@ const fetchProjectSummaries = function () {
                              errorText: null,
                              data: data});
 
-        app.projectSummaries = app.projectSummaries.merge(newData);;
-
-        triggerChange();
+        setProjectSummaries(app.projectSummaries.merge(newData));
 
     }.bind(this);
 
@@ -199,7 +244,17 @@ const fetchProjectSummaries = function () {
     }
 };
 
-const fetchProjectById = function (_id) {
+const generateMockProjectData = function (id) {
+
+    return {
+        _id: id,
+        services: services,
+        name: 'my random project name',
+        multicast: '1.1.1.1'
+    };
+
+};
+const fetchProjectById = function (id) {
 
     console.log('fetching project by id', id);
 
@@ -212,11 +267,20 @@ const fetchProjectById = function (_id) {
 
     }.bind(this);
 
-    $.ajax({
-        url: URLS.project,
-        success: successFn,
-        error: errorFn
-    });
+    var isMock = true;
+
+    if (isMock) {
+        var mockData = generateMockProjectData(id);
+
+        successFn(mockData);
+
+    } else {
+        $.ajax({
+            url: URLS.project,
+            success: successFn,
+            error: errorFn
+        });
+    }
 }
 
 
@@ -240,6 +304,31 @@ const fetchUser = function () {
 };
 
 
+const createNewProject = function (cb) {
+
+    var isMock = true;
+
+    var successFn = function (data) {
+
+        cb(data.id);
+    };
+
+   if (isMock) {
+        var MOCK_DATA = {id: Math.floor(1000*Math.random())};
+
+        window.setTimeout(function () {
+            successFn(MOCK_DATA)
+        }, 1000);
+    } else {
+
+    $.ajax({
+        url: URLS.createNewProject,
+        data: {}, // TODO: chosen project template?,
+        success: successFn
+    });
+    }
+
+};
 
 
 export default {
@@ -248,8 +337,11 @@ export default {
     getProjectById,
     getPalette,
     getUser,
+
     addService,
     addComponent,
+
+    getProjectCreation,
 
     addListener,
     removeListener,
@@ -258,4 +350,7 @@ export default {
 
     fetchProjectSummaries,
     fetchUser,
+    fetchProjectById,
+
+    createNewProject
 };

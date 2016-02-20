@@ -4,13 +4,16 @@ import { browserHistory } from 'react-router'
 
 var ProjectHandler = React.createClass({
 
+    backToProjects() {
+        browserHistory.push('/projects/');
+    },
     render() {
         let {store, params} = this.props;
 
         return (
-          <ProjectView 
-              store={store}
-              projectId={parseInt(params.id)} />
+            <ProjectView
+                store={store}
+                projectId={parseInt(params.id)} />
         );
     }
 

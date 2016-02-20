@@ -74,11 +74,15 @@ var DesignView = React.createClass({
 
         let project = store.getProjectById(projectId);
         let palette = store.getPalette();
-        
+
+        if (!project) {
+             return <div>Project not found</div>;
+        }
+
         return (
             <div className={styles.designView}>
                 <div className={styles.canvasArea}>
-                    <Canvas project={project} 
+                    <Canvas project={project}
                             selectedComponent={selectedComponent}
                             onClearSelection={this.clearSelection}
                             store={store} />

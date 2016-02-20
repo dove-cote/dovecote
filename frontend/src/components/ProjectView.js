@@ -5,6 +5,7 @@ import DesignView from './DesignView';
 import MonitorView from './MonitorView';
 
 import styles from './ProjectView.module.css';
+import { browserHistory } from 'react-router';
 
 
 var ProjectView = React.createClass({

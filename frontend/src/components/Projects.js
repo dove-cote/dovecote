@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router';
 import _ from 'lodash';
 
 var Projects = React.createClass({
@@ -13,17 +13,25 @@ var Projects = React.createClass({
         browserHistory.push('/project/' + id);
     },
 
+    createNewProject() {
+        this.props.store.createNewProject(this.navigateToProject);
+    },
+
+
     render() {
         var renderProjectSummary = function (projectSummary) {
             return <li style={{cursor: 'pointer'}} key={projectSummary.id} onClick={_.partial(this.navigateToProject, projectSummary.id)}>{projectSummary.id} {projectSummary.name} {moment().fromNow(projectSummary.lastUpdated)}</li>;
         }.bind(this);
         const projectSummaries = this.props.store.getProjectSummaries().toJS();
+        const projectCreation = this.props.store.getProjectCreation().toJS();
 
-        return <div className="">
+        return <div className=''>
                 <h2>projects view</h2>
 
             {projectSummaries.inProgress ? 'loading' : <ul>{projectSummaries.data.map(renderProjectSummary)}</ul>}
 
+
+        <button onClick={this.createNewProject}>{projectCreation.inProgress ? 'Initializing, please wait...' : 'Create New Project'}</button>
         </div>;
 
     }
