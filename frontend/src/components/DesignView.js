@@ -1,25 +1,40 @@
 import React, { Component } from 'react';
 
 import Canvas from './Canvas';
+import PromptDialog from './PromptDialog';
 import Palette from './Palette';
 
 import styles from './DesignView.module.css';
 
-
 var Toolbar = React.createClass({
+    getInitialState() {
+        return {
+            showDialog: false
+        };
+    },
 
-    addService() {
-        let name = window.prompt('Service name?', 'My Service');
+    toggleDialog() {
+        this.setState({
+            showDialog: !this.state.showDialog
+        })
+    },
+
+    newService(name) {
         if (name) {
             this.props.onAddService(name);
         }
+
+        this.toggleDialog();
     },
 
     render() {
         return (
             <div>
-                <button onClick={this.addService}>Add a Service</button>
-                Deploy
+                <PromptDialog isOpen={this.state.showDialog} 
+                              onSubmit={this.newService}
+                              onClose={this.toggleDialog}
+                              title="Service name?" /> 
+                <button onClick={this.toggleDialog}>Add a Service</button>
             </div>
         );
 
