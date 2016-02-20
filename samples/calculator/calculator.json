@@ -1,0 +1,34 @@
+{
+    "apps": [
+        {
+            "name": "calculator",
+            "script": "services/sockend.js",
+            "watch": true
+        },
+        {
+            "name": "calculation-service",
+            "script": "services/calculation-service.js",
+            "watch": true
+        },
+        {
+            "name": "addition-service",
+            "script": "services/addition-service.js",
+            "watch": true
+        },
+        {
+            "name": "subtraction-service",
+            "script": "services/subtraction-service.js",
+            "watch": true
+        },
+        {
+            "name": "multiplication-service",
+            "script": "services/multiplication-service.js",
+            "watch": true
+        },
+        {
+            "name": "division-service",
+            "script": "services/division-service.js",
+            "watch": true
+        }
+    ]
+}

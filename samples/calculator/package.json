@@ -1,0 +1,10 @@
+{
+  "name": "product-catalog",
+  "version": "1.0.0",
+  "author": "Armagan Amcalar <armagan@amcalar.com",
+  "license": "ISC",
+  "dependencies": {
+    "cote": "^0.7.2",
+    "socket.io": "^1.4.5"
+  }
+}
