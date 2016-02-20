@@ -120,7 +120,7 @@ function multicastFixtures() {
         }
         ip[2]++;
     }
-    debug(`Adding ${ipList.length} ip records (this may take some time, be patient)`);
+    debug(`Adding ${ipList.length} ip records (this may take some ~3mins, be patient)`);
     return async.eachLimit(ipList, 30, ip => {
         return MulticastService.create(ip);
     });
@@ -246,5 +246,6 @@ Promise
     .then(serviceIds => projectFixture({owner: user._id, services: serviceIds}))
     .then(project => {
         debug('Fixture data created');
+        process.exit()
     })
     .catch(err => console.log('Error when creating fixture data', err));
