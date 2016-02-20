@@ -16,5 +16,6 @@ const projectSchema = new Schema({
 
 projectSchema.plugin(deepPopulate, {});
 
+projectSchema.index({ name: 1, owner: 1}, { unique: true });
 
 module.exports = mongoose.model('Project', projectSchema);
