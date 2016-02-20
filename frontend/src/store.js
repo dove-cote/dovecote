@@ -316,21 +316,6 @@ const fetchUser = function () {
 
 
 const createNewProject = function (name, cb) {
-
-    var isMock = false;
-
-    var successFn = function (data) {
-        cb(data._id);
-    };
-
-   if (isMock) {
-        var MOCK_DATA = {id: Math.floor(1000*Math.random())};
-
-        window.setTimeout(function () {
-            successFn(MOCK_DATA)
-        }, 1000);
-    } else {
-
     $.ajax({
         method: 'POST',
         url: URLS.projects,
@@ -341,10 +326,8 @@ const createNewProject = function (name, cb) {
                 name
             }
         }),
-        success: successFn
+        success: ({_id}) => cb(_id)
     });
-    }
-
 };
 
 
