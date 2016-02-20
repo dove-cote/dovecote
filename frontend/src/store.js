@@ -105,7 +105,6 @@ const triggerChange = () => {
 const setServicePosition = (projectId, serviceIndex, position) => {
     let project = getProjectById(projectId);
     let service = project.services[serviceIndex];
-    console.log(position, serviceIndex, projectId, project, service)
     service.meta.position = position;
 
     triggerChange();
