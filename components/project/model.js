@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 
 const projectSchema = new Schema({
@@ -11,6 +12,9 @@ const projectSchema = new Schema({
     multicastIP_: String,
     lastDeploy: Date
 }, {timestamps: true});
+
+
+projectSchema.plugin(deepPopulate, {});
 
 
 module.exports = mongoose.model('Project', projectSchema);
