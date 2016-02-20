@@ -9,24 +9,18 @@ router.get('/', function(req, res) {
 });
 
 
-// TODO: a single array of public urls
-router.get('/login', renderApp);
-router.get('/logout', renderApp);
-router.get('/register', renderApp);
+const URLS_LOGGED_OUT = ['/login', '/register'];
+
+URLS_LOGGED_OUT.forEach(function (url) {
+    router.get(url, auth.ensureNoAuthentication, renderApp);
+})
 
 
-router.get('/dashboard',
-    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
-    renderApp);
+const URLS_LOGGED_IN = ['/logout', '/projects', 'project/:id', '/dashboard'];
 
-
-router.get('/projects',
-    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
-    renderApp);
-
-router.get('/project/:id',
-    // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
-    renderApp);
+URLS_LOGGED_IN.forEach(function (url) {
+    router.get(url, auth.ensureAuthenticationOrRedirect, renderApp);
+})
 
 
 function renderApp(req, res) {
