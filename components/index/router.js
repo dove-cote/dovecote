@@ -9,9 +9,15 @@ router.get('/', function(req, res) {
 });
 
 
+router.get('/login', renderApp);
+
+
 router.get('/dashboard',
     // auth.ensureAuthenticationOrRedirect, // TODO: comment in for authentication check
-    function(req, res) {
+    renderApp);
+
+
+function renderApp(req, res) {
     var bundle = 'bundle.js';
 
     try {
@@ -22,7 +28,7 @@ router.get('/dashboard',
     res.render('dashboard', {
         bundle: bundle
     });
-});
+}
 
 
 module.exports = router;
