@@ -127,6 +127,27 @@ const setServicePosition = (projectId, serviceIndex, position) => {
     triggerChange();
 };
 
+const addService = (projectId, name, position = {x: 100, y: 100}) => {
+    let project = getProjectById(projectId);
+    
+    project.services.push({
+        name,
+        instance: 1,
+        code: "",
+        meta: { position },
+        components: []
+    });
+
+    triggerChange();
+};
+
+const addComponent = (projectId, serviceIndex, component) => {
+    let project = getProjectById(projectId);
+    let service = project.services[serviceIndex];
+    service.components.push(component);
+    triggerChange();
+};
+
 const getProjects = () => app.projects;
 const getProjectSummaries = () => app.projectSummaries;
 const getProjectById = (_id) => _.find(app.projects, {_id});
@@ -227,6 +248,8 @@ export default {
     getProjectById,
     getPalette,
     getUser,
+    addService,
+    addComponent,
 
     addListener,
     removeListener,

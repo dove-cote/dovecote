@@ -1,12 +1,35 @@
 .paletteItem {
-	margin: 20px;
-	border: 2px solid #cbcbcb;
-	background: #f6f6f6;
-	border-radius: 5px;
-	padding: 10px;
-	font-size: 0.9em;
+    margin: 15px 0 0;
+    border: 2px solid #cbcbcb;
+    background: #f6f6f6;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 0.9em;
+    cursor: move;
+    width: 80px;
+    text-align: center;
+    display: inline-block;
+
+    -webkit-user-select: none;   
+    -moz-user-select: none;      
+    user-select: none;
+}
+
+.palette {
+    text-align: center;
+    width: 100%;
 }
 
 .paletteItemName {
-	margin-left: 5px;
+    margin-left: 5px;
+}
+
+.ghostItem {
+    display: none;
+    opacity: 0.4;
+    position: absolute;
+    left: 0;
+    margin: 0;
+    top: 0;
+    transform: scale(0.7);
 }

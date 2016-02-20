@@ -1,7 +1,44 @@
 .service {
-	width: 220px;
-	border: 1px solid gray;
-	border-radius: 5px;
-	position: absolute;
-	cursor: move;
+    width: 180px;
+    border: 2px solid #bababa;
+    background: #fff;
+    padding: 9px;
+    border-radius: 5px;
+    position: absolute;
+    cursor: move;
+
+    -webkit-user-select: none;   
+    -moz-user-select: none;      
+    user-select: none;
+}
+
+.currentService {
+    transform: scale(1.1);
+    border: 2px solid #62bbff;
+}
+
+.componentList {
+    margin: 10px 0 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.component {
+    list-style: none;
+    float: left;
+    width: 70px;
+    text-align: center;
+    padding: 5px;
+    margin: 5px;
+    background: #ebebeb;
+    border-radius: 5px;
+}
+
+.component path {
+    fill: gray;
+}
+
+.componentLabel {
+    font-size: 0.8em;
+    color: gray;
 }
