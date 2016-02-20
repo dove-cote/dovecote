@@ -22,11 +22,7 @@ var Projects = React.createClass({
         return <div className="">
                 <h2>projects view</h2>
 
-            {projectSummaries.inProgress ? 'loading' : null}
-
-            <ul>
-        {projectSummaries.data.map(renderProjectSummary)}
-            </ul>
+            {projectSummaries.inProgress ? 'loading' : <ul>{projectSummaries.data.map(renderProjectSummary)}</ul>}
 
         </div>;
 

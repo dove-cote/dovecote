@@ -2,6 +2,7 @@ import _ from 'lodash';
 import Immutable from 'Immutable';
 const {fromJS, Map, List} = Immutable;
 import $ from 'jquery';
+import URLS from './urls';
 
 var project = {
     _id: 234,
@@ -170,7 +171,7 @@ const fetchProjectSummaries = function () {
         }, 2000);
     } else {
         $.ajax({
-            url: '/api/projects/',
+            url: URLS.projectSummaries,
             success: successFn,
             error: errorFn
         });
@@ -191,7 +192,7 @@ const fetchProjectById = function (_id) {
     }.bind(this);
 
     $.ajax({
-        url: '/api/projects/',
+        url: URLS.project,
         success: successFn,
         error: errorFn
     });
@@ -206,7 +207,7 @@ const setUser = function (userDetails) {
 const fetchUser = function () {
 
     $.ajax({
-        url: '/api/users/me',
+        url: URLS.me,
         success: function (data) {
             setUser(data);
         },

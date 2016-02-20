@@ -14,7 +14,7 @@ var ProjectHandler = React.createClass({
 
         return (
             <div>
-              <div onClick={this.backToProjects}>Back to Projects</div>
+              <div style={{cursor: 'pointer'}} onClick={this.backToProjects}>Back to Projects</div>
               <ProjectView store={store}
                            projectId={parseInt(params.id)} />
             </div>

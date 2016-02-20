@@ -2,6 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
 import { browserHistory } from 'react-router'
+import URLS from '../urls';
 
 var Register = React.createClass({
 
@@ -20,7 +21,7 @@ var Register = React.createClass({
 
         $.ajax({
             type: 'POST',
-            url: '/api/users/register',
+            url: URLS.register,
             data: {username: this.state.username, email: this.state.email, password: this.state.password},
             success: function () {
                 this.setState({inProgress: false, error: false});

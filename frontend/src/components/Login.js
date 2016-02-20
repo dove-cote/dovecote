@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
+import URLS from '../urls';
 
 import { browserHistory } from 'react-router'
 
@@ -27,7 +28,7 @@ var Login = React.createClass({
         var email = this.state.email;
         $.ajax({
             type: 'POST',
-            url: '/api/users/login',
+            url: URLS.login,
             data: {email: this.state.email, password: this.state.password},
             success: function () {
                 this.setState({inProgress: false, error: false});

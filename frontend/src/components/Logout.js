@@ -1,11 +1,12 @@
 import React from 'react';
 import $ from 'jquery';
+import URLS from '../urls';
 
 var Logout = React.createClass({
 
     componentDidMount() {
         $.ajax({
-            url: '/api/users/logout',
+            url: URLS.logout,
             success: function () {
                 window.location = '/';
             }
