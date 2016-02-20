@@ -27,23 +27,15 @@ router.get('/', auth.ensureAuthentication, function(req, res, next) {
 
 
 router.get('/:projectId', auth.ensureAuthentication, function(req, res, next) {
-    Project
-        .findOne({owner: req.user._id, _id: req.params.projectId})
-        .populate({
-            path: 'owner',
-            select: '_id username email'
-        })
-        .populate('services')
-        .deepPopulate('services.components')
-        .exec((err, project) => {
-            if (err)
-                return next(new APIError(`Could not get project with id ${req.params.projectId}`, 500));
-
+    ProjectService
+        .get(req.params.projectId, req.user._id)
+        .then(project => {
             if (!project)
                 return next(new APIError(`Project with id ${req.params.projectId} is not defined`, 404));
 
             res.json(project);
         })
+        .catch(next);
 });
 
 
