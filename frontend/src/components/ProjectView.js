@@ -23,7 +23,9 @@ var ProjectView = React.createClass({
                     <a onClick={this.backToProjects}>Back to Projects</a>
                 </div>
                 <div className={styles.designArea}>
-                    <DesignView store={store} projectId={projectId} />
+                    <DesignView store={store} 
+                                onSync={this.props.onSync}
+                                projectId={projectId} />
                 </div>
             </div>
         );

@@ -8,7 +8,7 @@ import styles from './Palette.module.css';
 var PaletteItem = React.createClass({
     updateGhost(element, event) {
         element.style.display = 'block';
-        element.style.top = event.clientY  + 'px';
+        element.style.top = event.clientY  + 10 + 'px';
         element.style.left = event.clientX - 50 + 'px';
     },
 

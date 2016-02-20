@@ -414,7 +414,7 @@ const fetchUser = function () {
 };
 
 
-const createNewProject = function (name, cb) {
+const createNewProject = function (name, callback) {
     $.ajax({
         method: 'POST',
         url: URLS.projects,
@@ -425,7 +425,20 @@ const createNewProject = function (name, cb) {
                 name
             }
         }),
-        success: ({_id}) => cb(_id)
+        success: ({_id}) => callback(_id)
+    });
+};
+
+const saveProject = function (project, callback) {
+    $.ajax({
+        method: 'PUT',
+        url: URLS.projects + project.get('_id'),
+        contentType: "application/json",
+        dataType: 'json',
+        data: JSON.stringify({
+            project: project.delete('_id').toJS()
+        }),
+        success: callback
     });
 };
 
@@ -452,6 +465,7 @@ var store = {
     fetchProjectById,
 
     createNewProject,
+    saveProject,
 
     // undo-redo stuff TODO clean up
     undo: atom.undo.bind(atom),

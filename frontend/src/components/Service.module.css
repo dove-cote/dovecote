@@ -44,3 +44,11 @@
     font-size: 0.8em;
     color: gray;
 }
+
+.empty {
+    color: #b7b7b7;
+    background: #eaeaea;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}

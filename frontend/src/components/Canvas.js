@@ -66,6 +66,7 @@ var Canvas = React.createClass({
         });
 
         this.props.onClearSelection();
+        this.props.onSync();
     },
 
     dropComponent(serviceIndex, event) {
@@ -98,6 +99,8 @@ var Canvas = React.createClass({
                     name
                 }
             );
+
+            this.props.onSync();
         }
     },
 

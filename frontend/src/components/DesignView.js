@@ -53,6 +53,8 @@ var DesignView = React.createClass({
     addService(name) {
         let {store, projectId} = this.props;
         store.addService(projectId, name);
+
+        this.sync();
     },
 
     selectComponent(componentKey) {
@@ -65,7 +67,12 @@ var DesignView = React.createClass({
         this.setState({
             selectedComponent: null
         });
+    },
 
+    sync() {
+        let {store, projectId} = this.props;
+        let project = store.getProjectById(projectId)
+        this.props.onSync(project);
     },
 
     render() {
@@ -87,6 +94,7 @@ var DesignView = React.createClass({
             <div className={styles.designView}>
                 <div className={styles.canvasArea}>
                     <Canvas project={project}
+                            onSync={this.sync}
                             selectedComponent={selectedComponent}
                             onClearSelection={this.clearSelection}
                             store={store} />
