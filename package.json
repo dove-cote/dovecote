@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "rm -f node_modules/dovecote && ln -s ../ node_modules/dovecote",
     "start": "node server.js",
-    "add-initial-data": "DEBUG=\"dovecote:ficture\" node scripts/fixture --reset",
+    "add-initial-data": "DEBUG=\"dovecote:fixture\" node scripts/fixture --reset",
     "fe_clean": "rm -f public/bundle.*.js public/stats.json",
     "fe_build": "cd frontend && npm run package"
   },
