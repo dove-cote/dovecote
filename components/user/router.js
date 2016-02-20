@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var User = require('dovecote/components/user/model');
 
 
 router.get('/', function(req, res, next) {
