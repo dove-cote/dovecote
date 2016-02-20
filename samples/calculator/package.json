@@ -4,7 +4,7 @@
   "author": "Armagan Amcalar <armagan@amcalar.com",
   "license": "ISC",
   "dependencies": {
-    "cote": "^0.8.0",
+    "cote": "^0.8.1",
     "socket.io": "^1.4.5"
   }
 }
