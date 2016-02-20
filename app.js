@@ -10,8 +10,8 @@ var app = express();
 
 
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 
 // uncomment after placing your favicon in /public
@@ -40,7 +40,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.json({
+        res.render('error', {
             message: err.message,
             error: err
         });
@@ -51,7 +51,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.json({
+    res.render('error', {
         message: err.message,
         error: {}
     });
