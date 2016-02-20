@@ -16,7 +16,7 @@ var PROD_PLUGINS = [
     }),
     new webpack.optimize.UglifyJsPlugin({
         compress:{
-            warnings: true
+            warnings: false
         }
     }),
 

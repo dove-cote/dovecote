@@ -3,4 +3,3 @@ node_modules
 public/bundle*
 public/stats.json
 npm-debug.log
-
