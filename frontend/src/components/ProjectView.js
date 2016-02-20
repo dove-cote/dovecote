@@ -9,12 +9,13 @@ import styles from './ProjectView.module.css';
 var ProjectView = React.createClass({
 
     render() {
-	    var data = this.props.data;
+	    var {palette, project} = this.props;
 	    return (
 	    	<div className={styles.projectView}>
 		        <div className={styles.sidebar}>Sidebar</div>
 		    	<div className={styles.designArea}>
-		    		<DesignView data={data}/>
+		    		<DesignView palette={palette}
+		    					project={project} />
 		    	</div>
 		    </div>
 	    );

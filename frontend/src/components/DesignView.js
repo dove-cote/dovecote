@@ -24,13 +24,15 @@ var Toolbar = React.createClass({
 var DesignView = React.createClass({
 
     render() {
+        var {palette, project} = this.props;
+
         return (
             <div>
                 <div className={styles.canvasArea}>
-                    <Canvas data={this.props.data.project}/>
+                    <Canvas project={project}/>
                 </div>
                 <div className={styles.paletteArea}>
-                    <Palette data={this.props.data.palette}/>
+                    <Palette data={palette}/>
                 </div>
                 <div className={styles.toolbarArea}>
                     <Toolbar />

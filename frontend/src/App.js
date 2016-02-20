@@ -7,9 +7,11 @@ import styles from './App.module.css';
 var App = React.createClass({
 
     render() {
+    	let {palette, projects} = screen1;
         return (
             <div className={styles.container}>
-                <ProjectView data={screen1}/>
+                <ProjectView palette={palette}
+                			 project={projects[0]} />
             </div>
         );
     }

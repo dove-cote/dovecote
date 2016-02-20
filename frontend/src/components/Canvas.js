@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 
-import ProjectComponent from './ProjectComponent';
+import Service from './Service';
 import styles from './Canvas.module.css';
 
 var Canvas = React.createClass({
 
     render() {
-        var renderProjectComponent = function (item) {
-            return <ProjectComponent data={item} />;
-        };
-
-        return <div className={styles.canvas}>
-
-        {this.props.data.map(renderProjectComponent)}
-            
-        </div>;
-
+    	let {project} = this.props;
+    	
+        return (
+        	<div className={styles.canvas}>
+	        	{project.services.map(service => <Service data={service} />)}
+	        </div>
+        );
     }
 
 });
