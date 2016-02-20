@@ -1,0 +1,19 @@
+{
+    "apps": [
+        {
+            "name": "product-catalog",
+            "script": "services/sockend.js",
+            "watch": true
+        },
+        {
+            "name": "stock-service",
+            "script": "services/stock-service.js",
+            "watch": true
+        },
+        {
+            "name": "catalog-service",
+            "script": "services/catalog-service.js",
+            "watch": true
+        }
+    ]
+}
