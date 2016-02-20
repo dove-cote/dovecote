@@ -117,7 +117,7 @@ class ProjectGenerator {
                 watch: true
             });
 
-            fs.writeFile(path, JSON.stringify(content, null, 4), (err) => {
+            fs.writeFile(path, JSON.stringify(config, null, 4), (err) => {
                 if (err) return reject(err);
                 resolve();
             });
