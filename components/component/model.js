@@ -14,12 +14,8 @@ const types = [
 ];
 
 
-const maxCodeLength = 100 * 1024; // 100kB
-
-
 const componentSchema = new Schema({
-    type: {type: String, enum: types},
-    code: {type: String, maxlength: maxCodeLength}
+    type: {type: String, enum: types}
 }, {timestamps: true});
 
 
