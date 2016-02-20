@@ -10,6 +10,7 @@ const User = require('dovecote/components/user/model');
 const Project = require('dovecote/components/project/model');
 const Service = require('dovecote/components/service/model');
 const Component = require('dovecote/components/component/model');
+const ProjectService = require('dovecote/components/project/service');
 
 const resetDB = !!~process.argv.indexOf('--reset');
 
@@ -126,6 +127,53 @@ function multicastFixtures() {
     });
 }
 
+const demoProjects = [
+    {
+        name: 'prouct-catalog',
+        project: {
+            multicastIP_: '239.1.0.17',
+            services: [
+                {
+                    name: 'Catalog Service',
+                    meta: {position: {x: 320, y: 90}},
+                    components: [
+                        {
+                            name: 'Catalog Publisher',
+                            type: 'pub',
+                            external: true,
+                            namespace: 'catalog'
+                        },
+                        {
+                            name: 'Catalog Responder',
+                            type: 'res',
+                            external: true,
+                            namespace: 'catalog'
+                        },
+                        {
+                            name: 'Stock Requester',
+                            type: 'req',
+                            external: true,
+                            namespace: 'catalog'
+                        }
+                    ],
+                    code: catalogServiceCode
+                },
+                {
+                    name: 'Stock Service',
+                    meta: {position: {x: 100, y: 100}},
+                    components: [
+                        {
+                            name: 'Stock Responder',
+                            type: 'res'
+                        }
+                    ],
+                    code: stockServiceCode
+                }
+            ]
+        }
+    }
+];
+
 
 /**
  * Adds test user
@@ -143,47 +191,19 @@ function userFixture() {
 }
 
 
-function createComponents(opt_raw) {
-    let raw = {
-        type: 'req',
-        name: 'Requester 1'
-    };
-
-    raw = _.assign(raw, opt_raw || {});
-    const component = new Component(raw);
-    debug(`Creating ${component.type} component as ${component.name}`);
-    return component.save();
-}
-
-function createServices(opt_raw) {
-    let raw = {
-        name: 'Untitled Service'
-    };
-
-    raw = _.assign(raw, opt_raw || {});
-    const service = new Service(raw);
-    debug(`Creating service as ${service.name}`);
-    return service.save();
-
-}
-
 /**
- * Add a demo project.
+ * Create project
+ * @param {Object} project
  * @returns {Promise}
  */
-function projectFixture(opt_raw) {
-    let raw = {
-        name: "e-store",
-        multicastIP_: '239.1.0.17',
-        services: []
-    };
-
-    raw = _.assign(raw, opt_raw || {});
-    debug(`Creating project ${raw.name}`)
-    const project = new Project(raw);
-    return project.save();
+function createProject(raw, user) {
+    return ProjectService
+        .create({
+            name: raw.name,
+            owner: user._id
+        })
+        .then(project => ProjectService.save(project._id, raw.project));
 }
-let user;
 
 
 Promise
@@ -193,57 +213,7 @@ Promise
     })
     .then(() => multicastFixtures())
     .then(() => userFixture())
-    .then(user_ => {
-        user = user_;
-        return Promise.all([
-                createComponents({
-                    name: 'Catalog Publisher',
-                    type: 'pub',
-                    external: true,
-                    namespace: 'catalog'
-                }),
-                createComponents({
-                    name: 'Catalog Responder',
-                    type: 'res',
-                    external: true,
-                    namespace: 'catalog'
-                }),
-                createComponents({
-                    name: 'Stock Requester',
-                    type: 'req',
-                    external: true,
-                    namespace: 'catalog'
-                }),
-                createComponents({
-                    name: 'Stock Responder',
-                    type: 'res'
-                })
-            ])
-        .then(components => _.map(components, '_id'));
-    })
-    .then(componentIds => {
-        return Promise.all([
-                createServices({
-                    name: 'Catalog Service',
-                    meta: {position: {x: 320, y: 90}},
-                    components: [
-                        componentIds[0],
-                        componentIds[1],
-                        componentIds[2]
-                    ],
-                    code: catalogServiceCode
-                }),
-                createServices({
-                    name: 'Stock Service',
-                    meta: {position: {x: 100, y: 100}},
-                    components: [componentIds[3]],
-                    code: stockServiceCode
-                })
-            ])
-        .then(services => _.map(services, '_id'));
-
-    })
-    .then(serviceIds => projectFixture({owner: user._id, services: serviceIds}))
+    .then(user => async.eachSeries(demoProjects, project => createProject(project, user)))
     .then(project => {
         debug('Fixture data created');
         process.exit()
