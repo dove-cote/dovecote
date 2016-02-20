@@ -1,8 +1,14 @@
+'use strict';
+
+const async = require('async-q');
 const _ = require('lodash');
 const express = require('express');
 const passport = require('passport');
 const validator = require('validator');
 const router = express.Router();
+
+const demoProjects = require('dovecote/scripts/demos');
+const ProjectService = require('dovecote/components/project/service');
 
 const User = require('dovecote/components/user/model');
 const auth = require('dovecote/lib/middlewares/auth');
@@ -64,10 +70,33 @@ router.post('/register', function(req, res, next) {
 
         user.save((err, user_) => {
             if (err) return next(err);
-            res.json(user_);
+
+            /**
+             * Create demo projects
+             */
+            return async
+                .eachSeries(demoProjects, project => createProject(project, user))
+                .then(() => {
+                    res.json(user_);
+                });
         });
     })
 });
+
+
+/**
+ * Create project
+ * @param {Object} project
+ * @returns {Promise}
+ */
+function createProject(raw, user) {
+    return ProjectService
+        .create({
+            name: raw.name,
+            owner: user._id
+        })
+        .then(project => ProjectService.save(project._id, raw.project));
+}
 
 
 module.exports = router;
