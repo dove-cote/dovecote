@@ -24,7 +24,8 @@ class ProjectGenerator {
                 this.generateCommonFiles(),
                 this.generateServices()
             ]))
-            .then(() => this.generateSockendServiceIfNeeded());
+            .then(() => this.generateSockendServiceIfNeeded())
+            .then(() => this.symlinkNodeModules());
     }
 
 
@@ -65,6 +66,7 @@ class ProjectGenerator {
             this.writeSockendPM2()
         ]);
     }
+
 
     writeSockendService() {
         const content = `
@@ -122,6 +124,37 @@ class ProjectGenerator {
                 resolve();
             });
         });
+    }
+
+
+    symlinkNodeModules() {
+        return this
+            .createNodeModules()
+            .then(() => Promise.all([
+                this.symlinkNodeModule('cote', '../../../../dovecote/node_modules/cote'),
+                this.symlinkNodeModule('socket.io', '../../../../dovecote/node_modules/socket.io')
+            ]));
+    }
+
+
+    symlinkNodeModule(packageName, path) {
+        return new Promise((resolve, reject) => {
+            const target = `${this.options.targetFolder}/node_modules/${packageName}`;
+            fs.symlink(path, target, (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+    }
+
+
+    createNodeModules() {
+        return new Promise((resolve, reject) => {
+            mkdirp(this.options.targetFolder + '/node_modules', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        })
     }
 }
 
