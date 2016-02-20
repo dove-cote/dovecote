@@ -1,4 +1,4 @@
-var cote = require('cote');
+var cote = require('cote', {multicast: '239.1.1.1'});
 
 var divisionResponder = new cote.Responder({
     name: 'Division Responder',

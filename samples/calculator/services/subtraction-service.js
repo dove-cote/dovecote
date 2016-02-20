@@ -1,4 +1,4 @@
-var cote = require('cote');
+var cote = require('cote', {multicast: '239.1.1.1'});
 
 var subtractionResponder = new cote.Responder({
     name: 'Subtraction Responder',
