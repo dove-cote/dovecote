@@ -29,6 +29,10 @@
             "name": "division-service",
             "script": "services/division-service.js",
             "watch": true
+        },
+        {
+            "name": "monitor",
+            "script": "services/monitor.js"
         }
     ]
 }
