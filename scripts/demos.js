@@ -104,8 +104,7 @@ module.exports = [
                         {
                             name: 'Stock Requester',
                             type: 'req',
-                            external: true,
-                            namespace: 'catalog'
+                            external: false
                         }
                     ],
                     code: catalogServiceCode
