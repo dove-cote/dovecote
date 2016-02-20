@@ -10,15 +10,15 @@ import styles from './ProjectView.module.css';
 var ProjectView = React.createClass({
 
     render() {
-	    var {projectId, store} = this.props;
-	    return (
-	    	<div className={styles.projectView}>
-		        <div className={styles.sidebar}>Sidebar</div>
-		    	<div className={styles.designArea}>
-		    		<DesignView store={store} projectId={projectId} />
-		    	</div>
-		    </div>
-	    );
+        var {projectId, store} = this.props;
+        return (
+            <div className={styles.projectView}>
+                <div className={styles.sidebar}>Sidebar</div>
+                <div className={styles.designArea}>
+                    <DesignView store={store} projectId={projectId} />
+                </div>
+            </div>
+        );
     }
 
 });

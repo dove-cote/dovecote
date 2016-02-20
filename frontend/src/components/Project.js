@@ -6,11 +6,11 @@ import ProjectView from './ProjectView';
 var Project = React.createClass({
 
     render() {
-    	let {store, params} = this.props;
+        let {store, params} = this.props;
 
-    	return (
-        	<ProjectView store={store}
-                	     projectId={parseInt(params.id)} />
+        return (
+            <ProjectView store={store}
+                         projectId={parseInt(params.id)} />
         );
     }
 
