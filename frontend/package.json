@@ -47,11 +47,11 @@
     "style-loader": "^0.13.0",
     "svg-inline-loader": "^0.4.0",
     "webpack": "^1.12.2",
-    "webpack-dev-server": "^1.12.1"
+    "webpack-dev-server": "^1.12.1",
+    "react-codemirror": "^0.2.5",
   },
   "dependencies": {
     "react": "^0.14.0",
-    "react-codemirror": "^0.2.5",
     "react-dom": "^0.14.0"
   }
 }
