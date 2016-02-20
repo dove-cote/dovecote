@@ -11,7 +11,8 @@ const serviceSchema = new Schema({
     name: {type: String, default: 'Untitled Service'},
     instance: {type: Number, default: 1},
     components: [{type: Schema.Types.ObjectId, ref: 'Component'}],
-    code: {type: String, maxlength: maxCodeLength}
+    code: {type: String, maxlength: maxCodeLength},
+    meta: {type: Schema.Types.Mixed}
 }, {timestamps: true});
 
 
