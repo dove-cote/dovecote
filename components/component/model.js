@@ -15,6 +15,7 @@ const types = [
 
 
 const componentSchema = new Schema({
+    name: {type: String, default: 'Untitled Component'},
     type: {type: String, enum: types}
 }, {timestamps: true});
 
