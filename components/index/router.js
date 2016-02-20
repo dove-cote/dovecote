@@ -16,7 +16,7 @@ URLS_LOGGED_OUT.forEach(function (url) {
 })
 
 
-const URLS_LOGGED_IN = ['/logout', '/projects', 'project/:id', '/dashboard'];
+const URLS_LOGGED_IN = ['/logout', '/projects', '/project/:id', '/dashboard'];
 
 URLS_LOGGED_IN.forEach(function (url) {
     router.get(url, auth.ensureAuthenticationOrRedirect, renderApp);
