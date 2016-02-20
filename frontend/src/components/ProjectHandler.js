@@ -3,7 +3,7 @@ import React from 'react';
 
 import ProjectView from './ProjectView';
 
-var Project = React.createClass({
+var ProjectHandler = React.createClass({
 
     render() {
         let {store, params} = this.props;
@@ -17,4 +17,4 @@ var Project = React.createClass({
 });
 
 
-export default Project;
+export default ProjectHandler;

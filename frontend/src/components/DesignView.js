@@ -29,7 +29,7 @@ var DesignView = React.createClass({
         let palette = store.getPalette();
 
         return (
-            <div>
+            <div className={styles.designView}>
                 <div className={styles.canvasArea}>
                     <Canvas project={project} store={store} />
                 </div>

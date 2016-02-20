@@ -1,5 +1,6 @@
 .projectView {
 	overflow: hidden;
+	height: 100%;
 }
 
 .sidebar {
@@ -9,5 +10,6 @@
 
 .designArea {
 	width: calc(100% - 150px);
+	height: 100%;
 	float: left;
 }
