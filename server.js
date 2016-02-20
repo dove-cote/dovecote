@@ -83,3 +83,6 @@ function onListening() {
 
     console.log('Listening on ' + bind);
 }
+
+
+module.exports = server;
