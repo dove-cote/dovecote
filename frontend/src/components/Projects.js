@@ -2,8 +2,15 @@ import React from 'react';
 import moment from 'moment';
 import { browserHistory } from 'react-router';
 import _ from 'lodash';
+import PromptDialog from './PromptDialog';
 
 var Projects = React.createClass({
+
+    getInitialState() {
+        return {
+            showNewProjectDialog: false
+        };
+    },
 
     componentWillMount() {
         this.props.store.fetchProjectSummaries();
@@ -13,10 +20,15 @@ var Projects = React.createClass({
         browserHistory.push('/project/' + id);
     },
 
-    createNewProject() {
-        this.props.store.createNewProject(this.navigateToProject);
+    createNewProject(name) {
+        this.props.store.createNewProject(name, this.navigateToProject);
     },
 
+    toggleState(key) {
+        this.setState({
+            [key]: !this.state[key]
+        });
+    },
 
     render() {
         var renderProjectSummary = function (projectSummary) {
@@ -25,14 +37,26 @@ var Projects = React.createClass({
         const projectSummaries = this.props.store.getProjectSummaries().toJS();
         const projectCreation = this.props.store.getProjectCreation().toJS();
 
-        return <div className=''>
-                <h2>projects view</h2>
+        return (
+            <div className={''}>
+                <h2>My Projects</h2>
+                {projectSummaries.inProgress ? 
+                    'loading' : (
+                        <ul>
+                            {projectSummaries.data.map(renderProjectSummary)}
+                        </ul>
+                    )}
 
-            {projectSummaries.inProgress ? 'loading' : <ul>{projectSummaries.data.map(renderProjectSummary)}</ul>}
+                <PromptDialog isOpen={this.state.showNewProjectDialog}
+                              onSubmit={this.createNewProject}
+                              onClose={this.toggleState.bind(this, 'showNewProjectDialog')}
+                              title="Enter a project name" />
 
-
-        <button onClick={this.createNewProject}>{projectCreation.inProgress ? 'Initializing, please wait...' : 'Create New Project'}</button>
-        </div>;
+                <button onClick={this.toggleState.bind(this, 'showNewProjectDialog')}>
+                    Create New Project
+                </button>
+            </div>
+        );
 
     }
 

@@ -315,13 +315,12 @@ const fetchUser = function () {
 };
 
 
-const createNewProject = function (cb) {
+const createNewProject = function (name, cb) {
 
-    var isMock = true;
+    var isMock = false;
 
     var successFn = function (data) {
-
-        cb(data.id);
+        cb(data._id);
     };
 
    if (isMock) {
@@ -333,8 +332,15 @@ const createNewProject = function (cb) {
     } else {
 
     $.ajax({
-        url: URLS.createNewProject,
-        data: {}, // TODO: chosen project template?,
+        method: 'POST',
+        url: URLS.projects,
+        contentType: "application/json",
+        dataType: 'json',
+        data: JSON.stringify({
+            project: {
+                name
+            }
+        }),
         success: successFn
     });
     }
