@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "rm -f node_modules/dovecote && ln -s ../ node_modules/dovecote",
-   "start": "node server.js",
+    "start": "node server.js",
     "fe_clean": "rm -f public/bundle.*.js public/stats.json",
     "fe_build": "cd frontend && npm run package"
   },
@@ -21,6 +21,7 @@
     "morgan": "~1.6.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "validator": "^4.9.0"
   }
 }

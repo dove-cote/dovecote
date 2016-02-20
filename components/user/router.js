@@ -1,9 +1,11 @@
-var express = require('express');
-var passport = require('passport');
-var router = express.Router();
+const _ = require('lodash');
+const express = require('express');
+const passport = require('passport');
+const validator = require('validator');
+const router = express.Router();
 
-var User = require('dovecote/components/user/model');
-var auth = require('dovecote/lib/middlewares/auth');
+const User = require('dovecote/components/user/model');
+const auth = require('dovecote/lib/middlewares/auth');
 
 
 router.get('/', function(req, res, next) {
@@ -28,6 +30,43 @@ router.get('/logout', auth.ensureAuthentication, function(req, res) {
 
 router.get('/me', auth.ensureAuthentication, function(req, res, next) {
     res.json(req.user);
+});
+
+
+router.post('/register', function(req, res, next) {
+    const rawUser = {
+        username: req.body.username,
+        email: req.body.email
+    };
+
+    // Validation stuff
+    if (!_.isString(rawUser.username) || rawUser.username.trim().length == 0)
+        return next(new Error('Invalid or missing username'));
+
+    if (!_.isString(rawUser.email) || !validator.isEmail(rawUser.email))
+        return next(new Error('Invalid or missing email'));
+
+    if (!_.isString(req.body.password) || req.body.password.trim().length == 0)
+        return next(new Error('Invalid or missing password'));
+
+    const user = new User(rawUser);
+    user.setPassword(req.body.password);
+
+    // Check whether email or username is taken
+    User.findOne({
+        $or: [
+            { email: user.email },
+            { username: user.username }
+        ]
+    }, (err, matchedUser) => {
+        if (err) return next(err);
+        if (matchedUser) return next(new Error('This username or email is already registered'));
+
+        user.save((err, user_) => {
+            if (err) return next(err);
+            res.json(user_);
+        });
+    })
 });
 
 
