@@ -2,7 +2,9 @@
 
 const _ = require('lodash');
 const fs = require('fs');
+const exec = require('child_process').exec;
 const mkdirp = require('mkdirp');
+const debug = require('debug')('dovecote:components:project:generator');
 const ServiceGenerator = require('dovecote/components/project/generator/service');
 const CommonGenerator = require('dovecote/components/project/generator/common');
 
@@ -46,6 +48,7 @@ class ProjectGenerator {
 
 
     run() {
+        debug(`Start generating ${this.data.name}...`);
         return this.
             createTargetFolder().
             then(() => Promise.all([
@@ -61,7 +64,12 @@ class ProjectGenerator {
     createTargetFolder() {
         return new Promise((resolve, reject) => {
             mkdirp(this.options.targetFolder + '/services', (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot create target folder: ${this.options.targetFolder}`);
+                    return reject(err);
+                }
+
+                debug(`Created target folder: ${this.options.targetFolder}`);
                 resolve();
             });
         })
@@ -69,26 +77,31 @@ class ProjectGenerator {
 
 
     generateCommonFiles() {
+        debug(`Generating common files...`);
         const generator = new CommonGenerator(this.data, this.options);
         return generator.run();
     }
 
 
     generateServices() {
-        const jobs = this.data.services.map((service) => {
-            const generator = new ServiceGenerator(service, this.data.multicastIP_, this.options);
-            return generator.run();
+        debug(`Generating services...`);
+        this.serviceGenerators = this.data.services.map((service) => {
+            return new ServiceGenerator(service, this.data.multicastIP_, this.options);
         });
 
-        return Promise.all(jobs);
+        return Promise.all(this.serviceGenerators.map(gen => gen.run()));
     }
 
 
     generateSockendServiceIfNeeded() {
+        debug(`Checking sockend service...`);
         const components = _.flatten(this.data.services.map(service => service.components));
         this.hasSockend_ = !!_.find(components, component => component.type == 'sockend');
 
-        if (!this.hasSockend_) return Promise.resolve();
+        if (!this.hasSockend_) {
+            debug(`Does not have sockend, skipping...`);
+            return Promise.resolve();
+        }
 
         return Promise.all([
             this.writeSockendService(),
@@ -129,8 +142,15 @@ class ProjectGenerator {
 
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/services/sockend.js`;
+            debug(`Creating sockend service: ${path}`);
+
             fs.writeFile(path, content, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot create sockend service: ${path}`, err);
+                    return reject(err);
+                }
+
+                debug(`Created sockend service: ${path}`);
                 resolve();
             })
         });
@@ -141,6 +161,7 @@ class ProjectGenerator {
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/${_.kebabCase(this.data.name)}.json`;
             const config = require(path);
+            debug(`Updating pm2 configuration for sockend: ${path}`);
 
             config.apps.push({
                 name: `${this.data.owner._id}-${this.data.name}-sockend`,
@@ -149,7 +170,12 @@ class ProjectGenerator {
             });
 
             fs.writeFile(path, JSON.stringify(config, null, 4), (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Could not pm2 config: ${path}`, err);
+                    return reject(err);
+                }
+
+                debug(`Updated pm2 configuration for sockend: ${path}`);
                 resolve();
             });
         });
@@ -167,10 +193,16 @@ class ProjectGenerator {
 
 
     symlinkNodeModule(packageName, path) {
+        debug(`Creating symlink for ${packageName}`);
         return new Promise((resolve, reject) => {
             const target = `${this.options.targetFolder}/node_modules/${packageName}`;
             fs.symlink(path, target, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Could not create symlink`, err);
+                    return reject(err);
+                }
+
+                debug(`Created ${packageName} symlink`);
                 resolve();
             });
         });
@@ -178,13 +210,21 @@ class ProjectGenerator {
 
 
     createNodeModules() {
+        debug(`Creating node_modules folder in ${this.options.targetFolder}`);
         return new Promise((resolve, reject) => {
             mkdirp(this.options.targetFolder + '/node_modules', (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Could not create node_modules`, err);
+                    return reject(err);
+                }
+
+                debug(`Created node_modules folder`);
                 resolve();
             });
         })
     }
+
+
 }
 
 module.exports = ProjectGenerator;

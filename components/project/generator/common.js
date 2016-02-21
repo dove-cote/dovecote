@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const _ = require('lodash');
+const debug = require('debug')('dovecote:components:project:generator:common');
 
 
 class CommonGenerator {
@@ -12,6 +13,8 @@ class CommonGenerator {
 
 
     run() {
+        debug(`Generating common files...`);
+
         const jobs = [
             this.write('index.html', this.generateIndex()),
             this.write('package.json', this.generatePackageJson()),
@@ -25,8 +28,15 @@ class CommonGenerator {
     write(fileName, content) {
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/${fileName}`;
+            debug(`Writing ${fileName}...`);
+
             fs.writeFile(path, content, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot write file: ${fileName}`, err);
+                    return reject(err);
+                }
+
+                debug(`Created file: ${fileName}`);
                 resolve();
             })
         });
