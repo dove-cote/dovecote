@@ -44,6 +44,21 @@ const get = function(projectId, ownerId) {
 };
 module.exports.get = get;
 
+
+/**
+ * List projects by userId
+ * @param {string} ownerId
+ */
+const list = function(ownerId) {
+    return Project
+        .find({owner: ownerId})
+        .select('_id name updatedAt createdAt')
+        .sort({updatedAt: -1})
+        .exec();
+}
+module.exports.list = list;
+
+
 /**
  * Save project
  * @param {string} id
