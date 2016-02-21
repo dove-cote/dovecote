@@ -18,7 +18,7 @@ class CommonGenerator {
         const jobs = [
             this.write('index.html', this.generateIndex()),
             this.write('package.json', this.generatePackageJson()),
-            this.write(`${_.kebabCase(this.data.name)}.json`, this.generatePM2Config())
+            this.write(`pm2.json`, this.generatePM2Config())
         ];
 
         return Promise.all(jobs);
