@@ -33,39 +33,55 @@ var ServiceItem = React.createClass({
     }
 });
 
-var CodeEditor = function ({value, onChange, left, top, onClose, fullScreen}) {
+var CodeEditor = React.createClass({
 
+    detectFullScreenChange() {
+        if (!document.fullscreen) {
+            this.props.onClose();
+        }
+    },
 
-    var style, width, height;
-    if (fullScreen) {
-        style = {top: 0, bottom: 0, left: 0, right: 0};
-        width = '100%';
-        height = '100%';
+    componentDidMount() {
+        document.addEventListener('fullscreenchange', this.detectFullScreenChange, false);
+    },
 
-    } else {
-        style = {left: left + 260, top: top + 56};
-        width='650px';
-        height='300px';
-    }
-// closeOnOutsideClick
+    componentWillUnmount() {
+        document.removeEventListener('fullscreenchange', this.detectFullScreenChange);
+    },
+
+    render() {
+
+        var {value, onChange, left, top, onClose, fullScreen} = this.props;
+        var style, width, height;
+        if (fullScreen) {
+            style = {top: 0, bottom: 0, left: 0, right: 0};
+            width = '100%';
+            height = '100%';
+
+        } else {
+            style = {left: left + 260, top: top + 56};
+            width='650px';
+            height='300px';
+        }
+        // closeOnOutsideClick
         return <Portal closeOnEsc  isOpened={true}   onClose={onClose}>
-        <div className={styles.codeEditor}
+            <div className={styles.codeEditor}
              style={style}>
             <AceEditor
-                width={width}
-                height={height}
-                fontSize={13}
-                mode={'javascript'}
-                theme="tomorrow_night"
-                style={{borderRadius: 5, paddingTop: 5, top:0, bottom: 0, left:0, right: 0}}
-                showGutter={false}
-                value={value}
-                highlightActiveLine={false}
-                onChange={onChange}
+             width={width}
+             height={height}
+             fontSize={13}
+             mode={'javascript'}
+             theme="tomorrow_night"
+             style={{borderRadius: 5, paddingTop: 5, top:0, bottom: 0, left:0, right: 0}}
+             showGutter={false}
+             value={value}
+             highlightActiveLine={false}
+             onChange={onChange}
              editorProps={{$blockScrolling: Infinity}} />
-        </div>
-    </Portal>
-};
+            </div>
+            </Portal>
+    }});
 
 
 var Service = React.createClass({
