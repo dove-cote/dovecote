@@ -7,6 +7,8 @@ import Palette from './Palette';
 import styles from './DesignView.module.css';
 import _ from 'lodash';
 
+
+
 var Toolbar = React.createClass({
     getInitialState() {
         return {
@@ -28,14 +30,27 @@ var Toolbar = React.createClass({
         this.toggleDialog();
     },
 
+    toggleDeployDialog() {
+        var shouldDeploy = window.confirm('do you want to deploy?');
+        if (shouldDeploy) {
+            console.log('deploy');
+        } else {
+            console.log('abort deploy');
+
+        }
+
+    },
+
     render() {
         return (
             <div className='bottom-toolbar'>
-                <PromptDialog isOpen={this.state.showDialog}
-                              onSubmit={this.newService}
-                              onClose={this.toggleDialog}
-                              title="Service name?" />
-                <button className='pure-button pure-button-primary' onClick={this.toggleDialog}>+ Add a Service</button>
+              <PromptDialog isOpen={this.state.showDialog}
+                            onSubmit={this.newService}
+                            onClose={this.toggleDialog}
+                            title="Service name?" />
+              <button className='pure-button pure-button-primary' onClick={this.toggleDialog}>+ Add a Service</button>
+              <button className='pure-button' style={{marginLeft: 10}} onClick={this.toggleDeployDialog}>Deploy</button>
+
             </div>
         );
 
@@ -91,25 +106,25 @@ var DesignView = React.createClass({
 
         return (
             <div className={styles.designView}>
-                <div className={styles.canvasArea}>
-                    <Canvas project={project}
-                            onSync={this.sync}
-                            selectedComponent={selectedComponent}
-                            onClearSelection={this.clearSelection}
-                            store={store} />
-                </div>
-                <div className={styles.paletteArea}>
-                    <Palette data={palette}
-                             onUndo={_.partial(store.undo, this.sync)}
-                             onRedo={_.partial(store.redo, this.sync)}
-                             canUndo={store.canUndo()}
-                             canRedo={store.canRedo()}
-                             onClearSelection={this.clearSelection}
-                             onComponentSelect={this.selectComponent} />
-                </div>
-                <div className={styles.toolbarArea}>
-                    <Toolbar onAddService={this.addService} />
-                </div>
+              <div className={styles.canvasArea}>
+                <Canvas project={project}
+                        onSync={this.sync}
+                        selectedComponent={selectedComponent}
+                        onClearSelection={this.clearSelection}
+                        store={store} />
+              </div>
+              <div className={styles.paletteArea}>
+                <Palette data={palette}
+                         onUndo={_.partial(store.undo, this.sync)}
+                         onRedo={_.partial(store.redo, this.sync)}
+                         canUndo={store.canUndo()}
+                         canRedo={store.canRedo()}
+                         onClearSelection={this.clearSelection}
+                         onComponentSelect={this.selectComponent} />
+              </div>
+              <div className={styles.toolbarArea}>
+                <Toolbar onAddService={this.addService} />
+              </div>
             </div>
         );
 

@@ -75,7 +75,7 @@ var Palette = React.createClass({
             <div className={styles.palette}>
 
               <button onClick={this.props.onUndo} disabled={!this.props.canUndo} className='pure-button button-xsmall' style={{fontStyle: this.props.canUndo ? 'normal' : 'italic', color: this.props.canUndo ? 'black' : 'grey'}}>Undo</button>
-              <button onClick={this.props.onRedo} disabled={!this.props.canRedo} className='pure-button button-xsmall' style={{color: this.props.canRedo ? 'black' : 'grey'}}>Redo</button>
+              <button onClick={this.props.onRedo} disabled={!this.props.canRedo} className='button-xsmall pure-button ' style={{color: this.props.canRedo ? 'black' : 'grey'}}>Redo</button>
 
 
 
