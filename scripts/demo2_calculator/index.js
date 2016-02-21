@@ -5,19 +5,6 @@ module.exports = {
     project: {
         services: [
             {
-                name: 'Addition Service',
-                meta: {position: {x: 320, y: 90}},
-                components: [
-                    {
-                        name: 'Addition Responder',
-                        type: 'res',
-                        external: true,
-                        namespace: 'addition'
-                    }
-                ],
-                code: sources.additionServiceCode
-            },
-            {
                 name: 'Calculation Service',
                 meta: {position: {x: 90, y: 160}},
                 components: [
@@ -43,6 +30,17 @@ module.exports = {
                 code: sources.calculationServiceCode
             },
             {
+                name: 'Addition Service',
+                meta: {position: {x: 320, y: 90}},
+                components: [
+                    {
+                        name: 'Addition Responder',
+                        type: 'res'
+                    }
+                ],
+                code: sources.additionServiceCode
+            },
+            {
                 name: 'Subtraction Service',
                 meta: {position: {x:20, y:200}},
                 components: [
@@ -50,7 +48,8 @@ module.exports = {
                         name: 'Subtraction Responder',
                         type: 'res'
                     }
-                ]
+                ],
+                code: sources.subtractionServiceCode
             },
             {
                 name: 'Multiplication Service',
