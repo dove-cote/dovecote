@@ -6,7 +6,9 @@
             "watch"     : true,
             "env_production": {
                 "NODE_ENV"  : "production",
-                "PORT"      : 80
+                "PORT"      : 80,
+                "DOCKER_NODE_VERSION": "5.6.0",
+                "DEPLOY_HOST": "169.45.231.138"
             }
         }
     ]
