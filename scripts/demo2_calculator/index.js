@@ -25,6 +25,10 @@ module.exports = {
                     {
                         name: 'Multiplication Requester',
                         type: 'req'
+                    },
+                    {
+                        name: 'Division Requester',
+                        type: 'req'
                     }
                 ],
                 code: sources.calculationServiceCode
