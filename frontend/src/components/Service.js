@@ -24,31 +24,47 @@ var ServiceItem = ({component, handleRemove, handleRename}) => (
     </li>
 );
 
-var CodeEditor = ({value, onChange, left, top}) => (
-    <Portal closeOnEsc closeOnOutsideClick isOpened={true}>
+var CodeEditor = function ({value, onChange, left, top, onClose, fullScreen}) {
+
+
+    var style, width, height;
+    if (fullScreen) {
+        style = {top: 0, bottom: 0, left: 0, right: 0};
+        width = '100%';
+        height = '100%';
+
+    } else {
+        style = {left: left + 260, top: top + 56};
+        width='650px';
+        height='300px';
+    }
+// closeOnOutsideClick
+        return <Portal closeOnEsc  isOpened={true}   onClose={onClose}>
         <div className={styles.codeEditor}
-             style={{left: left + 365, top: top + 13}}>
+             style={style}>
             <AceEditor
-                width={'300px'}
-                height={'300px'}
+                width={width}
+                height={height}
                 fontSize={13}
                 mode={'javascript'}
                 theme="tomorrow_night"
-                style={{borderRadius: 5, paddingTop: 5}}
+                style={{borderRadius: 5, paddingTop: 5, top:0, bottom: 0, left:0, right: 0}}
                 showGutter={false}
                 value={value}
                 highlightActiveLine={false}
                 onChange={onChange}
-                editorProps={{$blockScrolling: Infinity}} />
+             editorProps={{$blockScrolling: Infinity}} />
         </div>
     </Portal>
-);
+};
+
 
 var Service = React.createClass({
 
     getInitialState() {
         return {
             showEditor: false,
+            fullScreen: false,
             isCurrent: false
         };
     },
@@ -58,6 +74,12 @@ var Service = React.createClass({
         this.setState({
             showEditor: !this.state.showEditor
         });
+    },
+
+    hideCodeEditor() {
+
+        this.setState({showEditor: false, fullScreen: false});
+
     },
 
     updateCode(code) {
@@ -114,6 +136,16 @@ var Service = React.createClass({
         });
     },
 
+    setFullScreen() {
+        try {
+            document.documentElement.webkitRequestFullScreen();
+        } catch (e) {
+
+        }
+        this.setState({fullScreen: true});
+    },
+
+
     render() {
         var {name, meta, code, components} = this.props.service;
 
@@ -141,8 +173,10 @@ var Service = React.createClass({
 
                               {this.state.showEditor && (
                     <CodeEditor value={code}
+                                fullScreen={this.state.fullScreen}
                                 left={x}
                                 top={y}
+                                onClose={this.hideCodeEditor}
                                 onChange={this.updateCode} />
                 )}
 
@@ -151,7 +185,10 @@ var Service = React.createClass({
                 <button className='pure-button rename'>(rename)</button>
                 </div>
 
-                <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
+
+{this.state.showEditor && <button className='pure-button button-xsmall fullscreen' onClick={this.setFullScreen}><Icon icon='fullscreen' /></button>}
+                <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? 'Hide Code' : 'Edit Code'}</button>
+
 
                 <ul className={styles.componentList}>
                     {components.map((component, index) => <ServiceItem key={index}
