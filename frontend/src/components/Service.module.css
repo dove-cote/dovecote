@@ -64,3 +64,10 @@
 .currentService .empty {
     background: #fff7d7;
 }
+
+.codeEditor {
+    position: absolute;
+    border-radius: 5px;
+    background: #1D1F21;
+    padding: 5px;
+}

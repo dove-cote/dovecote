@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import Codemirror from 'react-codemirror';
-import 'codemirror/mode/javascript/javascript';
+
+import Portal from 'react-portal';
+import AceEditor from 'react-ace';
 import classNames from 'classnames';
+
+import 'brace/mode/javascript';
+import 'brace/theme/tomorrow_night';
 
 import styles from './Service.module.css';
 import Icon from './Icon';
 
-require('./code_mirror.less');
 
 var ServiceItem = ({component}) => (
     <li className={styles.component}>
@@ -15,18 +18,40 @@ var ServiceItem = ({component}) => (
     </li>
 );
 
+var CodeEditor = ({value, onChange, left, top}) => (
+    <Portal closeOnEsc closeOnOutsideClick isOpened={true}>
+        <div className={styles.codeEditor} 
+             style={{left: left + 365, top: top + 13}}>
+            <AceEditor
+                width={'300px'}
+                height={'300px'}
+                fontSize={13}
+                mode={'javascript'}
+                theme="tomorrow_night"
+                style={{borderRadius: 5, paddingTop: 5}}
+                showGutter={false}
+                value={value}
+                highlightActiveLine={false}
+                onChange={onChange}
+                editorProps={{$blockScrolling: Infinity}} />
+        </div>
+    </Portal>
+);
+
 var Service = React.createClass({
 
     getInitialState() {
         return {
-            edit: false,
+            showEditor: false,
             isCurrent: false
         };
     },
 
 
     toggleEdit() {
-        this.setState({edit: !this.state.edit});
+        this.setState({
+            showEditor: !this.state.showEditor
+        });
     },
 
     updateCode(code) {
@@ -58,11 +83,6 @@ var Service = React.createClass({
 
         var style = {left: x, top: y};
 
-        var options = {mode: 'javascript'};
-        var editor = <Codemirror value={code} onChange={this.updateCode} options={options}
-                      style={{position: 'absolute', right: 300, width: 280}}
-            />;
-
         let showPlaceholder = (
             components.length > 0 && this.props.isTarget
         );
@@ -78,10 +98,18 @@ var Service = React.createClass({
                  onMouseLeave={this.props.onMouseLeave}
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
+
+                {this.state.showEditor && (
+                    <CodeEditor value={code} 
+                                left={x}
+                                top={y}
+                                onChange={this.updateCode} />
+                )}
+
                 {name}
 
-                <button onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.edit ? "Hide Code" : "Edit Code"}</button>
-                {this.state.edit && editor}
+                <button onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
+                
                 <ul className={styles.componentList}>
                     {components.map((component, index) => <ServiceItem key={index} 
                                                                        component={component} />)}
