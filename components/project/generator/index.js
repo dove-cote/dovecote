@@ -27,24 +27,29 @@ class ProjectGenerator {
                 name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
                 script: `services/${kebabCasedName}.js`,
                 instance: service.instance || 1,
-                cwd: this.options.targetFolder
+                cwd: this.options.targetFolder,
+                key: service.key,
+                namespace: service.namespace
             };
         });
 
-        if (this.hasSockend_) {
-            services.push({
-                name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                instance: 1,
-                cwd: this.options.targetFolder
-            });
-        }
-        return {
+        const report = {
             deployFolder: this.options.targetFolder,
             name: this.data.name,
             owner: this.data.owner,
             services
         };
+
+        if (this.sockend_) {
+            report.sockend = {
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
+                script: `services/sockend.js`,
+                cwd: this.options.targetFolder,
+                namespace: this.sockend_.namespace
+            };
+        }
+
+        return report;
     }
 
 
@@ -96,9 +101,9 @@ class ProjectGenerator {
     generateSockendServiceIfNeeded() {
         debug(`Checking sockend service...`);
         const components = _.flatten(this.data.services.map(service => service.components));
-        this.hasSockend_ = !!_.find(components, component => component.type == 'sockend');
+        this.sockend_ = _.find(components, component => component.type == 'sockend');
 
-        if (!this.hasSockend_) {
+        if (!this.sockend_) {
             debug(`Does not have sockend, skipping...`);
             return Promise.resolve();
         }

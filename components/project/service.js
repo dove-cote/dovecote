@@ -166,7 +166,8 @@ module.exports.deploy = function(projectId, ownerId) {
                         .then(container => {
                             project.deploy = {
                                 services: response.services,
-                                container: container
+                                container: container,
+                                sockend: response.sockend
                             }
                             project.state = 'running';
                             return project.save();
