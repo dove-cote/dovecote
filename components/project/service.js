@@ -2,6 +2,8 @@
 
 const _ = require('lodash');
 const async = require('async-q');
+const path = require('path');
+const debug = require('debug')('dovecote:components:project:service');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Project = require('dovecote/components/project/model');
@@ -9,6 +11,7 @@ const MulticastService = require('dovecote/components/multicast/service');
 const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
 const ProjectGenerator = require('dovecote/components/project/generator');
+const ProjectManager = require('dovecote/components/project/manager');
 
 
 
@@ -91,13 +94,56 @@ module.exports.save = function(projectId, rawProject) {
 
 
 /**
+ * Stops a project
+ * @param {Object} project
+ * @returns {Promise}
+ */
+function stopProject(project) {
+    debug(`Terminating project ${project._id}`);
+    const deployedServiceNames = _.map(project.deployedServices, deployedService => deployedService.name);
+    return ProjectManager
+        .terminateList(deployedServiceNames)
+        .then(() => {
+            debug(`Setting ${project._id}'s state as "terminated"`);
+            project.state = 'terminated';
+            project.deployedServices = undefined;
+            return project.save();
+        });
+}
+
+
+/**
+ * Stop all projects by ownerId
+ * @param {string|ObjectId} ownerId
+ * @returns {Promise}
+ */
+function stopAllProjects(ownerId) {
+    debug(`Listing all projects of ${ownerId}`);
+    let projects = null;
+    return Project
+        .find({owner: ownerId, state: 'running'})
+        .populate('services')
+        .exec()
+        .then(projects_ => {
+            projects = projects_;
+            return async.eachSeries(projects, stopProject);
+        })
+        .then(() => {
+            debug(`${projects.length} projects of ${ownerId} have terminated.`);
+        });
+}
+
+
+/**
  * Deploys a project
  * @param {string|ObjectId} id
  * @returns {Promise}
  */
 module.exports.deploy = function(projectId, ownerId) {
     let project = null;
-    return get(projectId, ownerId)
+    debug(`Deploying project ${projectId}`);
+    return stopAllProjects(ownerId)
+        .then(() => get(projectId, ownerId))
         .then(project_ => {
             project = project_;
             if (!project)
@@ -112,7 +158,25 @@ module.exports.deploy = function(projectId, ownerId) {
                 .then(() => {
                     const generator = new ProjectGenerator(project);
                     return generator.run();
+                })
+                .then(response => {
+                    const deployedServices = _.map(response.services, service => {
+                        return {
+                            name: service.name,
+                            script: service.script,
+                            instance: service.instance,
+                            cwd: service.cwd
+                        }
+                    });
+
+                    return ProjectManager
+                        .run(deployedServices)
+                        .then(() => {
+                            project.deployedServices = deployedServices;
+                            project.state = 'running';
+                            return project.save();
+                        })
+
                 });
         })
-
 };
