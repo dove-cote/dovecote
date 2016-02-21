@@ -12,7 +12,7 @@ const Docker = require('dockerode-promise');
 class DockerService {
     constructor() {
         let options = {
-            host: '192.168.99.100',
+            host: process.env.DOCKER_HOST,
             port: 2376
         };
 
@@ -106,8 +106,7 @@ class DockerService {
                 return container
                     .start({
                         Binds: [`${sourceDir}:/app`],
-                        PublishAllPorts: true,
-                        Links: [`mongo:mongo`]
+                        PublishAllPorts: true
                     })
                     .then(response2 => {
                         return container.inspect()
