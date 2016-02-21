@@ -25,7 +25,7 @@ var ProjectHandler = React.createClass({
                 component._id = receivedComponent._id;
                 component.updatedAt = receivedComponent.updatedAt;
                 component.createdAt = receivedComponent.createdAt;
-                component.key = receivedComponent.key;
+                component.key = receivedComponent.key || '';
                 mutated = true;
             }
         });

@@ -113,10 +113,22 @@ var EdgeCanvas = React.createClass({
     },
 
     renameEdge(source, target) {
-        let name = window.prompt('Give a name for that connection.');
+        let {store, project} = this.props;
+        
+        let componentKey = (
+            store
+                .getComponentById(project._id, source)
+                .get('key')
+        );
+
+        let name = window.prompt(
+            'Give a name for that connection.',
+            componentKey
+        );
+
         if (name) {
-            this.props.store.connectComponents(
-                this.props.project._id,
+            store.connectComponents(
+                project._id,
                 source,
                 target,
                 name
@@ -165,11 +177,11 @@ var EdgeCanvas = React.createClass({
 
         let sourceRef = componentRefs[source];
         let targetRef = componentRefs[target];
-        
-        if (!sourceRef || !targetRef) {
-            debugger;
-        }
 
+        if (!sourceRef || !targetRef) {
+            return;
+        }
+        
         let sourceRect = sourceRef.getBoundingClientRect();
         let targetRect = targetRef.getBoundingClientRect();
 

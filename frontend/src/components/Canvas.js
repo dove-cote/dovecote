@@ -159,17 +159,42 @@ var Canvas = React.createClass({
         });
     },
 
+    buildEdgeName(source, target) {
+        let {store, project} = this.props;
+        
+        let sourceKey = (
+            store
+                .getComponentById(project._id, source)
+                .get('key')
+        );
+        
+        let targetKey = (
+            store
+                .getComponentById(project._id, target)
+                .get('key')
+        );
+
+        return (
+            sourceKey
+              || targetKey
+                 || `Edge-${UUID.v4().substr(5)}`
+        );
+    },
+
     onConnectorDropped(droppedComponentId) {
         let {connectingComponentId} = this.state;
             
         if (droppedComponentId) {
-            let uuid = UUID.v4().substr(5);
-        
+            let edgeName = (
+                this.buildEdgeName(connectingComponentId, 
+                                   droppedComponentId)
+            );
+
             this.props.store.connectComponents(
                 this.props.project._id,
                 connectingComponentId,
                 droppedComponentId,
-                `link-${uuid}`
+                edgeName
             );
         }
 

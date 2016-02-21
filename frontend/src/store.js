@@ -347,6 +347,20 @@ const getComponentIndexById = (project, serviceIndex, id) => {
     );
 };
 
+const getComponentById = (projectId, componentId) => {
+    let project = getProjectById(projectId);
+
+    let serviceIndex = (
+        getServiceIndexByComponentId(project, componentId)
+    );
+
+    return (
+        project
+            .getIn(['services', serviceIndex, 'components'])
+            .find(component => component.get('_id') === componentId)
+    );
+};
+
 const connectComponents = (projectId, sourceId, targetId, key) => {
 
     let project = getProjectById(projectId);
@@ -622,6 +636,7 @@ var store = {
     addListener,
     removeListener,
 
+    getComponentById,
     connectComponents,
     setServicePosition,
     updateProject,
