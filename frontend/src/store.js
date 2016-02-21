@@ -117,18 +117,34 @@ var _history = List();
 
 var _historyPointer = 0;
 
+var diff = require('immutablediff');
+
 var atom = {
 
     getApp: function () {
         return _app;
     },
 
-    swap: function (newApp, pushToHistory=true) {
+    swap: function (newApp, pushToHistory=true, resetHistory=false) {
         if (pushToHistory) {
-            _history = _history.push(newApp);
-            _historyPointer = _history.count() - 1;
+            if (Immutable.is(_history.last(), newApp)) {
+                console.log('prevent history')
+            } else {
+                window.MODIFICATIONS = window.MODIFICATIONS || [];
+                var modifications = diff(_history.last(), newApp).toJS();
+                console.log(JSON.stringify(modifications, null, 4));
+
+                window.MODIFICATIONS.push(diff(_history.last(), newApp).toJS());
+                _history = _history.push(newApp);
+                _historyPointer = _history.count() - 1;
+            }
         } else {
 
+        }
+
+        if (resetHistory) {
+            _history = List();
+            _historyPointer = 0;
         }
         _app = newApp;
         triggerChange();
@@ -159,7 +175,7 @@ var atom = {
     },
 
     canUndo() {
-        return _historyPointer > 1;
+        return _historyPointer > 0;
     },
 
     canRedo() {
@@ -376,7 +392,7 @@ const fetchProjectById = function (id) {
 
         var newApp = app.set('projects', projects);
 
-        atom.swap(newApp);
+        atom.swap(newApp, false, true);
 
     }.bind(this);
 
