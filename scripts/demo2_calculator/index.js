@@ -33,6 +33,11 @@ module.exports = {
                         name: 'Division Requester',
                         type: 'req',
                         key: 'divide'
+                    },
+                    {
+                        name: 'Sockend Component',
+                        type: 'sockend',
+                        namespace: 'divide'
                     }
                 ],
                 code: sources.calculationServiceCode
