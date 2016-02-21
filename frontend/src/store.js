@@ -257,6 +257,26 @@ const removeService = function (projectId, serviceIndex) {
         }));
     updateProject(project);
 
+    saveProject(project);
+
+};
+
+const renameService = function (projectId, serviceIndex, newServiceName) {
+  let project = getProjectById(projectId);
+    var services = project.get('services');
+
+    project = project.set('services',
+        services.map(function (service, i) {
+            if (serviceIndex !== i) {
+                return service;
+            } else {
+                return service.set('name', newServiceName);
+            }
+
+        }));
+    updateProject(project);
+    saveProject(project);
+
 
 };
 
@@ -278,7 +298,30 @@ const removeComponent = (projectId, serviceIndex, componentName) => {
     });
 
     updateProject(project);
+    saveProject(project);
+
     triggerChange();
+};
+
+
+const renameComponent = function (projectId, serviceIndex, componentName, newComponentName) {
+    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+        return oldComponents.map(function (component) {
+            if (component.get('name') === componentName) {
+                return component.set('name', newComponentName);
+            } else {
+                return component;
+            }
+
+        });
+
+    });
+
+    updateProject(project);
+    saveProject(project);
+
+    triggerChange();
+
 };
 
 
@@ -509,10 +552,14 @@ var store = {
 
     addCode,
     addService,
+    renameService,
+
     addComponent,
 
     removeService,
     removeComponent,
+    renameComponent,
+
 
     getProjectCreation,
 

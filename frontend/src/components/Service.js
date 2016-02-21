@@ -13,11 +13,11 @@ import Icon from './Icon';
 
 require('./Service.less');
 
-var ServiceItem = ({component, handleRemove}) => (
+var ServiceItem = ({component, handleRemove, handleRename}) => (
     <li className={classNames(styles.component, 'service-item')}>
       <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
         <Icon icon={component.type} />
-        <div className={styles.componentLabel}>{component.name}</div>
+        <div className={styles.componentLabel} onClick={handleRename}>{component.name}</div>
     </li>
 );
 
@@ -73,10 +73,27 @@ var Service = React.createClass({
         }
     },
 
+    handleRenameService() {
+        var newName = window.prompt('Enter new name for this service', this.props.service.name);
+        if (newName) {
+            this.props.store.renameService(this.props.projectId, this.props.serviceId, newName);
+        } else {
+
+        }
+    },
+
     handleRemoveServiceItem(componentName) {
         var shouldRemove = window.confirm('Do you want to remove this component?');
         if (shouldRemove) {
         this.props.store.removeComponent(this.props.projectId, this.props.serviceId, componentName);
+        }
+    },
+
+    handleRenameServiceItem(componentName) {
+
+        var newName = window.prompt('Enter new name for this service', componentName);
+        if (newName) {
+            this.props.store.renameComponent(this.props.projectId, this.props.serviceId, componentName, newName);
         }
     },
 
@@ -126,13 +143,15 @@ var Service = React.createClass({
                                 onChange={this.updateCode} />
                 )}
 
-                {name}
+            <div onClick={this.handleRenameService}>{name}</div>
 
                 <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
 
                 <ul className={styles.componentList}>
                     {components.map((component, index) => <ServiceItem key={index}
                                                                        handleRemove={_.partial(this.handleRemoveServiceItem, component.name)}
+                                                                       handleRename={_.partial(this.handleRenameServiceItem, component.name)}
+
                                                                        component={component} />)}
                     {showPlaceholder && (
                         <div className={styles.componentPlaceholder}></div>
