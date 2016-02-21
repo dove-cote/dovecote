@@ -20,39 +20,6 @@ class ProjectGenerator {
     }
 
 
-    createReport() {
-        const services = this.data.services.map((service) => {
-            const kebabCasedName = _.kebabCase(service.name);
-            return {
-                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
-                script: `services/${kebabCasedName}.js`,
-                instance: service.instance || 1,
-                cwd: this.options.targetFolder,
-                key: service.key,
-                namespace: service.namespace
-            };
-        });
-
-        const report = {
-            deployFolder: this.options.targetFolder,
-            name: this.data.name,
-            owner: this.data.owner,
-            services
-        };
-
-        if (this.sockend_) {
-            report.sockend = {
-                name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                cwd: this.options.targetFolder,
-                namespace: this.sockend_.namespace
-            };
-        }
-
-        return report;
-    }
-
-
     run() {
         debug(`Start generating ${this.data.name}...`);
         return this.
@@ -213,6 +180,39 @@ class ProjectGenerator {
                 resolve();
             });
         });
+    }
+
+
+    createReport() {
+        const services = this.data.services.map((service) => {
+            const kebabCasedName = _.kebabCase(service.name);
+            return {
+                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
+                script: `services/${kebabCasedName}.js`,
+                instance: service.instance || 1,
+                cwd: this.options.targetFolder,
+                key: service.key,
+                namespace: service.namespace
+            };
+        });
+
+        const report = {
+            deployFolder: this.options.targetFolder,
+            name: this.data.name,
+            owner: this.data.owner,
+            services
+        };
+
+        if (this.sockend_) {
+            report.sockend = {
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
+                script: `services/sockend.js`,
+                cwd: this.options.targetFolder,
+                namespace: this.sockend_.namespace
+            };
+        }
+
+        return report;
     }
 }
 
