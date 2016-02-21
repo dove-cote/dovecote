@@ -22,10 +22,10 @@ module.exports.upsert = function(service, projectId) {
     if (!_.isArray(service.components))
         return Promise.reject(new APIError('service.components must be an array', 400));
 
-    const updateData = _.pick(service, ['name', 'instance', 'code', 'meta']);
+    const updateData = _.pick(service, ['name', 'instance', 'code', 'meta', 'key']);
     const serviceKey = projectId + '/' + updateData.name;
     if (updateData.name)
-        updateData.key = serviceKey;
+        updateData.uniqueKey = serviceKey;
 
     return async
         .eachSeries(service.components, component => ComponentService.upsert(component, serviceKey))

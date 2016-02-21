@@ -17,10 +17,10 @@ module.exports.upsert = function(component, serviceKey) {
     if (!_.isObject(component))
         return Promise.reject(new APIError('component must be an object', 400));
 
-    const updateData = _.pick(component, ['name', 'type', 'namespace', 'external']);
+    const updateData = _.pick(component, ['name', 'type', 'namespace', 'external', 'key']);
 
     if (updateData.name)
-        updateData.key = serviceKey + '/' + updateData.name;
+        updateData.uniqueKey = serviceKey + '/' + updateData.name;
 
     if (component._id) {
         let componentId = component._id;
