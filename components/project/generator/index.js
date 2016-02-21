@@ -17,6 +17,34 @@ class ProjectGenerator {
     }
 
 
+    createReport() {
+        const services = this.data.services.map((service) => {
+            const kebabCasedName = _.kebabCase(service.name);
+            return {
+                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
+                script: `services/${kebabCasedName}.js`,
+                instance: service.instance || 1,
+                cwd: this.options.targetFolder
+            };
+        });
+
+        if (this.hasSockend_) {
+            services.push({
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
+                script: `services/sockend.js`,
+                instance: service.instance || 1,
+                cwd: this.options.targetFolder
+            });
+        }
+        return {
+            deployFolder: this.options.targetFolder,
+            name: this.data.name,
+            owner: this.data.owner,
+            services
+        };
+    }
+
+
     run() {
         return this.
             createTargetFolder().
@@ -25,7 +53,8 @@ class ProjectGenerator {
                 this.generateServices()
             ])).
             then(() => this.generateSockendServiceIfNeeded()).
-            then(() => this.symlinkNodeModules());
+            then(() => this.symlinkNodeModules()).
+            then(() => this.createReport());
     }
 
 
@@ -57,9 +86,9 @@ class ProjectGenerator {
 
     generateSockendServiceIfNeeded() {
         const components = _.flatten(this.data.services.map(service => service.components));
-        const exists = !!_.find(components, component => component.type == 'sockend');
+        this.hasSockend_ = !!_.find(components, component => component.type == 'sockend');
 
-        if (!exists) return Promise.resolve();
+        if (!this.hasSockend_) return Promise.resolve();
 
         return Promise.all([
             this.writeSockendService(),
@@ -114,7 +143,7 @@ class ProjectGenerator {
             const config = require(path);
 
             config.apps.push({
-                name: `${this.data.name}-sockend`,
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
                 script: `services/sockend.js`,
                 watch: true
             });

@@ -16,7 +16,7 @@ var ProjectHandler = React.createClass({
 
     fillReadonlyComponentFields(currentService, receivedService) {
         let mutated = false;
-        
+
         currentService.components.forEach((component, componentIndex) => {
             let receivedComponent = receivedService.components[componentIndex];
             if (!component._id) {
@@ -47,7 +47,7 @@ var ProjectHandler = React.createClass({
         });
 
         if (mutated) {
-            this.props.store.updateProject(fromJS(project));
+            this.props.store.updateProject(fromJS(project), false);
         }
     },
 

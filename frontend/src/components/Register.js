@@ -3,6 +3,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import { browserHistory } from 'react-router'
 import URLS from '../urls';
+import store from '../store';
 
 var Register = React.createClass({
 
@@ -24,35 +25,42 @@ var Register = React.createClass({
             url: URLS.register,
             data: {username: this.state.username, email: this.state.email, password: this.state.password},
             success: function () {
-                this.setState({inProgress: false, error: false});
+                this.setState({inProgress: false, error: false, errorText: null, registered: true});
                 // redirect
                 // TODO: we should autologin and redirect to dashboard.
-                browserHistory.push('/login');
+                browserHistory.push('/projects');
+                store.fetchUser();
             }.bind(this),
-            error: function () {
-                this.setState({inProgress: false, error: true});
+            error: function (data) {
+                var errorText = '';
+
+                try {
+                    errorText = data.responseJSON.error.message;
+                } catch (e) {
+
+                }
+                this.setState({inProgress: false, error: true, errorText: errorText});
                 console.error('error registering');
             }.bind(this)
         })
     },
 
     getInitialState() {
-        return {email: '', password: '', username: '', error: false, inProgress: false};
+        return {email: '', password: '', username: '', error: false, errorText: null, inProgress: false};
     },
 
     render() {
-        return <div className="">
-
-        <form onSubmit={this.submitForm}>
-            <input type='username' placeholder='username' onChange={_.partial(this.handleFieldChange, 'username')}/>
+        if (this.state.registered) {
+            <div>Account created. You can now login.</div>;
+        }
+        return <form className='pure-form pure-form-stacked register-form' onSubmit={this.submitForm}>
+            <input type='text' placeholder='username' onChange={_.partial(this.handleFieldChange, 'username')}/>
             <input type='email' placeholder='email' onChange={_.partial(this.handleFieldChange, 'email')}/>
             <input type='password' placeholder='Password'  onChange={_.partial(this.handleFieldChange, 'password')}/>
-            {this.state.error && <div>An error occurred</div>}
+            {this.state.error && <div className='error'>Unable to complete registration. {this.state.errorText.replace('Error: ', '')}</div>}
 
-            <button>{this.state.inProgress ? "Please wait..." : "Registersssssfsdfsd"}</button>
-        </form>
-
-        </div>;
+            <button className='pure-button pure-button-primary'>{this.state.inProgress ? 'Please wait...' : 'Register'}</button>
+        </form>;
 
     }
 

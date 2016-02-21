@@ -14,13 +14,8 @@ const User = require('dovecote/components/user/model');
 const auth = require('dovecote/lib/middlewares/auth');
 
 
-router.get('/', function(req, res, next) {
-    res.send('respond with a resource');
-});
-
-
 router.post('/login', passport.authenticate('local'), function(req, res, next) {
-    res.json(req.user);
+    res.json(req.user.toSafeJSON());
 
     // Update last login date
     req.user.lastLoginDate = new Date();
@@ -29,13 +24,18 @@ router.post('/login', passport.authenticate('local'), function(req, res, next) {
 
 
 router.get('/logout', auth.ensureAuthentication, function(req, res) {
+
+    console.log("before logout");
+
     req.logout();
+    console.log("after logout");
+
     res.redirect('/');
 });
 
 
 router.get('/me', auth.ensureAuthentication, function(req, res, next) {
-    res.json(req.user);
+    res.json(req.user.toSafeJSON());
 });
 
 
@@ -77,7 +77,8 @@ router.post('/register', function(req, res, next) {
             return async
                 .eachSeries(demoProjects, project => createProject(project, user))
                 .then(() => {
-                    res.json(user_);
+                    const authenticate = passport.authenticate('local');
+                    authenticate(req, res, () => res.json(user_.toSafeJSON()));
                 });
         });
     })

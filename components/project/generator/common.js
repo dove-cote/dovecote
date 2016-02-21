@@ -87,7 +87,7 @@ class CommonGenerator {
         content.apps = this.data.services.map((service) => {
             const kebabCasedName = _.kebabCase(service.name);
             return {
-                name: `${this.data.name}-${kebabCasedName}`,
+                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
                 script: `services/${kebabCasedName}.js`,
                 watch: true
             };

@@ -117,24 +117,34 @@ var _history = List();
 
 var _historyPointer = 0;
 
+var diff = require('immutablediff');
+
 var atom = {
 
     getApp: function () {
         return _app;
     },
 
-    swap: function (newApp, pushToHistory=true) {
-
-        console.log("swapping!");
-
+    swap: function (newApp, pushToHistory=true, resetHistory=false) {
         if (pushToHistory) {
-            console.log("pushing to history")
-            _history = _history.push(newApp);
-            _historyPointer = _history.count() - 1;
+            if (Immutable.is(_history.last(), newApp)) {
+                console.log('prevent history')
+            } else {
+                window.MODIFICATIONS = window.MODIFICATIONS || [];
+                var modifications = diff(_history.last(), newApp).toJS();
+                console.log(JSON.stringify(modifications, null, 4));
 
+                window.MODIFICATIONS.push(diff(_history.last(), newApp).toJS());
+                _history = _history.push(newApp);
+                _historyPointer = _history.count() - 1;
+            }
         } else {
-            console.log("not pushing to history")
 
+        }
+
+        if (resetHistory) {
+            _history = List();
+            _historyPointer = 0;
         }
         _app = newApp;
         triggerChange();
@@ -144,7 +154,7 @@ var atom = {
         return _history;
     },
 
-    undo: function () {
+    undo: function (cb) {
         if (!this.canUndo()) {
             return;
         }
@@ -153,15 +163,20 @@ var atom = {
         console.log("history at", _historyPointer);
 
         this.swap(_history.get(_historyPointer), false);
+
+        cb && cb();
+
     },
 
-    redo: function () {
+    redo: function (cb) {
         if (!this.canRedo()) {
             return;
         }
 
         _historyPointer = Math.min(_historyPointer + 1, _history.count());
         this.swap(_history.get(_historyPointer), false);
+
+        cb && cb();
     },
 
     canUndo() {
@@ -382,7 +397,7 @@ const fetchProjectById = function (id) {
 
         var newApp = app.set('projects', projects);
 
-        atom.swap(newApp);
+        atom.swap(newApp, false, true);
 
     }.bind(this);
 

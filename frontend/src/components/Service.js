@@ -20,7 +20,7 @@ var ServiceItem = ({component}) => (
 
 var CodeEditor = ({value, onChange, left, top}) => (
     <Portal closeOnEsc closeOnOutsideClick isOpened={true}>
-        <div className={styles.codeEditor} 
+        <div className={styles.codeEditor}
              style={{left: left + 365, top: top + 13}}>
             <AceEditor
                 width={'300px'}
@@ -73,7 +73,7 @@ var Service = React.createClass({
         this.setState({
             isCurrent: false
         });
-        
+
     },
 
     render() {
@@ -100,7 +100,7 @@ var Service = React.createClass({
                  onMouseUp={this.props.onMouseUp}>
 
                 {this.state.showEditor && (
-                    <CodeEditor value={code} 
+                    <CodeEditor value={code}
                                 left={x}
                                 top={y}
                                 onChange={this.updateCode} />
@@ -108,10 +108,10 @@ var Service = React.createClass({
 
                 {name}
 
-                <button onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
-                
+                <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
+
                 <ul className={styles.componentList}>
-                    {components.map((component, index) => <ServiceItem key={index} 
+                    {components.map((component, index) => <ServiceItem key={index}
                                                                        component={component} />)}
                     {showPlaceholder && (
                         <div className={styles.componentPlaceholder}></div>

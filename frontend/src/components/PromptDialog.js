@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
+import cx from 'classnames';
 
 import styles from './PromptDialog.module.css';
 
@@ -12,7 +13,7 @@ var PromptDialog = React.createClass({
 
     onSubmit(event) {
         event.preventDefault();
-        
+
         this.props.onSubmit(this.state.text);
         this.props.onClose();
 
@@ -42,12 +43,12 @@ var PromptDialog = React.createClass({
             <form onSubmit={this.onSubmit}
                   className={styles.form}>
               <input type="text"
-                     className={styles.input} 
+                     className={styles.input}
                      ref={(ref) => this.inputElement = ref}
                      onChange={(e) => this.setState({text: e.target.value})}
                      value={this.state.text} />
                <input type="submit"
-                      className={styles.submit}
+                      className={cx('pure-button pure-button-primary', styles.submit)}
                       value="Continue" />
             </form>
           </Modal>

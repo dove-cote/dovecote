@@ -1,5 +1,377 @@
-extends layout
-
-block content
-    p Welcome to DoveCote!
-    a(href='/login') Login
+doctype html
+//if lt IE 7
+  html.no-js.ie6(lang='en')
+//if IE 7
+  html.no-js.ie7(lang='en')
+//if IE 8
+  html.no-js.ie8(lang='en')
+// [if gt IE 8] <!
+html.no-js(lang='en')
+    // <![endif]
+    head
+        meta(charset='UTF-8')
+        title DoveCôte — Microservices Platform-as-a-Service
+        meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+        link(rel='shortcut icon', href='favicon.png')
+        // Bootstrap 3.3.2
+        link(rel='stylesheet', href='assets/css/bootstrap.min.css')
+        link(rel='stylesheet', href='assets/css/animate.css')
+        link(rel='stylesheet', href='assets/css/font-awesome.min.css')
+        link(rel='stylesheet', href='assets/css/slick.css')
+        link(rel='stylesheet', href='assets/js/rs-plugin/css/settings.css')
+        link(rel='stylesheet', href='assets/css/styles.css')
+        script(type='text/javascript', src='assets/js/modernizr.custom.32033.js')
+        //if lt IE 9
+          script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+          script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')
+    body
+        .pre-loader
+            .load-con
+                img.animated.fadeInDown(src='assets/img/logo.png', alt='')
+                .spinner
+                    .bounce1
+                    .bounce2
+                    .bounce3
+        header
+            nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
+                .container
+                    // Brand and toggle get grouped for better mobile display
+                    .navbar-header
+                        button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+                            span.fa.fa-bars.fa-lg
+                    // Collect the nav links, forms, and other content for toggling
+                    #bs-example-navbar-collapse-1.collapse.navbar-collapse
+                        ul.nav.navbar-nav.navbar-right
+                            li
+                                a(href='#about') about
+                            li
+                                a(href='#features') features
+                            li
+                                a(href='#reviews') reviews
+                            li
+                                a(href='#screens') screens
+                            li
+                                a(href='/login') sign in
+                            li
+                                a(href='#support') support
+                    // /.navbar-collapse
+                // /.container
+            // RevSlider
+            .tp-banner-container
+                .tp-banner
+                    ul
+                        // SLIDE 2
+                        li(data-transition='zoomout', data-slotamount='7', data-masterspeed='1000')
+                            // MAIN IMAGE
+                            img(src='assets/img/transparent.png', alt='slidebg1', data-bgfit='cover', data-bgposition='left top', data-bgrepeat='no-repeat')
+                            // LAYERS
+                            // LAYER NR. 1
+                            .tp-caption.lfb.fadeout.hidden-xs.call-to-action(data-x='center', data-y='bottom', data-hoffset='0', data-voffset='0', data-speed='1000', data-start='1400', data-easing='Power4.easeOut')
+                                .btn
+                                    a(href='/login') Sign in
+                                .btn
+                                    a(href='/login?anonymous') Demo
+                            .tp-caption.large_white_light.sft(data-x='center', data-y='200', data-hoffset='0', data-voffset='0', data-speed='1000', data-start='700', data-easing='Power4.easeOut')
+                                div(style='height: 150px')
+                                    a.navbar-brand(href='index.html')
+                                        img.logo(src='assets/img/logo.png', alt='')
+                                .typing
+                                    span.punchLine
+                                    span.punchLineStrings
+                                        p
+                                            | Build and Ship with <strong>Microservices</strong>
+                                        p
+                                            | Build and Ship with <strong>Scalability</strong>
+                                        p
+                                            | Build and Ship with <strong>Availability</strong>
+                                        p
+                                            | Build and Ship with all the <i class="fa fa-heart"> </i>
+        .wrapper
+            section#about
+                .container
+                    .section-heading.scrollpoint.sp-effect3
+                        h1
+                            | DoveCôte.
+                            br
+                            | Microservices-as-a-Solution.
+                        .divider
+                        p The Platform for building distributed and scalable applications
+                    .row
+                        .col-md-3.col-sm-3.col-xs-6
+                            .about-item.scrollpoint.sp-effect2
+                                i.fa.fa-paper-plane.fa-2x
+                                h3 Effortless Design
+                                p
+                                    | Build your microservices architecture with no effort and zero configuration. DoveCôte lets you design your services with a visual editor, link them together and code in a simple to use interface.
+                        .col-md-3.col-sm-3.col-xs-6
+                            .about-item.scrollpoint.sp-effect5
+                                i.fa.fa-gears.fa-2x
+                                h3 Zero Configuration
+                                p
+                                    | Worrying about orchestration, service discovery and registry is a thing of the past. DoveCôte handles every single bit of configuration for you.
+                        .col-md-3.col-sm-3.col-xs-6
+                            .about-item.scrollpoint.sp-effect5
+                                i.fa.fa-cloud.fa-2x
+                                h3 Serverless Deployment
+                                p
+                                    | DoveCôte runs your services on its own infrastructure, so that you don't have to keep a horde of servers. With its inherently scalable architecture, you can rest assured your application will scale effortlessly.
+                        .col-md-3.col-sm-3.col-xs-6
+                            .about-item.scrollpoint.sp-effect1
+                                i.fa.fa-sliders.fa-2x
+                                h3 Monitoring & Scaling
+                                p
+                                    | Monitor the connections between your services and your service discovery in real time. Get instant metrics on resource usage and scale individual services with one click.
+            section#features
+                .container
+                    .section-heading.scrollpoint.sp-effect3
+                        h1 Why DoveCôte?
+                        .divider
+                        p Learn more about this feature packed App
+                    .row
+                        .col-md-4.col-sm-4.scrollpoint.sp-effect1
+                            .media.text-right.feature
+                                a.pull-right(href='#')
+                                    i.fa.fa-cogs.fa-2x
+                                .media-body
+                                    h3.media-heading User Settings
+                                    | Lorem ipsum dolor sit amet.
+                            .media.text-right.feature
+                                a.pull-right(href='#')
+                                    i.fa.fa-envelope.fa-2x
+                                .media-body
+                                    h3.media-heading Messages Inbox
+                                    | Lorem ipsum dolor sit amet.
+                            .media.text-right.feature
+                                a.pull-right(href='#')
+                                    i.fa.fa-users.fa-2x
+                                .media-body
+                                    h3.media-heading Friends List
+                                    | Lorem ipsum dolor sit amet.
+                            .media.text-right.feature
+                                a.pull-right(href='#')
+                                    i.fa.fa-comments.fa-2x
+                                .media-body
+                                    h3.media-heading Live Chat Messages
+                                    | Lorem ipsum dolor sit amet.
+                            .media.text-right.feature
+                                a.pull-right(href='#')
+                                    i.fa.fa-calendar.fa-2x
+                                .media-body
+                                    h3.media-heading Calendar / Planner
+                                    | Lorem ipsum dolor sit amet.
+                        .col-md-4.col-sm-4
+                            img.img-responsive.scrollpoint.sp-effect5(src='assets/img/freeze/iphone-freeze.png', alt='')
+                        .col-md-4.col-sm-4.scrollpoint.sp-effect2
+                            .media.feature
+                                a.pull-left(href='#')
+                                    i.fa.fa-map-marker.fa-2x
+                                .media-body
+                                    h3.media-heading My Places
+                                    | Lorem ipsum dolor sit amet.
+                            .media.feature
+                                a.pull-left(href='#')
+                                    i.fa.fa-film.fa-2x
+                                .media-body
+                                    h3.media-heading Media Player™
+                                    | Lorem ipsum dolor sit amet.
+                            .media.feature
+                                a.pull-left(href='#')
+                                    i.fa.fa-compass.fa-2x
+                                .media-body
+                                    h3.media-heading Intuitive Statistics
+                                    | Lorem ipsum dolor sit amet.
+                            .media.feature
+                                a.pull-left(href='#')
+                                    i.fa.fa-picture-o.fa-2x
+                                .media-body
+                                    h3.media-heading Weather on-the-go
+                                    | Lorem ipsum dolor sit amet.
+                            .media.active.feature
+                                a.pull-left(href='#')
+                                    i.fa.fa-plus.fa-2x
+                                .media-body
+                                    h3.media-heading And much more!
+                                    | Lorem ipsum dolor sit amet.
+            section#reviews
+                .container
+                    .section-heading.inverse.scrollpoint.sp-effect3
+                        h1 Reviews
+                        .divider
+                        p Read What's The People Are Saying About Us
+                    .row
+                        .col-md-10.col-md-push-1.scrollpoint.sp-effect3
+                            .review-filtering
+                                .review
+                                    .row
+                                        .col-md-2
+                                            .review-person
+                                                img.img-responsive(src='http://api.randomuser.me/portraits/women/94.jpg', alt='')
+                                        .col-md-10
+                                            .review-comment
+                                                h3 “I love Oleose, I highly rfreezemmend it, Everyone Try It Now”
+                                                p
+                                                    | - Krin Fox
+                                                    span
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star-o.fa-lg
+                                .review.rollitin
+                                    .row
+                                        .col-md-2
+                                            .review-person
+                                                img.img-responsive(src='http://api.randomuser.me/portraits/men/70.jpg', alt='')
+                                        .col-md-10
+                                            .review-comment
+                                                h3 “Oleaose Is The Best Stable, Fast App I Have Ever Experienced”
+                                                p
+                                                    | - Theodore Willis
+                                                    span
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star-half-o.fa-lg
+                                                        i.fa.fa-star-o.fa-lg
+                                .review.rollitin
+                                    .row
+                                        .col-md-2
+                                            .review-person
+                                                img.img-responsive(src='http://api.randomuser.me/portraits/men/93.jpg', alt='')
+                                        .col-md-10
+                                            .review-comment
+                                                h3 “Keep It Up Guys Your Work Rules, Cheers :)”
+                                                p
+                                                    | - Ricky Grant
+                                                    span
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star.fa-lg
+                                                        i.fa.fa-star-half-o.fa-lg
+                                                        i.fa.fa-star-o.fa-lg
+            section#screens
+                .container
+                    .section-heading.scrollpoint.sp-effect3
+                        h1 Screens
+                        .divider
+                        p See what’s included in the App
+                    .filter.scrollpoint.sp-effect3
+                        a.button.js-filter-all.active(href='javascript:void(0)') All Screens
+                        a.button.js-filter-one(href='javascript:void(0)') User Access
+                        a.button.js-filter-two(href='javascript:void(0)') Social Network
+                        a.button.js-filter-three(href='javascript:void(0)') Media Players
+                    .slider.filtering.scrollpoint.sp-effect5
+                        .one
+                            img(src='assets/img/freeze/screens/profile.jpg', alt='')
+                            h4 Profile Page
+                        .two
+                            img(src='assets/img/freeze/screens/menu.jpg', alt='')
+                            h4 Toggel Menu
+                        .three
+                            img(src='assets/img/freeze/screens/weather.jpg', alt='')
+                            h4 Weather Forcast
+                        .one
+                            img(src='assets/img/freeze/screens/signup.jpg', alt='')
+                            h4 Sign Up
+                        .one
+                            img(src='assets/img/freeze/screens/calendar.jpg', alt='')
+                            h4 Event Calendar
+                        .two
+                            img(src='assets/img/freeze/screens/options.jpg', alt='')
+                            h4 Some Options
+                        .three
+                            img(src='assets/img/freeze/screens/sales.jpg', alt='')
+                            h4 Sales Analysis
+            section#demo
+                .container
+                    .section-heading.scrollpoint.sp-effect3
+                        h1 Demo
+                        .divider
+                        p Take a closer look in more detail
+                    .row
+                        .col-md-8.col-md-offset-2.scrollpoint.sp-effect2
+                            .video-container
+                                iframe(src='http://player.vimeo.com/video/70984663')
+            section#getApp
+                .container-fluid
+                    .section-heading.inverse.scrollpoint.sp-effect3
+                        h1 Get App
+                        .divider
+                        p Choose your native platform and get started!
+                    .row
+                        .col-md-12
+                            .hanging-phone.scrollpoint.sp-effect2.hidden-xs
+                                img(src='assets/img/freeze/freeze-angled2.png', alt='')
+                            .platforms
+                                a.btn.btn-primary.inverse.scrollpoint.sp-effect1(href='#')
+                                    i.fa.fa-android.fa-3x.pull-left
+                                    span Download for
+                                    br
+                                    b Android
+                                a.btn.btn-primary.inverse.scrollpoint.sp-effect2(href='#')
+                                    i.fa.fa-apple.fa-3x.pull-left
+                                    span Download for
+                                    br
+                                    b Apple IOS
+            section#support.doublediagonal
+                .container
+                    .section-heading.scrollpoint.sp-effect3
+                        h1 Support
+                        .divider
+                        p For more info and support, contact us!
+                    .row
+                        .col-md-12
+                            .row
+                                .col-md-8.col-sm-8.scrollpoint.sp-effect1
+                                    form(role='form')
+                                        .form-group
+                                            input.form-control(type='text', placeholder='Your name')
+                                        .form-group
+                                            input.form-control(type='email', placeholder='Your email')
+                                        .form-group
+                                            textarea.form-control(cols='30', rows='10', placeholder='Your message')
+                                        button.btn.btn-primary.btn-lg(type='submit') Submit
+                                .col-md-4.col-sm-4.contact-details.scrollpoint.sp-effect2
+                                    .media
+                                        a.pull-left(href='#')
+                                            i.fa.fa-map-marker.fa-2x
+                                        .media-body
+                                            h4.media-heading 4, Some street, California, USA
+                                    .media
+                                        a.pull-left(href='#')
+                                            i.fa.fa-envelope.fa-2x
+                                        .media-body
+                                            h4.media-heading
+                                                a(href='mailto:support@oleose.com') support@oleose.com
+                                    .media
+                                        a.pull-left(href='#')
+                                            i.fa.fa-phone.fa-2x
+                                        .media-body
+                                            h4.media-heading +1 234 567890
+            footer
+                .container
+                    a.scrollpoint.sp-effect3(href='#')
+                        img.logo(src='assets/img/logo.png', alt='')
+                    .social
+                        a.scrollpoint.sp-effect3(href='#')
+                            i.fa.fa-twitter.fa-lg
+                        a.scrollpoint.sp-effect3(href='#')
+                            i.fa.fa-google-plus.fa-lg
+                        a.scrollpoint.sp-effect3(href='#')
+                            i.fa.fa-facebook.fa-lg
+                    .rights
+                        p Copyright © 2016
+        script(src='assets/js/jquery-1.11.1.min.js')
+        script(src='assets/js/bootstrap.min.js')
+        script(src='assets/js/slick.min.js')
+        script(src='assets/js/placeholdem.min.js')
+        script(src='assets/js/rs-plugin/js/jquery.themepunch.plugins.min.js')
+        script(src='assets/js/rs-plugin/js/jquery.themepunch.revolution.min.js')
+        script(src='assets/js/waypoints.min.js')
+        script(src='assets/js/scripts.js')
+        script(src='assets/js/typed.min.js')
+        script.
+            $(document).ready(function() {
+                appMaster.preLoader();
+            });
