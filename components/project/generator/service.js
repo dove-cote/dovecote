@@ -115,7 +115,7 @@ class ServiceGenerator {
             options.namespace = data.namespace;
 
         if (data.name)
-            options.key: _.kebabCase(data.name);
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -134,7 +134,7 @@ class ServiceGenerator {
             options.namespace = data.namespace;
 
         if (data.name)
-            options.key: _.kebabCase(data.name);
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -151,7 +151,7 @@ class ServiceGenerator {
             options.namespace = data.namespace;
 
         if (data.name)
-            options.key: _.kebabCase(data.name);
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -168,7 +168,7 @@ class ServiceGenerator {
             options.namespace = data.namespace;
 
         if (data.name)
-            options.key: _.kebabCase(data.name);
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
