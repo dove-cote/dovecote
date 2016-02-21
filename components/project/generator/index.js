@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const path = require('path');
 const fs = require('fs');
 const exec = require('child_process').exec;
 const mkdirp = require('mkdirp');
@@ -34,7 +35,7 @@ class ProjectGenerator {
             services.push({
                 name: `${this.data.owner._id}-${this.data.name}-sockend`,
                 script: `services/sockend.js`,
-                instance: service.instance || 1,
+                instance: 1,
                 cwd: this.options.targetFolder
             });
         }
@@ -130,7 +131,7 @@ class ProjectGenerator {
             }
 
             app = http.createServer(handler);
-            app.listen(process.argv[2] || 5555);
+            app.listen(80);
 
             io = socketIO.listen(app);
 
@@ -158,23 +159,22 @@ class ProjectGenerator {
 
     writeSockendPM2() {
         return new Promise((resolve, reject) => {
-            const path = `${this.options.targetFolder}/${_.kebabCase(this.data.name)}.json`;
-            const config = require(path);
-            debug(`Updating pm2 configuration for sockend: ${path}`);
+            const path_ = path.resolve(process.cwd(), `${this.options.targetFolder}/pm2.json`);
+            const config = require(path_);
+            debug(`Updating pm2 configuration for sockend: ${path_}`);
 
             config.apps.push({
                 name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                watch: true
+                script: `services/sockend.js`
             });
 
-            fs.writeFile(path, JSON.stringify(config, null, 4), (err) => {
+            fs.writeFile(path_, JSON.stringify(config, null, 4), (err) => {
                 if (err) {
-                    debug(`Could not pm2 config: ${path}`, err);
+                    debug(`Could not pm2 config: ${path_}`, err);
                     return reject(err);
                 }
 
-                debug(`Updated pm2 configuration for sockend: ${path}`);
+                debug(`Updated pm2 configuration for sockend: ${path_}`);
                 resolve();
             });
         });
