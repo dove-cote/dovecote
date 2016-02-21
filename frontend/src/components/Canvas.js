@@ -13,12 +13,19 @@ var Canvas = React.createClass({
             draggingObjectIndex: null,
             startPoint: null,
             selectedComponent: null,
-            showComponentCreationDialog: false
+            showComponentCreationDialog: false,
+            showEdgeCanvas: false
         };
     },
 
     componentWillMount() {
         this.componentRefs = {};
+    },
+
+    componentDidMount() {
+        this.setState({
+            showEdgeCanvas: true
+        });
     },
 
     getMouseCoords(event) {
@@ -132,7 +139,9 @@ var Canvas = React.createClass({
     },
 
     onRenderComponent(id, domRef) {
-        this.componentRefs[id] = domRef;
+        if (domRef) {
+            this.componentRefs[id] = domRef;
+        }
     },
 
     onConnectorDrawingStarted(serviceIndex, componentIndex) {
@@ -152,14 +161,17 @@ var Canvas = React.createClass({
 
     onConnectorDropped(droppedComponentId) {
         let {connectingComponentId} = this.state;
+            
+        if (droppedComponentId) {
+            let uuid = UUID.v4().substr(5);
         
-        
-        this.props.store.connectComponents(
-            this.props.project._id,
-            connectingComponentId,
-            droppedComponentId,
-            UUID.v4()
-        );
+            this.props.store.connectComponents(
+                this.props.project._id,
+                connectingComponentId,
+                droppedComponentId,
+                `link-${uuid}`
+            );
+        }
 
         this.setState({
             connectingComponentId: null
@@ -173,10 +185,16 @@ var Canvas = React.createClass({
                  ref={(ref) => this.canvasElement = ref}
                  onMouseMove={this.onMouseMove}
                  onMouseUp={this.stopDrag}>
-                <EdgeCanvas componentRefs={this.componentRefs} 
-                            connectingComponentId={this.state.connectingComponentId}
-                            onConnectorDropped={this.onConnectorDropped}
-                            services={project.services} />
+
+                 {this.state.showEdgeCanvas && 
+                    <EdgeCanvas 
+                        project={project}
+                        store={this.props.store}
+                        componentRefs={this.componentRefs} 
+                        connectingComponentId={this.state.connectingComponentId}
+                        onConnectorDropped={this.onConnectorDropped}
+                        services={project.services} />
+                 };
                  
                  {project.services.map((service, index) =>
                     <Service 

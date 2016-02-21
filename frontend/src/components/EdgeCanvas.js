@@ -103,13 +103,25 @@ var EdgeCanvas = React.createClass({
     },
 
     onMouseUp() {
-        let droppedComponent = this.getDroppedComponent();;
-        
+        let droppedComponent = this.getDroppedComponent();
+
         this.props.onConnectorDropped(droppedComponent);
 
         this.setState({
             connectingPoint: {}
         });
+    },
+
+    renameEdge(source, target) {
+        let name = window.prompt('Give a name for that connection.');
+        if (name) {
+            this.props.store.connectComponents(
+                this.props.project._id,
+                source,
+                target,
+                name
+            );
+        }
     },
 
     buildPath(x1, y1, x2, y2) {
@@ -150,8 +162,16 @@ var EdgeCanvas = React.createClass({
 
     renderLine(source, target) {
         let {componentRefs} = this.props;
-        let sourceRect = componentRefs[source].getBoundingClientRect();
-        let targetRect = componentRefs[target].getBoundingClientRect();
+
+        let sourceRef = componentRefs[source];
+        let targetRef = componentRefs[target];
+        
+        if (!sourceRef || !targetRef) {
+            debugger;
+        }
+
+        let sourceRect = sourceRef.getBoundingClientRect();
+        let targetRect = targetRef.getBoundingClientRect();
 
         let x1 = sourceRect.left;
         let y1 = sourceRect.top;
@@ -163,6 +183,7 @@ var EdgeCanvas = React.createClass({
 
         return (
             <path d={d} stroke="black"
+                  onClick={this.renameEdge.bind(this, source, target)}
                   className={styles.edge} 
                   key={`${source}-${target}`} />
         )
