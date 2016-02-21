@@ -72,7 +72,7 @@ class CommonGenerator {
             "author": "Armagan Amcalar <armagan@amcalar.com",
             "license": "ISC",
             "dependencies": {
-                "cote": "^0.7.2",
+                "cote": "^0.8.1",
                 "socket.io": "^1.4.5"
             }
         };
