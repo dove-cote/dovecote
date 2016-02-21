@@ -30,7 +30,6 @@ var Register = React.createClass({
                 // browserHistory.push('/login');
             }.bind(this),
             error: function (data) {
-debugger
                 var errorText = '';
 
                 try {

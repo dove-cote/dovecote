@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import ProjectView from './components/ProjectView';
 
 import store from './store';
-import styles from './App.module.css';
 
+import styles from './App.module.css';
 require('./App.less');
+require('./components/Buttons.less');
 
 window.__STORE__ = store;
 

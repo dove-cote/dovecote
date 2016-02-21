@@ -17,6 +17,7 @@ router.get('/', auth.ensureAuthentication, function(req, res, next) {
     Project
         .find({owner: req.user._id})
         .select('_id name updatedAt createdAt')
+        .sort({updatedAt: -1})
         .exec((err, projects) => {
             if (err)
                 return next(new APIError(`Could not get project list`, 500));

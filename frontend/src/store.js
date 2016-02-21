@@ -124,16 +124,10 @@ var atom = {
     },
 
     swap: function (newApp, pushToHistory=true) {
-
-        console.log("swapping!");
-
         if (pushToHistory) {
-            console.log("pushing to history")
             _history = _history.push(newApp);
             _historyPointer = _history.count() - 1;
-
         } else {
-            console.log("not pushing to history")
 
         }
         _app = newApp;
@@ -165,7 +159,7 @@ var atom = {
     },
 
     canUndo() {
-        return _historyPointer > 0;
+        return _historyPointer > 1;
     },
 
     canRedo() {

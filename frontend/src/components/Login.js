@@ -5,7 +5,7 @@ import URLS from '../urls';
 
 import { browserHistory } from 'react-router'
 
-var store = require('../store');
+import store from '../store';
 
 require('./login.less');
 
@@ -34,6 +34,7 @@ var Login = React.createClass({
             success: function () {
                 this.setState({inProgress: false, error: false});
                 browserHistory.push('/projects');
+                store.fetchUser();
                 // window.location = '/projects'; // hack for now to trigger proper user data
 
             }.bind(this),
