@@ -102,7 +102,7 @@ var _app = Map({
         {type: 'res', icon: 'foo.png', name: 'Responder'},
         {type: 'pub', icon: 'foo.png', name: 'Publisher'},
         {type: 'sub', icon: 'foo.png', name: 'Subscriber'},
-        {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
+//        {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ]),
 
     projects: Immutable.fromJS([project]),

@@ -15,14 +15,14 @@ require('./Service.less');
 
 var ServiceItem = React.createClass({
     render() {
-        let {component, onRender, handleRename, handleRemove} = this.props;
+        let {component, onRender, handleRename, handleRemove, allowModifications} = this.props;
         let {_id: id} = component;
         return (
             <li className={classNames(styles.component, 'service-item', 'cf')}
                 ref={(ref) => id && onRender(id, ref)}>
-                <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
+                {allowModifications && <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>}
                 <Icon icon={component.type} size={20} />
-                <div onDoubleClick={handleRename}
+                <div onDoubleClick={allowModifications && handleRename}
                      className={classNames('name', styles.componentLabel)}>
                   {component.name}
                 </div>
@@ -170,6 +170,8 @@ var Service = React.createClass({
     renderComponent(component, index) {
         let {serviceIndex, onConnectorDrawingStarted} = this.props;
 
+        var allowModifications = this.props.service.name !== 'Gateway';
+
         let boundOnConnectorDrawingStarted = (
             onConnectorDrawingStarted
                 .bind(null, serviceIndex, index)
@@ -178,6 +180,7 @@ var Service = React.createClass({
         return (
             <ServiceItem
                 key={index}
+                allowModifications={allowModifications}
                 serviceIndex={serviceIndex}
                 componentIndex={index}
                 handleRemove={_.partial(this.handleRemoveServiceItem, component.name)}
@@ -203,6 +206,8 @@ var Service = React.createClass({
             [styles.currentService]: this.state.isCurrent
         });
 
+    var allowModifications = name !== 'Gateway';
+
         return (
             <div className={classes}
                  style={style}
@@ -213,7 +218,7 @@ var Service = React.createClass({
                  onMouseUp={this.props.onMouseUp}>
 
 
-            <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>
+            {allowModifications && <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>}
 
                 {this.state.showEditor && <button className='pure-button button-xsmall fullscreen' onClick={this.setFullScreen}><Icon icon='fullscreen' /></button>}
                 {this.state.showEditor && (
@@ -229,12 +234,12 @@ var Service = React.createClass({
                 )}
 
                 <div className={styles.serviceName}
-                     onDoubleClick={this.handleRenameService}>
+                     onDoubleClick={allowModifications && this.handleRenameService}>
                     {name}
-                    <button className='pure-button button-xsmall'
-                            onClick={this.toggleEdit} style={{float: 'right'}}>
-                            {this.state.showEditor ? "Hide Code" : "Edit Code"}
-                    </button>
+                    {allowModifications && <button className='pure-button button-xsmall'
+                                            onClick={this.toggleEdit} style={{float: 'right'}}>
+                     {this.state.showEditor ? "Hide Code" : "Edit Code"}
+                    </button>}
                 </div>
 
                 <ul className={styles.componentList}>
