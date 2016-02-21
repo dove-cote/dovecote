@@ -6,48 +6,48 @@ import {Graph} from 'graphlib';
 import styles from './EdgeCanvas.module.css';
 
 var EdgeCanvas = React.createClass({
-	getInitialState() {
-		return {
-			connectingPoint: {}
-		}
-	},
+    getInitialState() {
+        return {
+            connectingPoint: {}
+        }
+    },
 
-	buildGraph(services) {
-		let graph = new Graph({
-			directed: false
-		});
-		
-		let components = (
-			_.flatten(
-				_.pluck(
-					services, 'components'
-				)
-			)
-		).map(
-			({_id, key}) => ({_id, key})
-		);
+    buildGraph(services) {
+        let graph = new Graph({
+            directed: false
+        });
+        
+        let components = (
+            _.flatten(
+                _.pluck(
+                    services, 'components'
+                )
+            )
+        ).map(
+            ({_id, key}) => ({_id, key})
+        );
 
-		components.forEach(({_id, key}) => {
+        components.forEach(({_id, key}) => {
 
-			let connected = _.filter(components, (component) => {
-				return (
-						  component._id !== _id  // avoid self-link
-					  &&  component.key === key
-				)
-			});
+            let connected = _.filter(components, (component) => {
+                return (
+                          component._id !== _id  // avoid self-link
+                      &&  component.key === key
+                )
+            });
 
-			connected.forEach(component => {
-				graph.setNode(_id)
-				graph.setNode(component._id)
-				graph.setEdge(_id, component._id)
-			});
+            connected.forEach(component => {
+                graph.setNode(_id)
+                graph.setNode(component._id)
+                graph.setEdge(_id, component._id)
+            });
 
-		});
-		
-		return graph;
-	},
+        });
+        
+        return graph;
+    },
 
-	getMouseCoords(event) {
+    getMouseCoords(event) {
         let container = this.canvasElement.getBoundingClientRect();
 
         return {
@@ -56,145 +56,145 @@ var EdgeCanvas = React.createClass({
         }
     },
 
-	isCollides(x1, y1, x2, y2, radius=30) {
-		let xd = x1 - x2;
-		let yd = y1 - y2;
-		let wt = radius * 2;
-		return (xd * xd + yd * yd <= wt * wt);
-	},
-
-    getDroppedComponent() {
-    	let refs = this.props.componentRefs;
-    	let {connectingPoint} = this.state;
-
-    	let x2 = connectingPoint.x,
-    	    y2 = connectingPoint.y;
-
-    	let colliding = _.findKey(refs, (value, key) => {
-    		
-    		let rect = value.getBoundingClientRect();
-
-    		if (
-    			this.isCollides(
-    				rect.left, 
-    				rect.top, 
-    				x2, 
-    				y2
-    			)
-    		) {
-    			return key;
-    		}
-    		
-    	});
-
-    	return colliding;
+    isCollides(x1, y1, x2, y2, radius=30) {
+        let xd = x1 - x2;
+        let yd = y1 - y2;
+        let wt = radius * 2;
+        return (xd * xd + yd * yd <= wt * wt);
     },
 
-	onMouseMove(event) {
-		let {connectingComponentId} = this.props;
+    getDroppedComponent() {
+        let refs = this.props.componentRefs;
+        let {connectingPoint} = this.state;
 
-		if (connectingComponentId) {
-			let client = this.getMouseCoords(event);
-			
-			this.setState({
-				connectingPoint: client
-			});
-		}
-	},
+        let x2 = connectingPoint.x,
+            y2 = connectingPoint.y;
 
-	onMouseUp() {
-		let droppedComponent = this.getDroppedComponent();;
-		
-		this.props.onConnectorDropped(droppedComponent);
+        let colliding = _.findKey(refs, (value, key) => {
+            
+            let rect = value.getBoundingClientRect();
 
-		this.setState({
-			connectingPoint: {}
-		});
-	},
+            if (
+                this.isCollides(
+                    rect.left, 
+                    rect.top, 
+                    x2, 
+                    y2
+                )
+            ) {
+                return key;
+            }
+            
+        });
 
-	buildPath(x1, y1, x2, y2) {
-		let dx = x1 - x2,
+        return colliding;
+    },
+
+    onMouseMove(event) {
+        let {connectingComponentId} = this.props;
+
+        if (connectingComponentId) {
+            let client = this.getMouseCoords(event);
+            
+            this.setState({
+                connectingPoint: client
+            });
+        }
+    },
+
+    onMouseUp() {
+        let droppedComponent = this.getDroppedComponent();;
+        
+        this.props.onConnectorDropped(droppedComponent);
+
+        this.setState({
+            connectingPoint: {}
+        });
+    },
+
+    buildPath(x1, y1, x2, y2) {
+        let dx = x1 - x2,
             dy = y1 - y2,
             dr = Math.sqrt(dx * dx + dy * dy);
 
         return `
-        	M ${x1}, ${y1}
-        	A ${dr}, ${dr} 0 0,
-        	1 ${x2}, ${y2}
+            M ${x1}, ${y1}
+            A ${dr}, ${dr} 0 0,
+            1 ${x2}, ${y2}
         `;
-	},
+    },
 
-	renderDrawingConnector(componentId) {
-		let {connectingComponentId, componentRefs} = this.props;
-		let {connectingPoint} = this.state;
+    renderDrawingConnector(componentId) {
+        let {connectingComponentId, componentRefs} = this.props;
+        let {connectingPoint} = this.state;
 
-		let sourceRect = (
-			componentRefs[connectingComponentId]
-				.getBoundingClientRect()
-		);
-		
-		let x1 = sourceRect.left;
-		let y1 = sourceRect.top;
+        let sourceRect = (
+            componentRefs[connectingComponentId]
+                .getBoundingClientRect()
+        );
+        
+        let x1 = sourceRect.left;
+        let y1 = sourceRect.top;
 
-		let d = this.buildPath(
-			connectingPoint.x || x1, 
-			connectingPoint.y || y1,
-			x1, 
-			y1
-		);
-		
-		return (
-			<path d={d} className={styles.edge} />
-		);
-	},
+        let d = this.buildPath(
+            connectingPoint.x || x1, 
+            connectingPoint.y || y1,
+            x1, 
+            y1
+        );
+        
+        return (
+            <path d={d} className={styles.edge} />
+        );
+    },
 
-	renderLine(source, target) {
-		let {componentRefs} = this.props;
-		let sourceRect = componentRefs[source].getBoundingClientRect();
-		let targetRect = componentRefs[target].getBoundingClientRect();
+    renderLine(source, target) {
+        let {componentRefs} = this.props;
+        let sourceRect = componentRefs[source].getBoundingClientRect();
+        let targetRect = componentRefs[target].getBoundingClientRect();
 
-		let x1 = sourceRect.left;
-		let y1 = sourceRect.top;
-		
-		let x2 = targetRect.left;
-		let y2 = targetRect.top;
+        let x1 = sourceRect.left;
+        let y1 = sourceRect.top;
+        
+        let x2 = targetRect.left;
+        let y2 = targetRect.top;
 
-		let d = this.buildPath(x1, y1, x2, y2);
+        let d = this.buildPath(x1, y1, x2, y2);
 
-		return (
-			<path d={d} stroke="black"
-			      className={styles.edge} 
-				  key={`${source}-${target}`} />
-		)
-	},
+        return (
+            <path d={d} stroke="black"
+                  className={styles.edge} 
+                  key={`${source}-${target}`} />
+        )
+    },
 
-	render() {
-		let {services, connectingComponentId} = this.props;
-		let graph = this.buildGraph(services);
+    render() {
+        let {services, connectingComponentId} = this.props;
+        let graph = this.buildGraph(services);
 
-		let classes = classNames({
-			[styles.canvas]: true,
-			[styles.onTop]: !!connectingComponentId
-		});
+        let classes = classNames({
+            [styles.canvas]: true,
+            [styles.onTop]: !!connectingComponentId
+        });
 
-		return (
-			<svg className={classes}
-				 ref={(ref) => this.canvasElement = ref}
-				 onMouseUp={this.onMouseUp}
-				 onMouseMove={this.onMouseMove}>
-				{
-					graph.edges().map(
-						({v, w}) => this.renderLine(v, w)
-					)
-				}
-				{
-					connectingComponentId && (
-						this.renderDrawingConnector(connectingComponentId)
-					)
-				}
-			</svg>
-		);
-	}
+        return (
+            <svg className={classes}
+                 ref={(ref) => this.canvasElement = ref}
+                 onMouseUp={this.onMouseUp}
+                 onMouseMove={this.onMouseMove}>
+                {
+                    graph.edges().map(
+                        ({v, w}) => this.renderLine(v, w)
+                    )
+                }
+                {
+                    connectingComponentId && (
+                        this.renderDrawingConnector(connectingComponentId)
+                    )
+                }
+            </svg>
+        );
+    }
 });
 
 export default EdgeCanvas;
