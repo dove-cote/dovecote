@@ -16,19 +16,23 @@ module.exports = {
                     },
                     {
                         name: 'Addition Requester',
-                        type: 'req'
+                        type: 'req',
+                        key: 'add'
                     },
                     {
                         name: 'Subtraction Requester',
-                        type: 'req'
+                        type: 'req',
+                        key: 'subtract'
                     },
                     {
                         name: 'Multiplication Requester',
-                        type: 'req'
+                        type: 'req',
+                        key: 'multiply'
                     },
                     {
                         name: 'Division Requester',
-                        type: 'req'
+                        type: 'req',
+                        key: 'divide'
                     }
                 ],
                 code: sources.calculationServiceCode
@@ -39,7 +43,8 @@ module.exports = {
                 components: [
                     {
                         name: 'Addition Responder',
-                        type: 'res'
+                        type: 'res',
+                        key: 'add'
                     }
                 ],
                 code: sources.additionServiceCode
@@ -50,7 +55,8 @@ module.exports = {
                 components: [
                     {
                         name: 'Subtraction Responder',
-                        type: 'res'
+                        type: 'res',
+                        key: 'subtract'
                     }
                 ],
                 code: sources.subtractionServiceCode
@@ -61,7 +67,8 @@ module.exports = {
                 components: [
                     {
                         name: 'Multiplication Responder',
-                        type: 'res'
+                        type: 'res',
+                        key: 'multiply'
                     }
                 ],
                 code: sources.multiplicationServiceCode
@@ -72,7 +79,8 @@ module.exports = {
                 components: [
                     {
                         name: 'Division Responder',
-                        type: 'res'
+                        type: 'res',
+                        key: 'divide'
                     }
                 ],
                 code: sources.divisionServiceCode
