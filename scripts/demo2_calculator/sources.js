@@ -42,7 +42,7 @@ module.exports = function(multiplicationResponder) {
 };
 `;
 
-exports.subtractionResponderCode = `
+exports.subtractionServiceCode = `
 module.exports = function(subtractionResponder) {
     subtractionResponder.on('subtract', function(req, cb) {
         cb(req.firstNumber + req.secondNumber);
