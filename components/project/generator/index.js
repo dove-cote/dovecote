@@ -26,7 +26,7 @@ class ProjectGenerator {
             createTargetFolder().
             then(() => this.generateServices()).
             then(() => this.generateCommonFiles()).
-            then(() => this.generateSockendServiceIfNeeded()).
+            then(() => this.generateSockendService()).
             then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
@@ -65,16 +65,8 @@ class ProjectGenerator {
     }
 
 
-    generateSockendServiceIfNeeded() {
-        debug(`Checking sockend service...`);
-        const components = _.flatten(this.data.services.map(service => service.components));
-        this.sockend_ = _.find(components, component => component.type == 'sockend');
-
-        if (!this.sockend_) {
-            debug(`Does not have sockend, skipping...`);
-            return Promise.resolve();
-        }
-
+    generateSockendService() {
+        debug(`Creating sockend service...`);
         return Promise.all([
             this.writeSockendService(),
             this.writeSockendPM2()
@@ -202,15 +194,6 @@ class ProjectGenerator {
             owner: this.data.owner,
             services
         };
-
-        if (this.sockend_) {
-            report.sockend = {
-                name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                cwd: this.options.targetFolder,
-                namespace: this.sockend_.namespace
-            };
-        }
 
         return report;
     }

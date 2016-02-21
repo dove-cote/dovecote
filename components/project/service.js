@@ -186,9 +186,9 @@ module.exports.deploy = function(projectId, ownerId) {
                         run(sourceDir, ownerId).
                         then(container => {
                             project.deploy = {
+                                deployFolder: response.deployFolder,
                                 services: response.services,
-                                container: container,
-                                sockend: response.sockend
+                                container: container
                             }
                             project.state = 'running';
                             return project.save();

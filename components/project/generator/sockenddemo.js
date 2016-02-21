@@ -15,13 +15,8 @@ class SockendDemoGenerator {
     run() {
         debug('Generating index.html for sockend demo...');
 
-        if (!this.data.sockend) {
-            debug('Sockend not found, skipping');
-            return Promise.resolve();
-        }
-
         return new Promise((resolve, reject) => {
-            const path_ = path.resolve(process.cwd(), this.data.sockend.cwd, 'index.html');
+            const path_ = path.resolve(process.cwd(), this.data.deployFolder, 'index.html');
             fs.writeFile(path_, this.generateIndex(), (err) => {
                 if (err) {
                     debug('Could not write index.html', err);
@@ -59,7 +54,7 @@ class SockendDemoGenerator {
                 <a href="https://github.com/dashersw/cote" target="_blank">See cote.js docs</a>
             </p>
             <script>
-                window.sockend = io.connect('${url}/${this.data.sockend.namespace}');
+                window.sockend = io.connect('${url}/aResponder');
 
                 sockend.on('update', function() {
 
