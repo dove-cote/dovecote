@@ -59,19 +59,23 @@ class DockerService {
 
         const container = this.docker.getContainer(containerId);
 
-        if (!container) {
-            debug('Container id not found');
-            return Promise.resolve();
-        }
+        return container.inspect()
+            .then(data => {
+                const port = data.NetworkSettings.Ports['80/tcp'][0].HostPort;
+                const containerIP = data.NetworkSettings.IPAddress;
+                const state = data.State;
 
-        debug(`Container with id ${containerId} was found`);
-        debug(`Stopiing container...`);
+                if (!state.Running) return;
 
-        return container
-            .stop()
-            .then(() => {
-                debug(`Deleting container ${containerId}`);
-                return container.remove();
+                debug(`Container with id ${containerId} was found`);
+                debug(`Stopiing container...`);
+
+                return container
+                    .stop()
+                    .then(() => {
+                        debug(`Deleting container ${containerId}`);
+                        return container.remove();
+                    });
             });
     }
 

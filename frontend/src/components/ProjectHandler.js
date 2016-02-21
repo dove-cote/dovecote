@@ -13,7 +13,7 @@ var ProjectHandler = React.createClass({
 
     componentWillMount() {
         this.props.store.fetchProjectById(this.props.params.id);
-        this.onSync = _.debounce(this.onSync.bind(this), 500);
+        this.onSync = _.debounce(this.onSync, 500);
     },
 
     fillReadonlyComponentFields(currentService, receivedService) {
@@ -25,7 +25,7 @@ var ProjectHandler = React.createClass({
                 component._id = receivedComponent._id;
                 component.updatedAt = receivedComponent.updatedAt;
                 component.createdAt = receivedComponent.createdAt;
-                component.key = receivedComponent.key;
+                component.key = receivedComponent.key || '';
                 mutated = true;
             }
         });

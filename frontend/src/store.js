@@ -331,7 +331,7 @@ const getServiceIndexByComponentId = (project, componentId) => {
             .findIndex(
                 service => service.get('components').find(
                     component => component.get('_id') === componentId
-                ) 
+                )
             )
     );
 }
@@ -344,6 +344,20 @@ const getComponentIndexById = (project, serviceIndex, id) => {
             .findIndex(
                 component => component.get('_id') === id
             )
+    );
+};
+
+const getComponentById = (projectId, componentId) => {
+    let project = getProjectById(projectId);
+
+    let serviceIndex = (
+        getServiceIndexByComponentId(project, componentId)
+    );
+
+    return (
+        project
+            .getIn(['services', serviceIndex, 'components'])
+            .find(component => component.get('_id') === componentId)
     );
 };
 
@@ -622,6 +636,7 @@ var store = {
     addListener,
     removeListener,
 
+    getComponentById,
     connectComponents,
     setServicePosition,
     updateProject,

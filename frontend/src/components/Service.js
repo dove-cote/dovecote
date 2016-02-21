@@ -22,7 +22,7 @@ var ServiceItem = React.createClass({
                 ref={(ref) => id && onRender(id, ref)}>
                 <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
                 <Icon icon={component.type} size={20} />
-                <div onDoubleClick={handleRename} 
+                <div onDoubleClick={handleRename}
                      className={classNames('name', styles.componentLabel)}>
                   {component.name}
                 </div>
@@ -36,13 +36,13 @@ var ServiceItem = React.createClass({
 var CodeEditor = React.createClass({
 
     detectFullScreenChange() {
-        if (!document.fullscreen) {
+        if (!document.webkitIsFullScreen) {
             this.props.onClose();
         }
     },
 
     componentDidMount() {
-        document.addEventListener('fullscreenchange', this.detectFullScreenChange, false);
+        document.addEventListener('webkitfullscreenchange', this.detectFullScreenChange, false);
     },
 
     componentWillUnmount() {
@@ -176,7 +176,7 @@ var Service = React.createClass({
         );
 
         return (
-            <ServiceItem 
+            <ServiceItem
                 key={index}
                 serviceIndex={serviceIndex}
                 componentIndex={index}
@@ -198,7 +198,7 @@ var Service = React.createClass({
             components.length > 0 && this.props.isTarget
         );
 
-        let classes = classNames({
+        let classes = classNames('service', {
             [styles.service]: true,
             [styles.currentService]: this.state.isCurrent
         });
@@ -212,21 +212,26 @@ var Service = React.createClass({
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
 
-      
+
             <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>
 
+                {this.state.showEditor && <button className='pure-button button-xsmall fullscreen' onClick={this.setFullScreen}><Icon icon='fullscreen' /></button>}
                 {this.state.showEditor && (
                     <CodeEditor
-                        onChange={this.updateCode} 
-                        value={code} 
-                        left={x} 
+                        onChange={this.updateCode}
+                      onClose={this.hideCodeEditor}
+                      fullScreen={this.state.fullScreen}
+
+
+                        value={code}
+                        left={x}
                         top={y} />
                 )}
 
-                <div className={styles.serviceName} 
+                <div className={styles.serviceName}
                      onDoubleClick={this.handleRenameService}>
                     {name}
-                    <button className='pure-button button-xsmall' 
+                    <button className='pure-button button-xsmall'
                             onClick={this.toggleEdit} style={{float: 'right'}}>
                             {this.state.showEditor ? "Hide Code" : "Edit Code"}
                     </button>
@@ -234,7 +239,7 @@ var Service = React.createClass({
 
                 <ul className={styles.componentList}>
                     {components.map(
-                        (component, index) => 
+                        (component, index) =>
                             this.renderComponent(component, index)
                     )}
 

@@ -12,6 +12,7 @@ const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
 const ProjectGenerator = require('dovecote/components/project/generator');
 const DockerService = require('dovecote/components/docker/service');
+const SockendDemoGenerator = require('dovecote/components/project/generator/sockenddemo')
 
 
 
@@ -35,15 +36,15 @@ module.exports.create = function(rawProject) {
  * @returns {Promise}
  */
 const get = function(projectId, ownerId) {
-    return Project
-        .findOne({owner: ownerId, _id: projectId})
-        .populate({
+    return Project.
+        findOne({owner: ownerId, _id: projectId}).
+        populate({
             path: 'owner',
             select: '_id username email'
-        })
-        .populate('services')
-        .deepPopulate('services.components')
-        .exec();
+        }).
+        populate('services').
+        deepPopulate('services.components').
+        exec();
 };
 module.exports.get = get;
 
@@ -53,11 +54,11 @@ module.exports.get = get;
  * @param {string} ownerId
  */
 const list = function(ownerId) {
-    return Project
-        .find({owner: ownerId})
-        .select('_id name updatedAt createdAt')
-        .sort({updatedAt: -1})
-        .exec();
+    return Project.
+        find({owner: ownerId}).
+        select('_id name updatedAt createdAt').
+        sort({updatedAt: -1}).
+        exec();
 }
 module.exports.list = list;
 
@@ -76,19 +77,19 @@ module.exports.save = function(projectId, rawProject) {
     if (!_.isArray(rawServices))
         return Promise.reject(new APIError('project.services must be an array', 400));
 
-    return async
-        .eachSeries(rawServices, service => ServiceService.upsert(service, projectId))
-        .then(services => {
+    return async.
+        eachSeries(rawServices, service => ServiceService.upsert(service, projectId)).
+        then(services => {
             const updateData = _.pick(rawProject, ['name']);
             updateData.services = _.map(services, service => service._id);
 
-            return Project
-                .findOneAndUpdate(
+            return Project.
+                findOneAndUpdate(
                     {_id: projectId},
                     updateData,
                     {upsert: false, new: true}
-                )
-                .exec();
+                ).
+                exec();
         });
 };
 
@@ -101,9 +102,12 @@ module.exports.save = function(projectId, rawProject) {
 function stopProject(project) {
     debug(`Terminating project ${project._id}`);
     const containerId = project.deploy && project.deploy.container && project.deploy.container.id;
-    return DockerService
-        .terminate(containerId)
-        .then(() => {
+    return DockerService.
+        terminate(containerId).
+        catch((err) => {
+            console.log(`Could not terminate docker container`, project, err);
+        }).
+        then(() => {
             debug(`Setting ${project._id}'s state as "terminated"`);
             project.state = 'terminated';
             project.deploy = undefined;
@@ -120,15 +124,15 @@ function stopProject(project) {
 function stopAllProjects(ownerId) {
     debug(`Listing all projects of ${ownerId}`);
     let projects = null;
-    return Project
-        .find({owner: ownerId, state: 'running'})
-        .populate('services')
-        .exec()
-        .then(projects_ => {
+    return Project.
+        find({owner: ownerId, state: 'running'}).
+        populate('services').
+        exec().
+        then(projects_ => {
             projects = projects_;
             return async.eachSeries(projects, stopProject);
-        })
-        .then(() => {
+        }).
+        then(() => {
             debug(`${projects.length} projects of ${ownerId} have terminated.`);
         });
 }
@@ -142,28 +146,28 @@ function stopAllProjects(ownerId) {
 module.exports.deploy = function(projectId, ownerId) {
     let project = null;
     debug(`Deploying project ${projectId}`);
-    return stopAllProjects(ownerId)
-        .then(() => get(projectId, ownerId))
-        .then(project_ => {
+    return stopAllProjects(ownerId).
+        then(() => get(projectId, ownerId)).
+        then(project_ => {
             project = project_;
             if (!project)
                 throw new APIError(`Project with id ${req.params.projectId} is not defined`, 404);
 
-            return MulticastService
-                .reserve(project._id)
-                .then(ip => {
+            return MulticastService.
+                reserve(project._id).
+                then(ip => {
                     project.multicastIP_ = ip;
                     return project.save();
-                })
-                .then(() => {
+                }).
+                then(() => {
                     const generator = new ProjectGenerator(project);
                     return generator.run();
-                })
-                .then(response => {
+                }).
+                then(response => {
                     const sourceDir = path.resolve(process.cwd(), response.deployFolder);
-                    return DockerService
-                        .run(sourceDir, ownerId)
-                        .then(container => {
+                    return DockerService.
+                        run(sourceDir, ownerId).
+                        then(container => {
                             project.deploy = {
                                 services: response.services,
                                 container: container,
@@ -171,8 +175,11 @@ module.exports.deploy = function(projectId, ownerId) {
                             }
                             project.state = 'running';
                             return project.save();
-                        })
-
+                        });
+                }).
+                then(() => {
+                    const generator = new SockendDemoGenerator(project.deploy);
+                    return generator.run();
                 });
-        })
+        });
 };

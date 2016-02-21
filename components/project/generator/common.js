@@ -17,7 +17,6 @@ class CommonGenerator {
         debug(`Generating common files...`);
 
         const jobs = [
-            this.write('index.html', this.generateIndex()),
             this.write('package.json', this.generatePackageJson()),
             this.write(`pm2.json`, this.generatePM2Config())
         ];
@@ -41,38 +40,6 @@ class CommonGenerator {
                 resolve();
             })
         });
-    }
-
-
-    generateIndex() {
-        return `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Title</title>
-                <script src="/socket.io/socket.io.js"></script>
-            </head>
-            <body>
-            <script>
-                var catalog = io.connect('localhost:5555/catalog');
-
-                catalog.emit('add product', {
-                    product: {
-                        id: 'goodProduct',
-                        stock: 3
-                    }
-                }, function() {
-                });
-
-                catalog.on('update', function() {
-                    catalog.emit('get catalog', function(err, catalog) {
-                        console.log('catalog', catalog);
-                    });
-                });
-            </script>
-            </body>
-            </html>`;
     }
 
 
