@@ -11,10 +11,11 @@ var Canvas = React.createClass({
         return {
             isDragging: false,
             draggingObjectIndex: null,
-            startPoint: null,
             selectedComponent: null,
             showComponentCreationDialog: false,
-            showEdgeCanvas: false
+            showEdgeCanvas: false,
+
+            startPosition: {}
         };
     },
 
@@ -100,6 +101,7 @@ var Canvas = React.createClass({
         let difference = this.getDifference(event);
         
         if (difference.x || difference.y) {
+            console.log('stop drag')
             this.props.onSync();
             this.props.store.snapshotState();
         }

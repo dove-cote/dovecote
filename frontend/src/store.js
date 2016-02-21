@@ -137,7 +137,7 @@ var atom = {
             } else {
                 window.MODIFICATIONS = window.MODIFICATIONS || [];
                 var modifications = diff(_history.last(), newApp).toJS();
-                console.log(JSON.stringify(modifications, null, 4));
+                //console.log(JSON.stringify(modifications, null, 4));
 
                 window.MODIFICATIONS.push(diff(_history.last(), newApp).toJS());
                 _history = _history.push(newApp);
@@ -287,7 +287,6 @@ const renameService = function (projectId, serviceIndex, newServiceName) {
     updateProject(project);
     saveProject(project);
 
-
 };
 
 const addComponent = (projectId, serviceIndex, component) => {
@@ -303,9 +302,7 @@ const addComponent = (projectId, serviceIndex, component) => {
     let project = oldProject.setIn(['services', serviceIndex], newService);
 
     updateProject(project);
-    saveProject(project);
 
-    // TODO: do we need save project here?
     triggerChange();
 };
 
