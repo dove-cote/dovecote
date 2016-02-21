@@ -12,7 +12,7 @@ const Docker = require('dockerode-promise');
 class DockerService {
     constructor() {
         let options = {
-            host: '192.168.99.100',
+            host: process.env.DOCKER_HOST,
             port: 2376
         };
 
@@ -84,9 +84,10 @@ class DockerService {
      * Run a new container with source directory and ownerId.
      * @param {string} sourceDir
      * @param {string} ownerId
+     * @param {string} projectId
      * @returns {Promise}
      */
-    run(sourceDir, ownerId) {
+    run(sourceDir, ownerId, projectId) {
         const nodeVersion = process.env.DOCKER_NODE_VERSION || '4.2.2'
 
         debug(`Creating docker container from ${sourceDir}`);
@@ -94,7 +95,9 @@ class DockerService {
             .createContainer({
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
-                    'APP=pm2.json'
+                    `APP=pm2.json`,
+                    `DOVECOTE_USER=${ownerId}`,
+                    `DOVECOTE_PROJECT=${projectId}`
                 ]
             })
             .then(container => {
@@ -103,7 +106,7 @@ class DockerService {
                 return container
                     .start({
                         Binds: [`${sourceDir}:/app`],
-                        PublishAllPorts: true,
+                        PublishAllPorts: true
                     })
                     .then(response2 => {
                         return container.inspect()

@@ -26,7 +26,24 @@ module.exports.create = function(rawProject) {
         return Promise.reject(new APIError('project must be an object', 400));
 
     const project = new Project(_.pick(rawProject, ['name', 'owner']));
-    return project.save();
+    return project.
+        save().
+        then(project => {
+            return ServiceService.upsert({
+                name: 'Gateway',
+                meta: {position: {x: 10, y: 10}},
+                components: [
+                    {
+                        name: 'Gateway',
+                        type: 'sockend'
+                    }
+                ]}, project._id).
+                then(service => {
+                    project.services.push(service._id);
+                    return project.save();
+                });
+        }).
+        then(project => get(project._id, project.owner));
 };
 
 
@@ -166,12 +183,12 @@ module.exports.deploy = function(projectId, ownerId) {
                 then(response => {
                     const sourceDir = path.resolve(process.cwd(), response.deployFolder);
                     return DockerService.
-                        run(sourceDir, ownerId).
+                        run(sourceDir, ownerId, project._id).
                         then(container => {
                             project.deploy = {
+                                deployFolder: response.deployFolder,
                                 services: response.services,
-                                container: container,
-                                sockend: response.sockend
+                                container: container
                             }
                             project.state = 'running';
                             return project.save();

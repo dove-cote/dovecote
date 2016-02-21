@@ -35,3 +35,8 @@
 	top: 195px;
 	left: 12px;
 }
+
+.currentTab {
+	color: black;
+	text-decoration: none;
+}

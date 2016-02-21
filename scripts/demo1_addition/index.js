@@ -13,14 +13,19 @@ module.exports = {
                         type: 'res',
                         external: true,
                         namespace: 'addition'
-                    },
-                    {
-                        name: 'Sockend Component',
-                        type: 'sockend',
-                        namespace: 'addition'
                     }
                 ],
                 code: sources.additionServiceCode
+            },
+            {
+                name: 'Gateway',
+                meta: {position: {x: 10, y: 10}},
+                components: [
+                    {
+                        name: 'Gateway',
+                        type: 'sockend'
+                    }
+                ]
             }
         ]
     }

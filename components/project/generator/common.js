@@ -66,7 +66,9 @@ class CommonGenerator {
     generatePM2Config() {
         const content = { apps: [] };
 
-        content.apps = this.data.services.map((service) => {
+        const filteredServices = _.filter(this.data.services, service => service.name != 'Getaway');
+
+        content.apps = filteredServices.map((service) => {
             const kebabCasedName = _.kebabCase(service.name);
             return {
                 name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,

@@ -24,11 +24,6 @@ module.exports = {
                         name: 'Stock Requester',
                         type: 'req',
                         external: false
-                    },
-                    {
-                        name: 'Sockend Component',
-                        type: 'sockend',
-                        namespace: 'catalog'
                     }
                 ],
                 code: sources.catalogServiceCode
@@ -43,6 +38,16 @@ module.exports = {
                     }
                 ],
                 code: sources.stockServiceCode
+            },
+            {
+                name: 'Gateway',
+                meta: {position: {x: 10, y: 10}},
+                components: [
+                    {
+                        name: 'Gateway',
+                        type: 'sockend'
+                    }
+                ]
             }
         ]
     }

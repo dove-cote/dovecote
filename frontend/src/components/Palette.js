@@ -92,8 +92,9 @@ var Palette = React.createClass({
                 </div>
                 <div className={styles.components}>
                 {this.props.data.map(
-                    (item) => (
+                    (item, index) => (
                         <PaletteItem
+                            key={index}
                             onClearSelection={this.props.onClearSelection}
                             onComponentSelect={this.props.onComponentSelect}
                             item={item} />

@@ -4,6 +4,7 @@ const URLS = {
 
     projectSummaries: '/api/services/summaries',
     projects: '/api/projects/',
+    deployProject: '/api/projects/:projectId/deploy',
 
     // users api
     register: '/api/users/register',

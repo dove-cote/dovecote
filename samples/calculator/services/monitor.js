@@ -1,3 +1,31 @@
+'use strict';
+
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+mongoose.connect(process.env.DOVECOTE_MONGO || 'mongodb://mongo/dovecote');
+
+mongoose.connection.on(
+    'error',
+    console.error.bind(console, 'Mongo connection error')
+);
+
+mongoose.connection.once('open', function() {
+    console.log('Connected to mongo');
+});
+
+
+const monitorRecordSchema = new Schema({
+    nodes: [{type: Schema.Types.Mixed}],
+    links: [{type: Schema.Types.Mixed}],
+    project: {type: Schema.Types.ObjectId, ref: 'Project'}
+}, {timestamps: true});
+
+
+const MonitorRecord = mongoose.model('MonitorRecord', monitorRecordSchema);
+
+
+
+
 var cote = require('cote', {multicast: '239.1.1.1'});
 var _ = require('lodash');
 
@@ -45,4 +73,8 @@ setInterval(function() {
     });
 
     graph.links = _.flatten(links);
+    graph.project = process.env.DOVECOTE_PROJECT;
+
+
+    MonitorRecord.findOneAndUpdate({project: graph.project}, graph, {upsert: true}).exec();
 }, 5000);

@@ -4,6 +4,8 @@ const {fromJS, Map, List} = Immutable;
 import $ from 'jquery';
 import URLS from './urls';
 
+import {exportsLine} from './project_helpers';
+
 var services = [
         {
             name: "Stock Service",
@@ -100,7 +102,7 @@ var _app = Map({
         {type: 'res', icon: 'foo.png', name: 'Responder'},
         {type: 'pub', icon: 'foo.png', name: 'Publisher'},
         {type: 'sub', icon: 'foo.png', name: 'Subscriber'},
-        {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
+//        {type: 'sockend', icon: 'foo.png', name: 'Sockend'}
     ]),
 
     projects: Immutable.fromJS([project]),
@@ -109,7 +111,10 @@ var _app = Map({
 
     projectSummaries: initialProjectSummaries,
 
-    projectCreation: Map({inProgress: false, error: false, errorText: null})
+    projectCreation: Map({inProgress: false, error: false, errorText: null}),
+
+    projectDeployment: Map({inProgress: false, error: false, errorText: null})
+
 
 });
 
@@ -132,7 +137,7 @@ var atom = {
             } else {
                 window.MODIFICATIONS = window.MODIFICATIONS || [];
                 var modifications = diff(_history.last(), newApp).toJS();
-                console.log(JSON.stringify(modifications, null, 4));
+                //console.log(JSON.stringify(modifications, null, 4));
 
                 window.MODIFICATIONS.push(diff(_history.last(), newApp).toJS());
                 _history = _history.push(newApp);
@@ -223,8 +228,14 @@ const snapshotState = function () {
 const addCode = function (projectId, serviceId, code, pushToHistory=true) {
     var project = getProjectById(projectId);
 
+    var expectedLine = exportsLine(project.getIn(['services', serviceId]));
+    // debugger
+    // console.log("code is", code, "exportsline is" , exportsLine)
+    var isValidCode = (code.indexOf(expectedLine) > -1);
 
-    updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+    if (isValidCode) {
+       updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+    }
 
 };
 
@@ -232,12 +243,11 @@ const addService = (projectId, name, position = {x: 100, y: 100}) => {
     let project = getProjectById(projectId);
     var services = project.get('services');
 
-// debugger
     project = project.set('services',
                 services.push(fromJS({
                     name,
                     instance: 1,
-                    code: '',
+                    code: 'module.exports = function () {\n  // your code goes here!\n}',
                     meta: { position },
                     components: []})));
 
@@ -277,25 +287,38 @@ const renameService = function (projectId, serviceIndex, newServiceName) {
     updateProject(project);
     saveProject(project);
 
-
 };
 
 const addComponent = (projectId, serviceIndex, component) => {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.push(fromJS(component));
     });
 
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+
+    let project = oldProject.setIn(['services', serviceIndex], newService);
+
     updateProject(project);
+
     triggerChange();
 };
 
 const removeComponent = (projectId, serviceIndex, componentName) => {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.filter(function (component) {
             return component.get('name') !== componentName;
         });
 
     });
+
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+    let project = oldProject.setIn(['services', serviceIndex], newService);
 
     updateProject(project);
     saveProject(project);
@@ -305,7 +328,11 @@ const removeComponent = (projectId, serviceIndex, componentName) => {
 
 
 const renameComponent = function (projectId, serviceIndex, componentName, newComponentName) {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.map(function (component) {
             if (component.get('name') === componentName) {
                 return component.set('name', newComponentName);
@@ -316,6 +343,9 @@ const renameComponent = function (projectId, serviceIndex, componentName, newCom
         });
 
     });
+
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+    let project = oldProject.setIn(['services', serviceIndex], newService);
 
     updateProject(project);
     saveProject(project);
@@ -402,6 +432,7 @@ var getApp = function () {
 const getProjects = () => getApp().get('projects');
 const getProjectSummaries = () => getApp().get('projectSummaries');
 const getProjectCreation = () => getApp().get('projectCreation');
+const getProjectDeployment = () => getApp().get('projectDeployment');
 
 const getProjectById = function (_id) {
     return atom.getApp().get('projects').find(function (project) {
@@ -504,6 +535,43 @@ const fetchProjectSummaries = function () {
             error: errorFn
         });
     }
+};
+
+const deployProject = function (projectId) {
+
+    var successFn = function (data) {
+        console.log('project deployed');
+        var app = atom.getApp();
+
+        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+
+    };
+
+
+    var errorFn = function () {
+        console.error('error deploying project');
+
+        var app = atom.getApp();
+        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+
+    };
+
+
+    var app = atom.getApp();
+
+    if (app.getIn(['projectDeployment', 'inProgress'])) {
+        console.warn('Deployment in Progress');
+        return;
+    }
+
+    atom.swap(app.setIn(['projectDeployment', 'inProgress'], true));
+
+    $.ajax({
+        method: 'POST',
+        url: URLS.deployProject.replace(':projectId', projectId),
+        success: successFn,
+        error: errorFn
+    });
 };
 
 const generateMockProjectData = function (id) {
@@ -614,6 +682,7 @@ const saveProject = function (project, callback) {
 
 
 var store = {
+    getProjectDeployment,
     getProjectSummaries,
     getProjects,
     getProjectById,
@@ -640,6 +709,7 @@ var store = {
     connectComponents,
     setServicePosition,
     updateProject,
+    deployProject,
 
     fetchProjectSummaries,
     fetchUser,

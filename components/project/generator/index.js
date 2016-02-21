@@ -20,46 +20,13 @@ class ProjectGenerator {
     }
 
 
-    createReport() {
-        const services = this.data.services.map((service) => {
-            const kebabCasedName = _.kebabCase(service.name);
-            return {
-                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
-                script: `services/${kebabCasedName}.js`,
-                instance: service.instance || 1,
-                cwd: this.options.targetFolder,
-                key: service.key,
-                namespace: service.namespace
-            };
-        });
-
-        const report = {
-            deployFolder: this.options.targetFolder,
-            name: this.data.name,
-            owner: this.data.owner,
-            services
-        };
-
-        if (this.sockend_) {
-            report.sockend = {
-                name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                cwd: this.options.targetFolder,
-                namespace: this.sockend_.namespace
-            };
-        }
-
-        return report;
-    }
-
-
     run() {
         debug(`Start generating ${this.data.name}...`);
         return this.
             createTargetFolder().
             then(() => this.generateServices()).
             then(() => this.generateCommonFiles()).
-            then(() => this.generateSockendServiceIfNeeded()).
+            then(() => this.generateSockendService()).
             then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
@@ -98,22 +65,115 @@ class ProjectGenerator {
     }
 
 
-    generateSockendServiceIfNeeded() {
-        debug(`Checking sockend service...`);
-        const components = _.flatten(this.data.services.map(service => service.components));
-        this.sockend_ = _.find(components, component => component.type == 'sockend');
-
-        if (!this.sockend_) {
-            debug(`Does not have sockend, skipping...`);
-            return Promise.resolve();
-        }
-
+    generateSockendService() {
+        debug(`Creating sockend service...`);
         return Promise.all([
             this.writeSockendService(),
+            this.writeMonitorService(),
             this.writeSockendPM2()
         ]);
     }
 
+    writeMonitorService() {
+        const content = `
+'use strict';
+
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+mongoose.connect(process.env.DOVECOTE_MONGO || 'mongodb://mongo/dovecote');
+
+mongoose.connection.on(
+    'error',
+    console.error.bind(console, 'Mongo connection error')
+);
+
+mongoose.connection.once('open', function() {
+    console.log('Connected to mongo');
+});
+
+
+const monitorRecordSchema = new Schema({
+    nodes: [{type: Schema.Types.Mixed}],
+    links: [{type: Schema.Types.Mixed}],
+    project: {type: Schema.Types.ObjectId, ref: 'Project'}
+}, {timestamps: true});
+
+
+const MonitorRecord = mongoose.model('MonitorRecord', monitorRecordSchema);
+
+
+
+
+var cote = require('cote', {multicast: '239.1.1.1'});
+var _ = require('lodash');
+
+var monitor = new cote.Monitor({
+    name: 'monitor'
+}, {disableScreen: true});
+
+var graph = {
+    nodes: [],
+    links: []
+};
+
+var rawLinks = {};
+
+monitor.on('status', function(status) {
+    var node = monitor.discovery.nodes[status.id];
+    if (!node) return;
+
+    rawLinks[status.id] = {
+        source: status.id,
+        target: status.nodes
+    };
+});
+
+setInterval(function() {
+    graph.nodes = _.map(monitor.discovery.nodes, function(node) {
+        return {
+            id: node.id,
+            name: node.advertisement.name
+        }
+    });
+
+    var indexMap = {};
+    graph.nodes.forEach(function(node, index) {
+        indexMap[node.id] = index;
+    });
+
+    var links = _.map(rawLinks, function(rawLink) {
+        return rawLink.target.map(function(target) {
+            return { // flip source & target for semantics :)
+                source: indexMap[target],//monitor.discovery.nodes[target].advertisement.name + '#' + target,
+                target: indexMap[rawLink.source]//monitor.discovery.nodes[rawLink.source].advertisement.name + '#' + rawLink.source
+            };
+        });
+    });
+
+    graph.links = _.flatten(links);
+    graph.project = process.env.DOVECOTE_PROJECT;
+
+
+    MonitorRecord.findOneAndUpdate({project: graph.project}, graph, {upsert: true}).exec();
+}, 5000);
+
+        `;
+
+        return new Promise((resolve, reject) => {
+            const path = `${this.options.targetFolder}/services/___monitor.js`;
+            debug(`Creating monitor: ${path}`);
+
+            fs.writeFile(path, content, (err) => {
+                if (err) {
+                    debug(`Cannot create monitor service: ${path}`, err);
+                    return reject(err);
+                }
+
+                debug(`Created monitor service: ${path}`);
+                resolve();
+            })
+        });
+    }
 
     writeSockendService() {
         const content = `
@@ -171,6 +231,9 @@ class ProjectGenerator {
             config.apps.push({
                 name: `${this.data.owner._id}-${this.data.name}-sockend`,
                 script: `services/sockend.js`
+            }, {
+                name: `${this.data.owner._id}-${this.data.name}-___monitor`,
+                script: `services/___monitor.js`
             });
 
             fs.writeFile(path_, JSON.stringify(config, null, 4), (err) => {
@@ -213,6 +276,30 @@ class ProjectGenerator {
                 resolve();
             });
         });
+    }
+
+
+    createReport() {
+        const services = this.data.services.map((service) => {
+            const kebabCasedName = _.kebabCase(service.name);
+            return {
+                name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
+                script: `services/${kebabCasedName}.js`,
+                instance: service.instance || 1,
+                cwd: this.options.targetFolder,
+                key: service.key,
+                namespace: service.namespace
+            };
+        });
+
+        const report = {
+            deployFolder: this.options.targetFolder,
+            name: this.data.name,
+            owner: this.data.owner,
+            services
+        };
+
+        return report;
     }
 }
 
