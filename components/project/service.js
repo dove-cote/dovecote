@@ -183,7 +183,7 @@ module.exports.deploy = function(projectId, ownerId) {
                 then(response => {
                     const sourceDir = path.resolve(process.cwd(), response.deployFolder);
                     return DockerService.
-                        run(sourceDir, ownerId).
+                        run(sourceDir, ownerId, project._id).
                         then(container => {
                             project.deploy = {
                                 services: response.services,
