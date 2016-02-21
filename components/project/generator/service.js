@@ -18,9 +18,9 @@ class ServiceGenerator {
     run() {
         debug(`Generating service: ${this.data.name}`);
 
-        return this
-            .parseCode()
-            .then(() => Promise.all([
+        return this.
+            parseCode().
+            then(() => Promise.all([
                 this.writeOriginal(),
                 this.generateAndWrite()
             ]));
@@ -114,8 +114,8 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
-        if (data.name)
-            options.key = _.kebabCase(data.name);
+        if (data.key)
+            options.key = data.key;
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -133,8 +133,8 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
-        if (data.name)
-            options.key = _.kebabCase(data.name);
+        if (data.key)
+            options.key = data.key;
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -150,8 +150,8 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
-        if (data.name)
-            options.key = _.kebabCase(data.name);
+        if (data.key)
+            options.key = data.key;
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -167,8 +167,8 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
-        if (data.name)
-            options.key = _.kebabCase(data.name);
+        if (data.key)
+            options.key = data.key;
 
         const optionsStr = JSON.stringify(options, null, 4);
 
