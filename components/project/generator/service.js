@@ -108,12 +108,14 @@ class ServiceGenerator {
 
     template_requester(data) {
         const options = {
-            name: data.name,
-            key: _.kebabCase(data.name)
+            name: data.name
         };
 
         if (data.external || data.namespace)
             options.namespace = data.namespace;
+
+        if (data.name)
+            options.key: _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -131,6 +133,9 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
+        if (data.name)
+            options.key: _.kebabCase(data.name);
+
         const optionsStr = JSON.stringify(options, null, 4);
 
         return `var ${camelCasedName} = new cote.Responder(${optionsStr});`;
@@ -145,6 +150,9 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
+        if (data.name)
+            options.key: _.kebabCase(data.name);
+
         const optionsStr = JSON.stringify(options, null, 4);
 
         return `var ${_.camelCase(data.name)} = new cote.Publisher(${optionsStr});`;
@@ -158,6 +166,9 @@ class ServiceGenerator {
 
         if (data.external || data.namespace)
             options.namespace = data.namespace;
+
+        if (data.name)
+            options.key: _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
