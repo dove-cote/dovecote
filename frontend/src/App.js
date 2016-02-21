@@ -5,7 +5,7 @@ import store from './store';
 
 import styles from './App.module.css';
 require('./App.less');
-require('./components/Buttons.less');
+require('./components/buttons.less');
 
 window.__STORE__ = store;
 
