@@ -331,7 +331,7 @@ const getServiceIndexByComponentId = (project, componentId) => {
             .findIndex(
                 service => service.get('components').find(
                     component => component.get('_id') === componentId
-                ) 
+                )
             )
     );
 }
