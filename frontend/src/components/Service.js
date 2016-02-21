@@ -14,10 +14,13 @@ import Icon from './Icon';
 require('./Service.less');
 
 var ServiceItem = ({component, handleRemove, handleRename}) => (
-    <li className={classNames(styles.component, 'service-item')}>
+    <li className={classNames(styles.component, 'service-item', 'cf')}>
       <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
         <Icon icon={component.type} />
-        <div className={styles.componentLabel} onClick={handleRename}>{component.name}</div>
+        <div className={classNames('name', styles.componentLabel)} onClick={handleRename}>
+          {component.name}
+          <button className='pure-button rename' >(rename)</button>
+        </div>
     </li>
 );
 
@@ -143,7 +146,10 @@ var Service = React.createClass({
                                 onChange={this.updateCode} />
                 )}
 
-            <div onClick={this.handleRenameService}>{name}</div>
+            <div className='name'  onClick={this.handleRenameService}>
+                {name}
+                <button className='pure-button rename'>(rename)</button>
+                </div>
 
                 <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? "Hide Code" : "Edit Code"}</button>
 

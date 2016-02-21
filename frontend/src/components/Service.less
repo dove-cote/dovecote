@@ -1,3 +1,15 @@
+.service {
+
+  position: relative;
+
+  > .name {
+    display: inline-block;
+  }
+
+}
+
+// remove buttons
+
 button.pure-button.remove-service, button.pure-button.remove-service-item {
     display: none;
     font-size: 50%;
@@ -10,6 +22,8 @@ button.pure-button.remove-service, button.pure-button.remove-service-item {
   }
 
 
+
+
 .service-item {
   position: relative;
 
@@ -20,13 +34,35 @@ button.pure-button.remove-service, button.pure-button.remove-service-item {
   }
 }
 
+
 .service {
 
   position: relative;
+
 
   &:hover {
     button.remove-service {
       display: block;
     }
+  }
+}
+
+
+// rename buttons
+.service, .service-item {
+  button.rename {
+    font-size: 45%;
+    display: none;
+    background: transparent;
+    // color: white;
+  }
+
+  div.name {
+    &:hover {
+      button.rename {
+        display: inline-block;
+      }
+    }
+
   }
 }
