@@ -13,16 +13,25 @@ import Icon from './Icon';
 
 require('./Service.less');
 
-var ServiceItem = ({component, handleRemove, handleRename}) => (
-    <li className={classNames(styles.component, 'service-item', 'cf')}>
-      <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
-        <Icon icon={component.type} />
-        <div className={classNames('name', styles.componentLabel)} onClick={handleRename}>
-          {component.name}
-          <button className='pure-button rename' >(rename)</button>
-        </div>
-    </li>
-);
+var ServiceItem = React.createClass({
+    render() {
+        let {component, onRender, handleRename, handleRemove} = this.props;
+        let {_id: id} = component;
+        return (
+            <li className={classNames(styles.component, 'service-item', 'cf')}
+                ref={(ref) => id && onRender(id, ref)}>
+                <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
+                <Icon icon={component.type} size={20} />
+                <div onDoubleClick={handleRename} 
+                     className={classNames('name', styles.componentLabel)}>
+                  {component.name}
+                </div>
+                <div className={`${styles.connector} connector`}
+                     onMouseDown={this.props.onConnectorDrawingStarted} />
+            </li>
+        );
+    }
+});
 
 var CodeEditor = function ({value, onChange, left, top, onClose, fullScreen}) {
 
@@ -93,8 +102,6 @@ var Service = React.createClass({
         var shouldRemove = window.confirm('Do you want to remove this service?');
         if (shouldRemove) {
             this.props.store.removeService(this.props.projectId, this.props.serviceId);
-        } else {
-
         }
     },
 
@@ -102,15 +109,13 @@ var Service = React.createClass({
         var newName = window.prompt('Enter new name for this service', this.props.service.name);
         if (newName) {
             this.props.store.renameService(this.props.projectId, this.props.serviceId, newName);
-        } else {
-
         }
     },
 
     handleRemoveServiceItem(componentName) {
         var shouldRemove = window.confirm('Do you want to remove this component?');
         if (shouldRemove) {
-        this.props.store.removeComponent(this.props.projectId, this.props.serviceId, componentName);
+            this.props.store.removeComponent(this.props.projectId, this.props.serviceId, componentName);
         }
     },
 
@@ -136,6 +141,7 @@ var Service = React.createClass({
         });
     },
 
+
     setFullScreen() {
         try {
             document.documentElement.webkitRequestFullScreen();
@@ -145,10 +151,29 @@ var Service = React.createClass({
         this.setState({fullScreen: true});
     },
 
+    renderComponent(component, index) {
+        let {serviceIndex, onConnectorDrawingStarted} = this.props;
+
+        let boundOnConnectorDrawingStarted = (
+            onConnectorDrawingStarted
+                .bind(null, serviceIndex, index)
+        );
+
+        return (
+            <ServiceItem 
+                key={index}
+                serviceIndex={serviceIndex}
+                componentIndex={index}
+                handleRemove={_.partial(this.handleRemoveServiceItem, component.name)}
+                handleRename={_.partial(this.handleRenameServiceItem, component.name)}
+                onRender={this.props.onRenderComponent}
+                onConnectorDrawingStarted={boundOnConnectorDrawingStarted}
+                component={component} />
+        );
+    },
 
     render() {
         var {name, meta, code, components} = this.props.service;
-
         var {x, y} = meta.position;
 
         var style = {left: x, top: y};
@@ -157,45 +182,46 @@ var Service = React.createClass({
             components.length > 0 && this.props.isTarget
         );
 
-        return (
-            <div className={classNames('service', {
-                [styles.service]: true,
-                [styles.currentService]: this.state.isCurrent,
+        let classes = classNames({
+            [styles.service]: true,
+            [styles.currentService]: this.state.isCurrent
+        });
 
-            })}
+        return (
+            <div className={classes}
                  style={style}
                  onMouseOver={this.onMouseOver}
                  onMouseOut={this.onMouseOut}
                  onMouseLeave={this.props.onMouseLeave}
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
-      <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>
 
-                              {this.state.showEditor && (
-                    <CodeEditor value={code}
-                                fullScreen={this.state.fullScreen}
-                                left={x}
-                                top={y}
-                                onClose={this.hideCodeEditor}
-                                onChange={this.updateCode} />
+      
+            <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>
+
+                {this.state.showEditor && (
+                    <CodeEditor
+                        onChange={this.updateCode} 
+                        value={code} 
+                        left={x} 
+                        top={y} />
                 )}
 
-            <div className='name'  onClick={this.handleRenameService}>
-                {name}
-                <button className='pure-button rename'>(rename)</button>
+                <div className={styles.serviceName} 
+                     onDoubleClick={this.handleRenameService}>
+                    {name}
+                    <button className='pure-button button-xsmall' 
+                            onClick={this.toggleEdit} style={{float: 'right'}}>
+                            {this.state.showEditor ? "Hide Code" : "Edit Code"}
+                    </button>
                 </div>
 
-
-{this.state.showEditor && <button className='pure-button button-xsmall fullscreen' onClick={this.setFullScreen}><Icon icon='fullscreen' /></button>}
-                <button className='pure-button button-xsmall' onClick={this.toggleEdit} style={{float: 'right'}}>{this.state.showEditor ? 'Hide Code' : 'Edit Code'}</button>
-
-
                 <ul className={styles.componentList}>
-                    {components.map((component, index) => <ServiceItem key={index}
-                                                                       handleRemove={_.partial(this.handleRemoveServiceItem, component.name)}
-                                                                       handleRename={_.partial(this.handleRenameServiceItem, component.name)}
+                    {components.map(
+                        (component, index) => 
+                            this.renderComponent(component, index)
+                    )}
 
-                                                                       component={component} />)}
                     {showPlaceholder && (
                         <div className={styles.componentPlaceholder}></div>
                     )}

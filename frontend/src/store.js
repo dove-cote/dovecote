@@ -325,6 +325,62 @@ const renameComponent = function (projectId, serviceIndex, componentName, newCom
 };
 
 
+const getServiceIndexByComponentId = (project, componentId) => {
+    return (
+        project.get('services')
+            .findIndex(
+                service => service.get('components').find(
+                    component => component.get('_id') === componentId
+                ) 
+            )
+    );
+}
+
+const getComponentIndexById = (project, serviceIndex, id) => {
+    return (
+        project
+            .getIn(['services', serviceIndex])
+            .get('components')
+            .findIndex(
+                component => component.get('_id') === id
+            )
+    );
+};
+
+const connectComponents = (projectId, sourceId, targetId, key) => {
+
+    let project = getProjectById(projectId);
+
+    let sourceServiceIndex = (
+        getServiceIndexByComponentId(project, sourceId)
+    );
+
+    let sourceComponentIndex = (
+        getComponentIndexById(project, sourceServiceIndex, sourceId)
+    );
+
+    let targetServiceIndex = (
+        getServiceIndexByComponentId(project, targetId)
+    );
+
+    let targetComponentIndex = (
+        getComponentIndexById(project, targetServiceIndex, targetId)
+    );
+
+    updateProject(
+        getProjectById(projectId)
+        .setIn(
+            ['services', sourceServiceIndex, 'components', sourceComponentIndex, 'key'],
+            key
+        ).setIn(
+            ['services', targetServiceIndex, 'components', targetComponentIndex, 'key'],
+            key
+        )
+    );
+
+    triggerChange();
+};
+
 var getApp = function () {
     return atom.getApp();
 };
@@ -566,6 +622,7 @@ var store = {
     addListener,
     removeListener,
 
+    connectComponents,
     setServicePosition,
     updateProject,
 
