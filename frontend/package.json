@@ -39,6 +39,7 @@
     "brace": "^0.5.1",
     "classnames": "^2.2.1",
     "css-loader": "^0.23.0",
+    "d3": "^3.5.16",
     "eslint-plugin-react": "^3.6.2",
     "graphlib": "^2.1.0",
     "lodash": "^3.10.1",

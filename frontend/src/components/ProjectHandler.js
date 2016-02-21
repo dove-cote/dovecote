@@ -7,10 +7,6 @@ import Immutable from 'immutable';
 const {fromJS, Map, List} = Immutable;
 
 var ProjectHandler = React.createClass({
-    backToProjects() {
-        browserHistory.push('/projects/');
-    },
-
     componentWillMount() {
         this.props.store.fetchProjectById(this.props.params.id);
         this.onSync = _.debounce(this.onSync, 500);

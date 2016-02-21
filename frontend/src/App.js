@@ -72,16 +72,9 @@ var App = React.createClass({
     	return (
             <div className={styles.container}>
               <Header/>
-
-
-              {React.cloneElement(
-              	this.props.children,
-              	{
-              		store
-              	}
-              )}
+              {React.cloneElement(this.props.children, {store})}
             </div>
-        );
+      );
     }
 
 });

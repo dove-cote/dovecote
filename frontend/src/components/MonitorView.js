@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import CircleGraph from './CircleGraph';
 
 var MonitorView = React.createClass({
 
-    render() {
+	render() {
         return (
-        	<div className="">
-	            this is monitor view
+        	<div>
+	            <CircleGraph />
 	        </div>
         );
 
