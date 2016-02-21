@@ -26,7 +26,24 @@ module.exports.create = function(rawProject) {
         return Promise.reject(new APIError('project must be an object', 400));
 
     const project = new Project(_.pick(rawProject, ['name', 'owner']));
-    return project.save();
+    return project.
+        save().
+        then(project => {
+            return ServiceService.upsert({
+                name: 'Gateway',
+                meta: {position: {x: 10, y: 10}},
+                components: [
+                    {
+                        name: 'Gateway',
+                        type: 'sockend'
+                    }
+                ]}, project._id).
+                then(service => {
+                    project.services.push(service._id);
+                    return project.save();
+                });
+        }).
+        then(project => get(project._id, project.owner));
 };
 
 
