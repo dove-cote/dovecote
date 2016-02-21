@@ -1,6 +1,9 @@
 import React from 'react';
 import ProjectView from './ProjectView';
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router';
+import Immutable from 'immutable';
+
+const {fromJS, Map, List} = Immutable;
 
 var ProjectHandler = React.createClass({
     backToProjects() {
@@ -11,8 +14,48 @@ var ProjectHandler = React.createClass({
         this.props.store.fetchProjectById(this.props.params.id);
     },
 
+    fillReadonlyComponentFields(currentService, receivedService) {
+        let mutated = false;
+        
+        currentService.components.forEach((component, componentIndex) => {
+            let receivedComponent = receivedService.components[componentIndex];
+            if (!component._id) {
+                component._id = receivedComponent._id;
+                component.updatedAt = receivedComponent.updatedAt;
+                component.createdAt = receivedComponent.createdAt;
+                mutated = true;
+            }
+        });
+
+        return mutated;
+    },
+
+    fillReadonlyServiceFields(currentProject, receivedProject) {
+        let project = currentProject.toJS();
+        let mutated = false;
+
+        project.services.forEach((service, index) => {
+            let receivedService = receivedProject.services[index];
+            if (!service._id) {
+                service._id = receivedService._id;
+                service.updatedAt = receivedService.updatedAt;
+                service.createdAt = receivedService.createdAt;
+                mutated = true;
+            } else {
+                mutated = this.fillReadonlyComponentFields(service, receivedService);
+            }
+        });
+
+        if (mutated) {
+            this.props.store.updateProject(fromJS(project));
+        }
+    },
+
     onSync(project) {
-        this.props.store.saveProject(project);
+        this.props.store.saveProject(
+            project,
+            this.fillReadonlyServiceFields.bind(this, project)
+        );
     },
 
     render() {

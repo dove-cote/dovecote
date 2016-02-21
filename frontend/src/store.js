@@ -476,6 +476,7 @@ var store = {
     removeListener,
 
     setServicePosition,
+    updateProject,
 
     fetchProjectSummaries,
     fetchUser,

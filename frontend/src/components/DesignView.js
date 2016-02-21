@@ -83,12 +83,10 @@ var DesignView = React.createClass({
         let palette = store.getPalette().toJS();
 
         if (!project) {
-            console.log(projectId, project)
-             return <div>Loading</div>;
-        } else {
-                project = project.toJS();
-        }
-
+            return <div>Loading</div>;
+        } 
+        
+        project = project.toJS();
 
         return (
             <div className={styles.designView}>
