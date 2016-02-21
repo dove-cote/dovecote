@@ -74,19 +74,37 @@ var Canvas = React.createClass({
         this.setState({
             isDragging: true,
             draggingObjectIndex: index,
-            startOffset: startOffset
+            startOffset: startOffset,
+            startPosition: client
         });
     },
 
-    stopDrag() {
+    getDifference(event) {
+        let {startPosition} = this.state;
+
+        let client = this.getMouseCoords(event);
+
+        return {
+            x: client.x - startPosition.x,
+            y: client.y - startPosition.y
+        }
+    },
+
+    stopDrag(event) {
         this.setState({
             isDragging: false,
-            draggingObjectIndex: null
+            draggingObjectIndex: null,
+            startOffset: {}
         });
 
-        this.props.store.snapshotState();
+        let difference = this.getDifference(event);
+        
+        if (difference.x || difference.y) {
+            this.props.onSync();
+            this.props.store.snapshotState();
+        }
+
         this.props.onClearSelection();
-        this.props.onSync();
     },
 
     dropComponent(serviceIndex, event) {
