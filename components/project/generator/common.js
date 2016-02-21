@@ -99,7 +99,8 @@ class CommonGenerator {
             return {
                 name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
                 script: `services/${kebabCasedName}.js`,
-                watch: true
+                max_memory_restart: '50M',
+                instace: service.instace
             };
         });
 
