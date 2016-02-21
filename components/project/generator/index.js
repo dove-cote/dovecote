@@ -18,14 +18,14 @@ class ProjectGenerator {
 
 
     run() {
-        return this
-            .createTargetFolder()
-            .then(() => Promise.all([
+        return this.
+            createTargetFolder().
+            then(() => Promise.all([
                 this.generateCommonFiles(),
                 this.generateServices()
-            ]))
-            .then(() => this.generateSockendServiceIfNeeded())
-            .then(() => this.symlinkNodeModules());
+            ])).
+            then(() => this.generateSockendServiceIfNeeded()).
+            then(() => this.symlinkNodeModules());
     }
 
 
