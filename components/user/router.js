@@ -72,7 +72,8 @@ router.post('/register', function(req, res, next) {
             return async
                 .eachSeries(demoProjects, project => createProject(project, user))
                 .then(() => {
-                    res.json(user_.toSafeJSON());
+                    const authenticate = passport.authenticate('local');
+                    authenticate(req, res, () => res.json(user_.toSafeJSON()));
                 });
         });
     })
