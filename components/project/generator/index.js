@@ -1,8 +1,11 @@
 'use strict';
 
 const _ = require('lodash');
+const path = require('path');
 const fs = require('fs');
+const exec = require('child_process').exec;
 const mkdirp = require('mkdirp');
+const debug = require('debug')('dovecote:components:project:generator');
 const ServiceGenerator = require('dovecote/components/project/generator/service');
 const CommonGenerator = require('dovecote/components/project/generator/common');
 
@@ -24,36 +27,40 @@ class ProjectGenerator {
                 name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
                 script: `services/${kebabCasedName}.js`,
                 instance: service.instance || 1,
-                cwd: this.options.targetFolder
+                cwd: this.options.targetFolder,
+                key: service.key,
+                namespace: service.namespace
             };
         });
 
-        if (this.hasSockend_) {
-            services.push({
-                name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                instance: service.instance || 1,
-                cwd: this.options.targetFolder
-            });
-        }
-        return {
+        const report = {
             deployFolder: this.options.targetFolder,
             name: this.data.name,
             owner: this.data.owner,
             services
         };
+
+        if (this.sockend_) {
+            report.sockend = {
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
+                script: `services/sockend.js`,
+                cwd: this.options.targetFolder,
+                namespace: this.sockend_.namespace
+            };
+        }
+
+        return report;
     }
 
 
     run() {
+        debug(`Start generating ${this.data.name}...`);
         return this.
             createTargetFolder().
-            then(() => Promise.all([
-                this.generateCommonFiles(),
-                this.generateServices()
-            ])).
+            then(() => this.generateServices()).
+            then(() => this.generateCommonFiles()).
             then(() => this.generateSockendServiceIfNeeded()).
-            then(() => this.symlinkNodeModules()).
+            then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
 
@@ -61,7 +68,12 @@ class ProjectGenerator {
     createTargetFolder() {
         return new Promise((resolve, reject) => {
             mkdirp(this.options.targetFolder + '/services', (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot create target folder: ${this.options.targetFolder}`);
+                    return reject(err);
+                }
+
+                debug(`Created target folder: ${this.options.targetFolder}`);
                 resolve();
             });
         })
@@ -69,26 +81,32 @@ class ProjectGenerator {
 
 
     generateCommonFiles() {
-        const generator = new CommonGenerator(this.data, this.options);
+        debug(`Generating common files...`);
+        const requiredModules = this.getRequiredModules();
+        const generator = new CommonGenerator(this.data, this.options, requiredModules);
         return generator.run();
     }
 
 
     generateServices() {
-        const jobs = this.data.services.map((service) => {
-            const generator = new ServiceGenerator(service, this.data.multicastIP_, this.options);
-            return generator.run();
+        debug(`Generating services...`);
+        this.serviceGenerators = this.data.services.map((service) => {
+            return new ServiceGenerator(service, this.data.multicastIP_, this.options);
         });
 
-        return Promise.all(jobs);
+        return Promise.all(this.serviceGenerators.map(gen => gen.run()));
     }
 
 
     generateSockendServiceIfNeeded() {
+        debug(`Checking sockend service...`);
         const components = _.flatten(this.data.services.map(service => service.components));
-        this.hasSockend_ = !!_.find(components, component => component.type == 'sockend');
+        this.sockend_ = _.find(components, component => component.type == 'sockend');
 
-        if (!this.hasSockend_) return Promise.resolve();
+        if (!this.sockend_) {
+            debug(`Does not have sockend, skipping...`);
+            return Promise.resolve();
+        }
 
         return Promise.all([
             this.writeSockendService(),
@@ -118,7 +136,7 @@ class ProjectGenerator {
             }
 
             app = http.createServer(handler);
-            app.listen(process.argv[2] || 5555);
+            app.listen(80);
 
             io = socketIO.listen(app);
 
@@ -129,8 +147,15 @@ class ProjectGenerator {
 
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/services/sockend.js`;
+            debug(`Creating sockend service: ${path}`);
+
             fs.writeFile(path, content, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot create sockend service: ${path}`, err);
+                    return reject(err);
+                }
+
+                debug(`Created sockend service: ${path}`);
                 resolve();
             })
         });
@@ -139,51 +164,55 @@ class ProjectGenerator {
 
     writeSockendPM2() {
         return new Promise((resolve, reject) => {
-            const path = `${this.options.targetFolder}/${_.kebabCase(this.data.name)}.json`;
-            const config = require(path);
+            const path_ = path.resolve(process.cwd(), `${this.options.targetFolder}/pm2.json`);
+            const config = require(path_);
+            debug(`Updating pm2 configuration for sockend: ${path_}`);
 
             config.apps.push({
                 name: `${this.data.owner._id}-${this.data.name}-sockend`,
-                script: `services/sockend.js`,
-                watch: true
+                script: `services/sockend.js`
             });
 
-            fs.writeFile(path, JSON.stringify(config, null, 4), (err) => {
-                if (err) return reject(err);
+            fs.writeFile(path_, JSON.stringify(config, null, 4), (err) => {
+                if (err) {
+                    debug(`Could not pm2 config: ${path_}`, err);
+                    return reject(err);
+                }
+
+                debug(`Updated pm2 configuration for sockend: ${path_}`);
                 resolve();
             });
         });
     }
 
 
-    symlinkNodeModules() {
-        return this
-            .createNodeModules()
-            .then(() => Promise.all([
-                this.symlinkNodeModule('cote', '../../../../dovecote/node_modules/cote'),
-                this.symlinkNodeModule('socket.io', '../../../../dovecote/node_modules/socket.io')
-            ]));
+    getRequiredModules() {
+        let modulesObj = {};
+
+        this.serviceGenerators.forEach((generator) => {
+            modulesObj = _.assign(modulesObj, generator.parseResults.requiredModules);
+        });
+
+        return _.keys(modulesObj);
     }
 
 
-    symlinkNodeModule(packageName, path) {
-        return new Promise((resolve, reject) => {
-            const target = `${this.options.targetFolder}/node_modules/${packageName}`;
-            fs.symlink(path, target, (err) => {
-                if (err) return reject(err);
+    runNpmInstall() {
+        debug('Try to run npm install, will check required modules first...');
+        return new Promise((resolve ,reject) => {
+            const cmd = `npm install`;
+            debug(`Executing ${cmd}`);
+
+            exec(cmd, { cwd: this.options.targetFolder }, (err) => {
+                if (err) {
+                    debug(`Could not execute npm install`, err);
+                    return reject(err);
+                }
+
+                debug(`Executed npm install`);
                 resolve();
             });
         });
-    }
-
-
-    createNodeModules() {
-        return new Promise((resolve, reject) => {
-            mkdirp(this.options.targetFolder + '/node_modules', (err) => {
-                if (err) return reject(err);
-                resolve();
-            });
-        })
     }
 }
 

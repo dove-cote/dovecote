@@ -11,7 +11,7 @@ const MulticastService = require('dovecote/components/multicast/service');
 const ServiceService = require('dovecote/components/service/service');
 const APIError = require('dovecote/lib/apierror');
 const ProjectGenerator = require('dovecote/components/project/generator');
-const ProjectManager = require('dovecote/components/project/manager');
+const DockerService = require('dovecote/components/docker/service');
 
 
 
@@ -100,13 +100,13 @@ module.exports.save = function(projectId, rawProject) {
  */
 function stopProject(project) {
     debug(`Terminating project ${project._id}`);
-    const deployedServiceNames = _.map(project.deployedServices, deployedService => deployedService.name);
-    return ProjectManager
-        .terminateList(deployedServiceNames)
+    const containerId = project.deploy && project.deploy.container && project.deploy.container.id;
+    return DockerService
+        .terminate(containerId)
         .then(() => {
             debug(`Setting ${project._id}'s state as "terminated"`);
             project.state = 'terminated';
-            project.deployedServices = undefined;
+            project.deploy = undefined;
             return project.save();
         });
 }
@@ -160,19 +160,15 @@ module.exports.deploy = function(projectId, ownerId) {
                     return generator.run();
                 })
                 .then(response => {
-                    const deployedServices = _.map(response.services, service => {
-                        return {
-                            name: service.name,
-                            script: service.script,
-                            instance: service.instance,
-                            cwd: service.cwd
-                        }
-                    });
-
-                    return ProjectManager
-                        .run(deployedServices)
-                        .then(() => {
-                            project.deployedServices = deployedServices;
+                    const sourceDir = path.resolve(process.cwd(), response.deployFolder);
+                    return DockerService
+                        .run(sourceDir, ownerId)
+                        .then(container => {
+                            project.deploy = {
+                                services: response.services,
+                                container: container,
+                                sockend: response.sockend
+                            }
                             project.state = 'running';
                             return project.save();
                         })

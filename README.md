@@ -13,6 +13,14 @@ Installing
 email: test@dove-cote.co, password: asdf123
 
 
+Configuration
+--------------
+* DOCKER_CERT_DIR<br>
+In order to connect secure docker machines, you must set the environment variable `DOCKER_CERT_DIR` as your folder path of the credentials `ca.pem, cert.pem, key.pem`.
+* DOCKER_NODE_VERSION<br>
+By default dovecote comes with `node 4.2.2`. You can set other versions by changing `DOCKER_NODE_VERSION`.
+
+
 Development
 -----------
 
@@ -25,7 +33,7 @@ Access through http://localhost:3000 and it will proxy requests to backend if it
 
 Production
 ----------
-Generate the minified bundle using npm run fe_build. Then run `npm production_start`
+Generate the minified bundle using npm run fe_build. Then run `npm run production_start`
 
 ```
 npm run fe_build

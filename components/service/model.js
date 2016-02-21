@@ -13,9 +13,10 @@ const serviceSchema = new Schema({
     components: [{type: Schema.Types.ObjectId, ref: 'Component'}],
     code: {type: String, maxlength: maxCodeLength},
     meta: {type: Schema.Types.Mixed},
-    key: {type: String, require: true, unique: true}
+    key: {type: String, default: ''},
+    uniqueKey: {type: String, require: true, unique: true}
 }, {timestamps: true});
 
-serviceSchema.index({ key: 1}, { unique: true });
+serviceSchema.index({ uniqueKey: 1}, { unique: true });
 
 module.exports = mongoose.model('Service', serviceSchema);

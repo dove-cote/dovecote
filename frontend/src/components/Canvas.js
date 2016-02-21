@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import {default as UUID} from "node-uuid";
 
 import Service from './Service';
 import PromptDialog from './PromptDialog';
+import EdgeCanvas from './EdgeCanvas';
 import styles from './Canvas.module.css';
 
 var Canvas = React.createClass({
@@ -11,8 +13,19 @@ var Canvas = React.createClass({
             draggingObjectIndex: null,
             startPoint: null,
             selectedComponent: null,
-            showComponentCreationDialog: false
+            showComponentCreationDialog: false,
+            showEdgeCanvas: false
         };
+    },
+
+    componentWillMount() {
+        this.componentRefs = {};
+    },
+
+    componentDidMount() {
+        this.setState({
+            showEdgeCanvas: true
+        });
     },
 
     getMouseCoords(event) {
@@ -44,6 +57,10 @@ var Canvas = React.createClass({
     },
 
     startDrag(index, event) {
+        if (event.target.classList.contains('connector')) {
+            return;
+        }
+
         let service = this.props.project.services[index];
         let client = this.getMouseCoords(event);
 
@@ -121,6 +138,46 @@ var Canvas = React.createClass({
         });
     },
 
+    onRenderComponent(id, domRef) {
+        if (domRef) {
+            this.componentRefs[id] = domRef;
+        }
+    },
+
+    onConnectorDrawingStarted(serviceIndex, componentIndex) {
+        let {project} = this.props;
+
+        let componentId = (
+            project
+                .services[serviceIndex]
+                .components[componentIndex]
+                ._id
+        );
+        
+        this.setState({
+            connectingComponentId: componentId
+        });
+    },
+
+    onConnectorDropped(droppedComponentId) {
+        let {connectingComponentId} = this.state;
+            
+        if (droppedComponentId) {
+            let uuid = UUID.v4().substr(5);
+        
+            this.props.store.connectComponents(
+                this.props.project._id,
+                connectingComponentId,
+                droppedComponentId,
+                `link-${uuid}`
+            );
+        }
+
+        this.setState({
+            connectingComponentId: null
+        });
+    },
+
     render() {
         let {project} = this.props;
         return (
@@ -128,16 +185,33 @@ var Canvas = React.createClass({
                  ref={(ref) => this.canvasElement = ref}
                  onMouseMove={this.onMouseMove}
                  onMouseUp={this.stopDrag}>
+
+                 {this.state.showEdgeCanvas && 
+                    <EdgeCanvas 
+                        project={project}
+                        store={this.props.store}
+                        componentRefs={this.componentRefs} 
+                        connectingComponentId={this.state.connectingComponentId}
+                        onConnectorDropped={this.onConnectorDropped}
+                        services={project.services} />
+                 };
+                 
                  {project.services.map((service, index) =>
-                    <Service service={service}
-                                 isTarget={this.state.targetComponent === index}
-                                 onMouseOver={this.setTargetComponent.bind(this, index)}
-                                 onMouseLeave={this.clearTargetComponent.bind(this, index)}
-                                 serviceId={index}
-                                 store={this.props.store}
-                                 projectId={this.props.project._id}
-                                 onMouseUp={this.dropComponent.bind(this, index)}
-                             onMouseDown={this.startDrag.bind(this, index)}/>)}
+                    <Service 
+                        service={service}
+                        serviceIndex={index}
+                        isTarget={this.state.targetComponent === index}
+                        onMouseOver={this.setTargetComponent.bind(this, index)}
+                        onMouseLeave={this.clearTargetComponent.bind(this, index)}
+                        serviceId={index}
+                        store={this.props.store}
+                        onRenderComponent={this.onRenderComponent}
+                        projectId={this.props.project._id}
+                        onMouseUp={this.dropComponent.bind(this, index)}
+                        onMouseDown={this.startDrag.bind(this, index)}
+                        key={index}
+                        onConnectorDrawingStarted={this.onConnectorDrawingStarted} />)}
+
                 <PromptDialog
                     title="Enter a component name"
                     isOpen={this.state.showComponentCreationDialog}

@@ -2,20 +2,24 @@
 
 const fs = require('fs');
 const _ = require('lodash');
+const debug = require('debug')('dovecote:components:project:generator:common');
 
 
 class CommonGenerator {
-    constructor(projectData, options) {
+    constructor(projectData, options, requiredModules) {
         this.data = projectData;
         this.options = options;
+        this.requiredModules = requiredModules;
     }
 
 
     run() {
+        debug(`Generating common files...`);
+
         const jobs = [
             this.write('index.html', this.generateIndex()),
             this.write('package.json', this.generatePackageJson()),
-            this.write(`${_.kebabCase(this.data.name)}.json`, this.generatePM2Config())
+            this.write(`pm2.json`, this.generatePM2Config())
         ];
 
         return Promise.all(jobs);
@@ -25,8 +29,15 @@ class CommonGenerator {
     write(fileName, content) {
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/${fileName}`;
+            debug(`Writing ${fileName}...`);
+
             fs.writeFile(path, content, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot write file: ${fileName}`, err);
+                    return reject(err);
+                }
+
+                debug(`Created file: ${fileName}`);
                 resolve();
             })
         });
@@ -77,6 +88,10 @@ class CommonGenerator {
             }
         };
 
+        this.requiredModules.forEach((moduleName) => {
+            content.dependencies[moduleName] = '*';
+        });
+
         return JSON.stringify(content, null, 4);
     }
 
@@ -89,7 +104,8 @@ class CommonGenerator {
             return {
                 name: `${this.data.owner._id}-${this.data.name}-${kebabCasedName}`,
                 script: `services/${kebabCasedName}.js`,
-                watch: true
+                max_memory_restart: '50M',
+                instace: service.instace
             };
         });
 

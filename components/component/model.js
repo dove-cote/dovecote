@@ -19,12 +19,13 @@ const componentSchema = new Schema({
     type: {type: String, enum: types},
     namespace: {type: String},
     external: {type: Boolean, default: false},
-    key: {type: String, require: true, unique: true}
+    key: {type: String, default: ''},
+    uniqueKey: {type: String, require: true, unique: true}
 }, {timestamps: true});
 
 
 componentSchema.statics.ComponentTypes = types;
-componentSchema.index({ key: 1}, { unique: true });
+componentSchema.index({ uniqueKey: 1}, { unique: true });
 
 
 module.exports = mongoose.model('Component', componentSchema);

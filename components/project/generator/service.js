@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const fs = require('fs');
+const debug = require('debug')('dovecote:components:project:generator:service');
 const CodeParser = require('dovecote/components/service/codeparser');
 
 
@@ -15,6 +16,8 @@ class ServiceGenerator {
 
 
     run() {
+        debug(`Generating service: ${this.data.name}`);
+
         return this
             .parseCode()
             .then(() => Promise.all([
@@ -26,12 +29,15 @@ class ServiceGenerator {
 
     parseCode() {
         return new Promise((resolve, reject) => {
+            debug(`Parsing service code: ${this.data.name}`);
             const codeParser = new CodeParser(this.data.code);
 
             try {
                 this.parseResults = codeParser.run();
+                debug(`Parsed service code: ${this.data.name}`);
                 resolve();
             } catch(err) {
+                debug(`Cannot parse service code: ${this.data.name}`, err);
                 reject(err);
             }
         });
@@ -41,8 +47,15 @@ class ServiceGenerator {
     writeOriginal() {
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/services/${this.name}-original.js`;
+            debug(`Writing original service code: ${this.name}`);
+
             fs.writeFile(path, this.data.code, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Writing original service code: ${this.name}`);
+                    return reject(err);
+                }
+
+                debug(`Created original service code: ${this.name}`);
                 resolve();
             })
         });
@@ -50,6 +63,7 @@ class ServiceGenerator {
 
 
     generateAndWrite() {
+        debug(`Generating service code: ${this.name}`);
         let code = this.template_header();
         code += indent(2);
 
@@ -59,11 +73,17 @@ class ServiceGenerator {
         });
 
         code += this.template_footer() + indent(1);
+        debug(`Generated, now will try to save it: ${this.name}`);
 
         return new Promise((resolve, reject) => {
             const path = `${this.options.targetFolder}/services/${this.name}.js`;
             fs.writeFile(path, code, (err) => {
-                if (err) return reject(err);
+                if (err) {
+                    debug(`Cannot save service code: ${this.name}`, err);
+                    return reject(err);
+                }
+
+                debug(`Saved service code: ${this.name}`);
                 resolve();
             })
         });
@@ -88,12 +108,14 @@ class ServiceGenerator {
 
     template_requester(data) {
         const options = {
-            name: data.name,
-            key: _.kebabCase(data.name)
+            name: data.name
         };
 
         if (data.external || data.namespace)
             options.namespace = data.namespace;
+
+        if (data.name)
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 
@@ -111,6 +133,9 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
+        if (data.name)
+            options.key = _.kebabCase(data.name);
+
         const optionsStr = JSON.stringify(options, null, 4);
 
         return `var ${camelCasedName} = new cote.Responder(${optionsStr});`;
@@ -125,6 +150,9 @@ class ServiceGenerator {
         if (data.external || data.namespace)
             options.namespace = data.namespace;
 
+        if (data.name)
+            options.key = _.kebabCase(data.name);
+
         const optionsStr = JSON.stringify(options, null, 4);
 
         return `var ${_.camelCase(data.name)} = new cote.Publisher(${optionsStr});`;
@@ -138,6 +166,9 @@ class ServiceGenerator {
 
         if (data.external || data.namespace)
             options.namespace = data.namespace;
+
+        if (data.name)
+            options.key = _.kebabCase(data.name);
 
         const optionsStr = JSON.stringify(options, null, 4);
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
 import cx from 'classnames';
+import _ from 'lodash';
 
 import styles from './PromptDialog.module.css';
 
@@ -9,6 +10,14 @@ var PromptDialog = React.createClass({
         return {
             text: null
         };
+    },
+
+    componentDidUpdate() {
+      _.defer(() => {
+        if (this.inputElement) {
+          this.inputElement.focus();
+        }
+      }); 
     },
 
     onSubmit(event) {

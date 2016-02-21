@@ -246,6 +246,40 @@ const addService = (projectId, name, position = {x: 100, y: 100}) => {
     // triggerChange();
 };
 
+const removeService = function (projectId, serviceIndex) {
+  let project = getProjectById(projectId);
+    var services = project.get('services');
+
+    project = project.set('services',
+        services.filter(function (service, i) {
+            return serviceIndex !== i;
+            // return service.get('name') !== name;
+        }));
+    updateProject(project);
+
+    saveProject(project);
+
+};
+
+const renameService = function (projectId, serviceIndex, newServiceName) {
+  let project = getProjectById(projectId);
+    var services = project.get('services');
+
+    project = project.set('services',
+        services.map(function (service, i) {
+            if (serviceIndex !== i) {
+                return service;
+            } else {
+                return service.set('name', newServiceName);
+            }
+
+        }));
+    updateProject(project);
+    saveProject(project);
+
+
+};
+
 const addComponent = (projectId, serviceIndex, component) => {
     let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
         return oldComponents.push(fromJS(component));
@@ -255,6 +289,97 @@ const addComponent = (projectId, serviceIndex, component) => {
     triggerChange();
 };
 
+const removeComponent = (projectId, serviceIndex, componentName) => {
+    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+        return oldComponents.filter(function (component) {
+            return component.get('name') !== componentName;
+        });
+
+    });
+
+    updateProject(project);
+    saveProject(project);
+
+    triggerChange();
+};
+
+
+const renameComponent = function (projectId, serviceIndex, componentName, newComponentName) {
+    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+        return oldComponents.map(function (component) {
+            if (component.get('name') === componentName) {
+                return component.set('name', newComponentName);
+            } else {
+                return component;
+            }
+
+        });
+
+    });
+
+    updateProject(project);
+    saveProject(project);
+
+    triggerChange();
+
+};
+
+
+const getServiceIndexByComponentId = (project, componentId) => {
+    return (
+        project.get('services')
+            .findIndex(
+                service => service.get('components').find(
+                    component => component.get('_id') === componentId
+                ) 
+            )
+    );
+}
+
+const getComponentIndexById = (project, serviceIndex, id) => {
+    return (
+        project
+            .getIn(['services', serviceIndex])
+            .get('components')
+            .findIndex(
+                component => component.get('_id') === id
+            )
+    );
+};
+
+const connectComponents = (projectId, sourceId, targetId, key) => {
+
+    let project = getProjectById(projectId);
+
+    let sourceServiceIndex = (
+        getServiceIndexByComponentId(project, sourceId)
+    );
+
+    let sourceComponentIndex = (
+        getComponentIndexById(project, sourceServiceIndex, sourceId)
+    );
+
+    let targetServiceIndex = (
+        getServiceIndexByComponentId(project, targetId)
+    );
+
+    let targetComponentIndex = (
+        getComponentIndexById(project, targetServiceIndex, targetId)
+    );
+
+    updateProject(
+        getProjectById(projectId)
+        .setIn(
+            ['services', sourceServiceIndex, 'components', sourceComponentIndex, 'key'],
+            key
+        ).setIn(
+            ['services', targetServiceIndex, 'components', targetComponentIndex, 'key'],
+            key
+        )
+    );
+
+    triggerChange();
+};
 
 var getApp = function () {
     return atom.getApp();
@@ -483,13 +608,21 @@ var store = {
 
     addCode,
     addService,
+    renameService,
+
     addComponent,
+
+    removeService,
+    removeComponent,
+    renameComponent,
+
 
     getProjectCreation,
 
     addListener,
     removeListener,
 
+    connectComponents,
     setServicePosition,
     updateProject,
 

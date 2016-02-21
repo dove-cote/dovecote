@@ -13,6 +13,11 @@ module.exports = {
                         type: 'res',
                         external: true,
                         namespace: 'addition'
+                    },
+                    {
+                        name: 'Sockend Component',
+                        type: 'sockend',
+                        namespace: 'addition'
                     }
                 ],
                 code: sources.additionServiceCode

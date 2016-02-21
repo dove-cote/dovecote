@@ -24,6 +24,11 @@ module.exports = {
                         name: 'Stock Requester',
                         type: 'req',
                         external: false
+                    },
+                    {
+                        name: 'Sockend Component',
+                        type: 'sockend',
+                        namespace: 'catalog'
                     }
                 ],
                 code: sources.catalogServiceCode

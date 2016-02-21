@@ -16,7 +16,7 @@ const projectSchema = new Schema({
     owner: {ref: 'User', required: true, type: Schema.Types.ObjectId},
     multicastIP_: String,
     state: {type: String, enum: States, default: 'terminated'},
-    deployedServices: {type: Schema.Types.Mixed},
+    deploy: {type: Schema.Types.Mixed},
     lastDeploy: Date
 }, {timestamps: true});
 
