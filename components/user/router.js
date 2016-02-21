@@ -24,7 +24,12 @@ router.post('/login', passport.authenticate('local'), function(req, res, next) {
 
 
 router.get('/logout', auth.ensureAuthentication, function(req, res) {
+
+    console.log("before logout");
+
     req.logout();
+    console.log("after logout");
+
     res.redirect('/');
 });
 

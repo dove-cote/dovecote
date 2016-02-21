@@ -154,7 +154,7 @@ var atom = {
         return _history;
     },
 
-    undo: function () {
+    undo: function (cb) {
         if (!this.canUndo()) {
             return;
         }
@@ -163,15 +163,20 @@ var atom = {
         console.log("history at", _historyPointer);
 
         this.swap(_history.get(_historyPointer), false);
+
+        cb && cb();
+
     },
 
-    redo: function () {
+    redo: function (cb) {
         if (!this.canRedo()) {
             return;
         }
 
         _historyPointer = Math.min(_historyPointer + 1, _history.count());
         this.swap(_history.get(_historyPointer), false);
+
+        cb && cb();
     },
 
     canUndo() {

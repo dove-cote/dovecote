@@ -3,6 +3,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import { browserHistory } from 'react-router'
 import URLS from '../urls';
+import store from '../store';
 
 var Register = React.createClass({
 
@@ -27,7 +28,8 @@ var Register = React.createClass({
                 this.setState({inProgress: false, error: false, errorText: null, registered: true});
                 // redirect
                 // TODO: we should autologin and redirect to dashboard.
-                // browserHistory.push('/login');
+                browserHistory.push('/projects');
+                store.fetchUser();
             }.bind(this),
             error: function (data) {
                 var errorText = '';

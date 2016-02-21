@@ -5,6 +5,7 @@ import PromptDialog from './PromptDialog';
 import Palette from './Palette';
 
 import styles from './DesignView.module.css';
+import _ from 'lodash';
 
 var Toolbar = React.createClass({
     getInitialState() {
@@ -99,8 +100,8 @@ var DesignView = React.createClass({
                 </div>
                 <div className={styles.paletteArea}>
                     <Palette data={palette}
-                             onUndo={store.undo}
-                             onRedo={store.redo}
+                             onUndo={_.partial(store.undo, this.sync)}
+                             onRedo={_.partial(store.redo, this.sync)}
                              canUndo={store.canUndo()}
                              canRedo={store.canRedo()}
                              onClearSelection={this.clearSelection}
