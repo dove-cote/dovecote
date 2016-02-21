@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 
 import Portal from 'react-portal';
 import AceEditor from 'react-ace';
@@ -10,9 +11,11 @@ import 'brace/theme/tomorrow_night';
 import styles from './Service.module.css';
 import Icon from './Icon';
 
+require('./Service.less');
 
-var ServiceItem = ({component}) => (
-    <li className={styles.component}>
+var ServiceItem = ({component, handleRemove}) => (
+    <li className={classNames(styles.component, 'service-item')}>
+      <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>
         <Icon icon={component.type} />
         <div className={styles.componentLabel}>{component.name}</div>
     </li>
@@ -61,6 +64,22 @@ var Service = React.createClass({
         console.log('updating code');
     },
 
+    handleRemoveService() {
+        var shouldRemove = window.confirm('Do you want to remove this service?');
+        if (shouldRemove) {
+            this.props.store.removeService(this.props.projectId, this.props.serviceId);
+        } else {
+
+        }
+    },
+
+    handleRemoveServiceItem(componentName) {
+        var shouldRemove = window.confirm('Do you want to remove this component?');
+        if (shouldRemove) {
+        this.props.store.removeComponent(this.props.projectId, this.props.serviceId, componentName);
+        }
+    },
+
     onMouseOver(event) {
         this.setState({
             isCurrent: true
@@ -87,9 +106,10 @@ var Service = React.createClass({
         );
 
         return (
-            <div className={classNames({
+            <div className={classNames('service', {
                 [styles.service]: true,
-                [styles.currentService]: this.state.isCurrent
+                [styles.currentService]: this.state.isCurrent,
+
             })}
                  style={style}
                  onMouseOver={this.onMouseOver}
@@ -97,8 +117,9 @@ var Service = React.createClass({
                  onMouseLeave={this.props.onMouseLeave}
                  onMouseDown={this.props.onMouseDown}
                  onMouseUp={this.props.onMouseUp}>
+      <button className='pure-button remove-service' onClick={this.handleRemoveService}>X</button>
 
-                {this.state.showEditor && (
+                              {this.state.showEditor && (
                     <CodeEditor value={code}
                                 left={x}
                                 top={y}
@@ -111,6 +132,7 @@ var Service = React.createClass({
 
                 <ul className={styles.componentList}>
                     {components.map((component, index) => <ServiceItem key={index}
+                                                                       handleRemove={_.partial(this.handleRemoveServiceItem, component.name)}
                                                                        component={component} />)}
                     {showPlaceholder && (
                         <div className={styles.componentPlaceholder}></div>

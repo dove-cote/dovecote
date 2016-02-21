@@ -246,9 +246,35 @@ const addService = (projectId, name, position = {x: 100, y: 100}) => {
     // triggerChange();
 };
 
+const removeService = function (projectId, serviceIndex) {
+  let project = getProjectById(projectId);
+    var services = project.get('services');
+
+    project = project.set('services',
+        services.filter(function (service, i) {
+            return serviceIndex !== i;
+            // return service.get('name') !== name;
+        }));
+    updateProject(project);
+
+
+};
+
 const addComponent = (projectId, serviceIndex, component) => {
     let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
         return oldComponents.push(fromJS(component));
+    });
+
+    updateProject(project);
+    triggerChange();
+};
+
+const removeComponent = (projectId, serviceIndex, componentName) => {
+    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+        return oldComponents.filter(function (component) {
+            return component.get('name') !== componentName;
+        });
+
     });
 
     updateProject(project);
@@ -484,6 +510,9 @@ var store = {
     addCode,
     addService,
     addComponent,
+
+    removeService,
+    removeComponent,
 
     getProjectCreation,
 
