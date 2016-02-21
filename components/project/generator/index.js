@@ -57,6 +57,7 @@ class ProjectGenerator {
             ])).
             then(() => this.generateSockendServiceIfNeeded()).
             then(() => this.symlinkNodeModules()).
+            then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
 
@@ -225,6 +226,36 @@ class ProjectGenerator {
     }
 
 
+    runNpmInstall() {
+        debug('Try to run npm install, will check required modules first...');
+        return new Promise((resolve ,reject) => {
+            let modulesObj = {};
+
+            this.serviceGenerators.forEach((generator) => {
+                modulesObj = _.assign(modulesObj, generator.parseResults.requiredModules);
+            });
+
+            const modules = _.keys(modulesObj);
+
+            if (modules.length == 0) {
+                debug(`No extra modules required, skipping npm install`);
+                return resolve();
+            }
+
+            const cmd = `npm install ${modules.join(' ')} --save`;
+            debug(`Executing ${cmd}`);
+
+            exec(cmd, { cwd: this.options.targetFolder }, (err) => {
+                if (err) {
+                    debug(`Could not execute npm install`, err);
+                    return reject(err);
+                }
+
+                debug(`Executed npm install`);
+                resolve();
+            });
+        });
+    }
 }
 
 module.exports = ProjectGenerator;

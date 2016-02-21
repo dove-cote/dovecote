@@ -15,9 +15,13 @@ class CodeParser {
     run() {
         // Will check syntax immediately
         this.script = new vm.Script(this.code, this.options);
+        const requiredModules = {};
 
         const sandbox = {
-            module: {exports: null}
+            module: {exports: null},
+            require: (moduleName) => {
+                requiredModules[moduleName] = true;
+            }
         };
         const context = new vm.createContext(sandbox);
         this.script.runInContext(context);
@@ -28,6 +32,7 @@ class CodeParser {
         this.dependencies = CodeParser.getDependencies(sandbox.module.exports.toString());
 
         return {
+            requiredModules,
             dependencies: this.dependencies,
             responseTos: this.getResponseTos()
         };
@@ -48,7 +53,8 @@ class CodeParser {
 
     getResponseTos() {
         const sandbox = {
-            module: {exports: null}
+            module: {exports: null},
+            require: () => {}
         };
 
         this.dependencies.forEach((dependency) => {
