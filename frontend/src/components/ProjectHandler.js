@@ -32,8 +32,7 @@ var ProjectHandler = React.createClass({
     fillReadonlyServiceFields(currentProject, receivedProject) {
         let project = currentProject.toJS();
         let mutated = false;
-        console.log('foo')
-
+        
         project.services.forEach((service, index) => {
             let receivedService = receivedProject.services[index];
             if (!service._id) {
