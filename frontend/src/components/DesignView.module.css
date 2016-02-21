@@ -4,13 +4,13 @@
 }
 
 .canvasArea {
-    width: calc(100% - 140px);
-    height: calc(100% - 50px);
+    width: calc(100% - 100px);
+    height: calc(100% - 60px);
     float: left;
 }
 
 .paletteArea {
-    width: 140px;
+    width: 100px;
     float: left;
 }
 

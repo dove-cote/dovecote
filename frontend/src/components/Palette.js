@@ -71,14 +71,26 @@ var PaletteItem = React.createClass({
 var Palette = React.createClass({
 
     render() {
+        let {canUndo, canRedo, onUndo, onRedo} = this.props;
+
         return (
             <div className={styles.palette}>
-
-              <button onClick={this.props.onUndo} disabled={!this.props.canUndo} className='pure-button button-xsmall' style={{fontStyle: this.props.canUndo ? 'normal' : 'italic', color: this.props.canUndo ? 'black' : 'grey'}}>Undo</button>
-              <button onClick={this.props.onRedo} disabled={!this.props.canRedo} className='button-xsmall pure-button ' style={{color: this.props.canRedo ? 'black' : 'grey'}}>Redo</button>
-
-
-
+                <div className={styles.history}>
+                    <a onClick={onUndo} 
+                       disabled={!canUndo}
+                       className='pure-button button-xsmall' 
+                       style={{color: canUndo ? 'black' : 'grey',
+                               marginRight: 3}}>
+                        <Icon icon='undo' />
+                    </a>
+                    <a onClick={onRedo}
+                       disabled={!canRedo}
+                       className='button-xsmall pure-button' 
+                       style={{color: canRedo ? 'black' : 'grey'}}>
+                       <Icon icon='redo' />
+                    </a>
+                </div>
+                <div className={styles.components}>
                 {this.props.data.map(
                     (item) => (
                         <PaletteItem
@@ -86,6 +98,7 @@ var Palette = React.createClass({
                             onComponentSelect={this.props.onComponentSelect}
                             item={item} />
                     ))}
+                </div>
             </div>
         );
     }

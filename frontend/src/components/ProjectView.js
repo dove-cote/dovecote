@@ -9,18 +9,21 @@ import { browserHistory } from 'react-router';
 
 
 var ProjectView = React.createClass({
-    backToProjects(event) {
-        event.preventDefault();
-
-        browserHistory.push('/projects/');
-    },
-
     render() {
         var {projectId, store} = this.props;
         return (
             <div className={styles.projectView}>
                 <div className={styles.sidebar}>
-                    <a onClick={this.backToProjects}>Back to Projects</a>
+                    <div className={styles.verticalTabs}>
+                        <a href="#" 
+                           className={`${styles.verticalTabTitle} ${styles.designerTab}`}>
+                            Designer
+                        </a>
+                        <a href="#"
+                            className={`${styles.verticalTabTitle} ${styles.monitorTab}`}>
+                            Monitor
+                        </a>
+                    </div>
                 </div>
                 <div className={styles.designArea}>
                     <DesignView store={store} 

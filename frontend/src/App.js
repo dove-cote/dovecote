@@ -17,7 +17,7 @@ var UserInfo = React.createClass({
         var {email, username} = this.props.user;
 
         return <div className="">
-            {email ? <div>logged in as: {username} <a className='pure-button' href='/logout'>Logout</a></div>:<div>Not logged in <a href='/login'>Login</a>  </div>}
+            {email ? <div>logged in as: {username} <a href='/logout'>Logout</a></div>:<div>Not logged in <a href='/login'>Login</a>  </div>}
         </div>;
 
     }
@@ -29,11 +29,16 @@ var Header = React.createClass({
 
     render() {
         var user = store.getUser().toJS();
-        return <header className='top-header'>
-            <h1>DoveCote</h1>
-              {user.initialized && <div className='user-container'><UserInfo user={user}/></div>}
-        </header>;
-
+        return (
+          <header className='top-header'>
+            <img src='/img/logo.png' className='logo' />
+            {user.initialized && (
+              <div className='user-container'>
+                <UserInfo user={user} />
+              </div>
+            )}
+          </header>
+        );
     }
 
 });

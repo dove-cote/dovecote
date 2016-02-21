@@ -1,16 +1,37 @@
 .projectView {
 	overflow: hidden;
-	height: 100%;
+	height: calc(100% - 50px);
     width: 100%;
 }
 
 .sidebar {
 	float: left;
-	width: 150px;
+	width: 40px;
 }
 
 .designArea {
-	width: calc(100% - 175px);
-	height: calc(100% - 50px);
+	width: calc(100% - 60px);
+	height: 100%;
 	float: left;
+	padding-top: 5px;
+}
+
+.verticalTabs {
+	width: 30px;
+	display: inline-block;
+}
+
+.verticalTabTitle {
+	transform: rotate(-90deg);
+	transform-origin: top left;
+	position: absolute;
+}
+
+.designerTab {
+	top: 125px;
+	left: 12px;
+}
+.monitorTab {
+	top: 195px;
+	left: 12px;
 }

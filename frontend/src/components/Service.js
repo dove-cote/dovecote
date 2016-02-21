@@ -73,7 +73,6 @@ var Service = React.createClass({
         this.setState({
             isCurrent: false
         });
-
     },
 
     render() {

@@ -3,22 +3,39 @@
 }
 
 .top-header {
-  background: lightyellow;
-  padding-left: 25px;
-  padding-right: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  background: #5ab099;
+  padding: 5px;
+  height: 35px;
+  border-bottom: 5px solid #fff;
 
+  .logo {
+    margin-left: 10px;
+    height: 30px;
+  }
 
   h1 {
     display: inline-block;
     margin: 0;
+    font-weight: normal;
   }
 
   .user-container {
     float: right;
-    // background: red;
     margin-top: 10px;
+    padding-right: 10px;
+    font-size: 0.9em;
+    color: #316054;
+
+    a {
+      color: #fff;
+      text-decoration: inherit;
+      margin-left: 10px;
+
+      &:hover {
+        color: #274f45;
+        text-decoration: underline;
+      }
+    }
   }
 
 }

@@ -1,12 +1,12 @@
 .paletteItem {
-    margin: 15px 0 0;
-    border: 2px solid #cbcbcb;
+    margin: 10px 0 0;
+    border: 0px solid #cbcbcb;
     background: #f6f6f6;
     border-radius: 5px;
     padding: 10px;
-    font-size: 0.9em;
+    font-size: 0.7em;
     cursor: move;
-    width: 80px;
+    width: 70px;
     text-align: center;
     display: inline-block;
 }
@@ -18,10 +18,18 @@
     -webkit-user-select: none;   
     -moz-user-select: none;      
     user-select: none;
+
+    /*
+    I'm convertig this component to absolute because of
+    side offects on the toolbar
+    */
+    position: absolute;
+    width: 100px;
+    margin-left: 10px;
 }
 
 .paletteItemName {
-    margin-left: 5px;
+    display: block;
 }
 
 .ghostItem {
@@ -32,4 +40,10 @@
     margin: 0;
     top: 0;
     transform: scale(0.9);
+}
+
+.components {
+    margin-top: 10px;
+    border-top: 1px solid #ededed;
+    padding-top: 5px;
 }
