@@ -1,12 +1,12 @@
 .paletteItem {
-    margin: 10px 0 0;
+    margin: 7px 0 0;
     border: 0px solid #cbcbcb;
     background: #f6f6f6;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 10px;
     font-size: 0.7em;
     cursor: move;
-    width: 70px;
+    width: 80px;
     text-align: center;
     display: inline-block;
 }
