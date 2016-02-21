@@ -4,6 +4,8 @@ const {fromJS, Map, List} = Immutable;
 import $ from 'jquery';
 import URLS from './urls';
 
+import {exportsLine} from './project_helpers';
+
 var services = [
         {
             name: "Stock Service",
@@ -223,8 +225,14 @@ const snapshotState = function () {
 const addCode = function (projectId, serviceId, code, pushToHistory=true) {
     var project = getProjectById(projectId);
 
+    var expectedLine = exportsLine(project.getIn(['services', serviceId]));
+    // debugger
+    // console.log("code is", code, "exportsline is" , exportsLine)
+    var isValidCode = (code.indexOf(expectedLine) > -1);
 
-    updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+    if (isValidCode) {
+       updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+    }
 
 };
 
@@ -232,12 +240,11 @@ const addService = (projectId, name, position = {x: 100, y: 100}) => {
     let project = getProjectById(projectId);
     var services = project.get('services');
 
-// debugger
     project = project.set('services',
                 services.push(fromJS({
                     name,
                     instance: 1,
-                    code: '',
+                    code: 'module.exports = function () {\n  // your code goes here!\n}',
                     meta: { position },
                     components: []})));
 
@@ -281,21 +288,37 @@ const renameService = function (projectId, serviceIndex, newServiceName) {
 };
 
 const addComponent = (projectId, serviceIndex, component) => {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.push(fromJS(component));
     });
 
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+
+    let project = oldProject.setIn(['services', serviceIndex], newService);
+
     updateProject(project);
+    saveProject(project);
+
+    // TODO: do we need save project here?
     triggerChange();
 };
 
 const removeComponent = (projectId, serviceIndex, componentName) => {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.filter(function (component) {
             return component.get('name') !== componentName;
         });
 
     });
+
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+    let project = oldProject.setIn(['services', serviceIndex], newService);
 
     updateProject(project);
     saveProject(project);
@@ -305,7 +328,11 @@ const removeComponent = (projectId, serviceIndex, componentName) => {
 
 
 const renameComponent = function (projectId, serviceIndex, componentName, newComponentName) {
-    let project = getProjectById(projectId).updateIn(['services', serviceIndex, 'components'], function (oldComponents) {
+
+    let oldProject = getProjectById(projectId);
+    let oldService = oldProject.getIn(['services', serviceIndex]);
+
+    let tmpService = oldService.update('components', function (oldComponents) {
         return oldComponents.map(function (component) {
             if (component.get('name') === componentName) {
                 return component.set('name', newComponentName);
@@ -316,6 +343,9 @@ const renameComponent = function (projectId, serviceIndex, componentName, newCom
         });
 
     });
+
+    let newService = tmpService.set('code', tmpService.get('code').replace(exportsLine(oldService), exportsLine(tmpService)));
+    let project = oldProject.setIn(['services', serviceIndex], newService);
 
     updateProject(project);
     saveProject(project);
