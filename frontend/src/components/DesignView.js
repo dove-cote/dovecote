@@ -29,12 +29,12 @@ var Toolbar = React.createClass({
 
     render() {
         return (
-            <div>
+            <div className='bottom-toolbar'>
                 <PromptDialog isOpen={this.state.showDialog}
                               onSubmit={this.newService}
                               onClose={this.toggleDialog}
                               title="Service name?" />
-                <button onClick={this.toggleDialog}>Add a Service</button>
+                <button className='pure-button pure-button-primary' onClick={this.toggleDialog}>+ Add a Service</button>
             </div>
         );
 
@@ -84,8 +84,8 @@ var DesignView = React.createClass({
 
         if (!project) {
             return <div>Loading</div>;
-        } 
-        
+        }
+
         project = project.toJS();
 
         return (

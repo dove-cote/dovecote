@@ -4,6 +4,8 @@ import ProjectView from './components/ProjectView';
 import store from './store';
 import styles from './App.module.css';
 
+require('./App.less');
+
 window.__STORE__ = store;
 
 
@@ -14,8 +16,22 @@ var UserInfo = React.createClass({
         var {email, username} = this.props.user;
 
         return <div className="">
-            {email ? <div>logged in as: {username} <a href='/logout'>Logout</a></div>:<div>Not logged in <a href='/login'>Login</a>  </div>}
+            {email ? <div>logged in as: {username} <a className='pure-button' href='/logout'>Logout</a></div>:<div>Not logged in <a href='/login'>Login</a>  </div>}
         </div>;
+
+    }
+
+});
+
+
+var Header = React.createClass({
+
+    render() {
+        var user = store.getUser().toJS();
+        return <header className='top-header'>
+            <h1>DoveCote</h1>
+              {user.initialized && <div className='user-container'><UserInfo user={user}/></div>}
+        </header>;
 
     }
 
@@ -41,11 +57,11 @@ var App = React.createClass({
 	},
 
     render() {
-        var user = store.getUser().toJS();
 
     	return (
             <div className={styles.container}>
-              {user.initialized && <UserInfo user={user}/>}
+              <Header/>
+
 
               {React.cloneElement(
               	this.props.children,

@@ -9,7 +9,7 @@
 }
 
 .designArea {
-	width: calc(100% - 150px);
-	height: 100%;
+	width: calc(100% - 175px);
+	height: calc(100% - 50px);
 	float: left;
 }

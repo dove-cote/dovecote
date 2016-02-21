@@ -48,7 +48,9 @@ module.exports = {
     },
     plugins: PLUGINS,
     module: {
-        loaders: [{
+        loaders: [
+            {test: /min\.css$/, loader: enableExtractTextPlugin ? ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!less-loader!') : 'style-loader!css-loader!postcss-loader'},
+            {
             test: /\.module\.css$/,
             loaders: [
                 'style-loader',

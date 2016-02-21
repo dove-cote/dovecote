@@ -10,11 +10,12 @@ import Projects from './components/Projects';
 import Dashboard from './components/Dashboard';
 import ProjectHandler from './components/ProjectHandler';
 import Login from './components/Login';
+import LoginOrRegister from './components/LoginOrRegister';
 import Register from './components/Register';
 import Logout from './components/Logout';
 
 
-
+require('./pure-min.css');
 
 
 
@@ -40,8 +41,8 @@ render((
     <Route path="dashboard" component={Dashboard}/>
     <Route path="projects" component={Projects}/>
     <Route path="project/:id" component={ProjectHandler}/>
-    <Route path="login" component={Login}/>
-    <Route path="register" component={Register}/>
+    <Route path="login" component={LoginOrRegister}/>
+    <Route path="register" component={LoginOrRegister}/>
     <Route path="logout" component={Logout}/>
     <Route path="*" component={NoMatch}/>
     </Route>

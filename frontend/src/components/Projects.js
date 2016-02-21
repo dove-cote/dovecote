@@ -4,6 +4,8 @@ import { browserHistory } from 'react-router';
 import _ from 'lodash';
 import PromptDialog from './PromptDialog';
 
+require('./Projects.less');
+
 var Projects = React.createClass({
 
     getInitialState() {
@@ -39,7 +41,7 @@ var Projects = React.createClass({
         const projectCreation = this.props.store.getProjectCreation().toJS();
 
         return (
-            <div className={''}>
+            <div className='projects-container'>
                 <h2>My Projects</h2>
                 {projectSummaries.inProgress ?
                     'loading' : (
@@ -53,7 +55,7 @@ var Projects = React.createClass({
                               onClose={this.toggleState.bind(this, 'showNewProjectDialog')}
                               title="Enter a project name" />
 
-                <button onClick={this.toggleState.bind(this, 'showNewProjectDialog')}>
+                <button className='pure-button pure-button-primary' onClick={this.toggleState.bind(this, 'showNewProjectDialog')}>
                     Create New Project
                 </button>
             </div>

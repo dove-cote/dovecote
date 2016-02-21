@@ -7,6 +7,7 @@ import { browserHistory } from 'react-router'
 
 var store = require('../store');
 
+require('./login.less');
 
 var Login = React.createClass({
 
@@ -33,7 +34,7 @@ var Login = React.createClass({
             success: function () {
                 this.setState({inProgress: false, error: false});
                 browserHistory.push('/projects');
-                window.location = '/projects'; // hack for now to trigger proper user data
+                // window.location = '/projects'; // hack for now to trigger proper user data
 
             }.bind(this),
             error: function () {
@@ -51,18 +52,14 @@ var Login = React.createClass({
     },
 
     render() {
-        return <div className="">
-
-        <form onSubmit={this.submitForm}>
+        return <form className='pure-form pure-form-stacked login-form' style={{width: 300}} onSubmit={this.submitForm}>
 
             <input type='email' placeholder='email' onChange={_.partial(this.handleFieldChange, 'email')}/>
             <input type='password' placeholder='Password'  onChange={_.partial(this.handleFieldChange, 'password')}/>
-            {this.state.error && <div>An error occurred!!!</div>}
+            {this.state.error && <div className='error'>Not recognized email and password combination</div>}
 
-            <button>{this.state.inProgress ? "Please wait..." : "Loginsssss"}</button>
-        </form>
-
-        </div>;
+            <button className='pure-button pure-button-primary' style={{width: '100%'}}>{this.state.inProgress ? "Please wait..." : "Login"}</button>
+        </form>;
 
     }
 
