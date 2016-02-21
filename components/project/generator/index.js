@@ -51,12 +51,9 @@ class ProjectGenerator {
         debug(`Start generating ${this.data.name}...`);
         return this.
             createTargetFolder().
-            then(() => Promise.all([
-                this.generateCommonFiles(),
-                this.generateServices()
-            ])).
+            then(() => this.generateServices()).
+            then(() => this.generateCommonFiles()).
             then(() => this.generateSockendServiceIfNeeded()).
-            then(() => this.symlinkNodeModules()).
             then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
@@ -79,7 +76,8 @@ class ProjectGenerator {
 
     generateCommonFiles() {
         debug(`Generating common files...`);
-        const generator = new CommonGenerator(this.data, this.options);
+        const requiredModules = this.getRequiredModules();
+        const generator = new CommonGenerator(this.data, this.options, requiredModules);
         return generator.run();
     }
 
@@ -183,66 +181,21 @@ class ProjectGenerator {
     }
 
 
-    symlinkNodeModules() {
-        return this
-            .createNodeModules()
-            .then(() => Promise.all([
-                this.symlinkNodeModule('cote', '../../../../dovecote/node_modules/cote'),
-                this.symlinkNodeModule('socket.io', '../../../../dovecote/node_modules/socket.io')
-            ]));
-    }
+    getRequiredModules() {
+        let modulesObj = {};
 
-
-    symlinkNodeModule(packageName, path) {
-        debug(`Creating symlink for ${packageName}`);
-        return new Promise((resolve, reject) => {
-            const target = `${this.options.targetFolder}/node_modules/${packageName}`;
-            fs.symlink(path, target, (err) => {
-                if (err) {
-                    debug(`Could not create symlink`, err);
-                    return reject(err);
-                }
-
-                debug(`Created ${packageName} symlink`);
-                resolve();
-            });
+        this.serviceGenerators.forEach((generator) => {
+            modulesObj = _.assign(modulesObj, generator.parseResults.requiredModules);
         });
-    }
 
-
-    createNodeModules() {
-        debug(`Creating node_modules folder in ${this.options.targetFolder}`);
-        return new Promise((resolve, reject) => {
-            mkdirp(this.options.targetFolder + '/node_modules', (err) => {
-                if (err) {
-                    debug(`Could not create node_modules`, err);
-                    return reject(err);
-                }
-
-                debug(`Created node_modules folder`);
-                resolve();
-            });
-        })
+        return _.keys(modulesObj);
     }
 
 
     runNpmInstall() {
         debug('Try to run npm install, will check required modules first...');
         return new Promise((resolve ,reject) => {
-            let modulesObj = {};
-
-            this.serviceGenerators.forEach((generator) => {
-                modulesObj = _.assign(modulesObj, generator.parseResults.requiredModules);
-            });
-
-            const modules = _.keys(modulesObj);
-
-            if (modules.length == 0) {
-                debug(`No extra modules required, skipping npm install`);
-                return resolve();
-            }
-
-            const cmd = `npm install ${modules.join(' ')} --save`;
+            const cmd = `npm install`;
             debug(`Executing ${cmd}`);
 
             exec(cmd, { cwd: this.options.targetFolder }, (err) => {

@@ -6,9 +6,10 @@ const debug = require('debug')('dovecote:components:project:generator:common');
 
 
 class CommonGenerator {
-    constructor(projectData, options) {
+    constructor(projectData, options, requiredModules) {
         this.data = projectData;
         this.options = options;
+        this.requiredModules = requiredModules;
     }
 
 
@@ -86,6 +87,10 @@ class CommonGenerator {
                 "socket.io": "^1.4.5"
             }
         };
+
+        this.requiredModules.forEach((moduleName) => {
+            content.dependencies[moduleName] = '*';
+        });
 
         return JSON.stringify(content, null, 4);
     }
