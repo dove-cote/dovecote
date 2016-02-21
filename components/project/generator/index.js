@@ -114,7 +114,7 @@ class ProjectGenerator {
             const config = require(path);
 
             config.apps.push({
-                name: `${this.data.name}-sockend`,
+                name: `${this.data.owner._id}-${this.data.name}-sockend`,
                 script: `services/sockend.js`,
                 watch: true
             });
