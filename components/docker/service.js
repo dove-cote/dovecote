@@ -84,9 +84,10 @@ class DockerService {
      * Run a new container with source directory and ownerId.
      * @param {string} sourceDir
      * @param {string} ownerId
+     * @param {string} projectId
      * @returns {Promise}
      */
-    run(sourceDir, ownerId) {
+    run(sourceDir, ownerId, projectId) {
         const nodeVersion = process.env.DOCKER_NODE_VERSION || '4.2.2'
 
         debug(`Creating docker container from ${sourceDir}`);
@@ -94,7 +95,9 @@ class DockerService {
             .createContainer({
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
-                    'APP=pm2.json'
+                    `APP=pm2.json`,
+                    `DOVECOTE_USER=${ownerId}`,
+                    `DOVECOTE_PROJECT=${projectId}`
                 ]
             })
             .then(container => {
@@ -104,6 +107,7 @@ class DockerService {
                     .start({
                         Binds: [`${sourceDir}:/app`],
                         PublishAllPorts: true,
+                        Links: [`mongo:mongo`]
                     })
                     .then(response2 => {
                         return container.inspect()
