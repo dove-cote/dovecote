@@ -11,11 +11,17 @@ import { browserHistory } from 'react-router';
 var ProjectView = React.createClass({
     render() {
         var {projectId, store} = this.props;
+
+
+        if (store.getProjectDeployment().get('inProgress')) {
+            return <div>Build in Progress</div>;
+        }
+
         return (
             <div className={styles.projectView}>
                 <div className={styles.sidebar}>
                     <div className={styles.verticalTabs}>
-                        <a href="#" 
+                        <a href="#"
                            className={`${styles.verticalTabTitle} ${styles.designerTab}`}>
                             Designer
                         </a>
@@ -26,7 +32,7 @@ var ProjectView = React.createClass({
                     </div>
                 </div>
                 <div className={styles.designArea}>
-                    <DesignView store={store} 
+                    <DesignView store={store}
                                 onSync={this.props.onSync}
                                 projectId={projectId} />
                 </div>

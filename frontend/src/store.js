@@ -111,7 +111,10 @@ var _app = Map({
 
     projectSummaries: initialProjectSummaries,
 
-    projectCreation: Map({inProgress: false, error: false, errorText: null})
+    projectCreation: Map({inProgress: false, error: false, errorText: null}),
+
+    projectDeployment: Map({inProgress: false, error: false, errorText: null})
+
 
 });
 
@@ -432,6 +435,7 @@ var getApp = function () {
 const getProjects = () => getApp().get('projects');
 const getProjectSummaries = () => getApp().get('projectSummaries');
 const getProjectCreation = () => getApp().get('projectCreation');
+const getProjectDeployment = () => getApp().get('projectDeployment');
 
 const getProjectById = function (_id) {
     return atom.getApp().get('projects').find(function (project) {
@@ -534,6 +538,43 @@ const fetchProjectSummaries = function () {
             error: errorFn
         });
     }
+};
+
+const deployProject = function (projectId) {
+
+    var successFn = function (data) {
+        console.log('project deployed');
+        var app = atom.getApp();
+
+        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+
+    };
+
+
+    var errorFn = function () {
+        console.error('error deploying project');
+
+        var app = atom.getApp();
+        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+
+    };
+
+
+    var app = atom.getApp();
+
+    if (app.getIn(['projectDeployment', 'inProgress'])) {
+        console.warn('Deployment in Progress');
+        return;
+    }
+
+    atom.swap(app.setIn(['projectDeployment', 'inProgress'], true));
+
+    $.ajax({
+        method: 'POST',
+        url: URLS.deployProject.replace(':projectId', projectId),
+        success: successFn,
+        error: errorFn
+    });
 };
 
 const generateMockProjectData = function (id) {
@@ -644,6 +685,7 @@ const saveProject = function (project, callback) {
 
 
 var store = {
+    getProjectDeployment,
     getProjectSummaries,
     getProjects,
     getProjectById,
@@ -670,6 +712,7 @@ var store = {
     connectComponents,
     setServicePosition,
     updateProject,
+    deployProject,
 
     fetchProjectSummaries,
     fetchUser,

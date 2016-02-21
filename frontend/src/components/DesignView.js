@@ -33,6 +33,7 @@ var Toolbar = React.createClass({
     toggleDeployDialog() {
         var shouldDeploy = window.confirm('do you want to deploy?');
         if (shouldDeploy) {
+            this.props.onDeploy();
             console.log('deploy');
         } else {
             console.log('abort deploy');
@@ -71,6 +72,10 @@ var DesignView = React.createClass({
         store.addService(projectId, name);
 
         this.sync();
+    },
+
+    deploy() {
+        this.props.store.deployProject(this.props.projectId);
     },
 
     selectComponent(componentKey) {
@@ -123,7 +128,7 @@ var DesignView = React.createClass({
                          onComponentSelect={this.selectComponent} />
               </div>
               <div className={styles.toolbarArea}>
-                <Toolbar onAddService={this.addService} />
+                <Toolbar onAddService={this.addService} onDeploy={this.deploy}/>
               </div>
             </div>
         );
