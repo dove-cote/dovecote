@@ -6,7 +6,7 @@ module.exports = {
         services: [
             {
                 name: 'Calculation Service',
-                meta: {position: {x: 90, y: 160}},
+                meta: {position: {x: 515, y: 252}},
                 components: [
                     {
                         name: 'Calculation Responder',
@@ -39,7 +39,7 @@ module.exports = {
             },
             {
                 name: 'Addition Service',
-                meta: {position: {x: 320, y: 90}},
+                meta: {position: {x: 798, y: 488}},
                 components: [
                     {
                         name: 'Addition Responder',
@@ -51,7 +51,7 @@ module.exports = {
             },
             {
                 name: 'Subtraction Service',
-                meta: {position: {x:20, y:200}},
+                meta: {position: {x:248, y:250}},
                 components: [
                     {
                         name: 'Subtraction Responder',
@@ -63,7 +63,7 @@ module.exports = {
             },
             {
                 name: 'Multiplication Service',
-                meta: {position: {x: 200, y: 20}},
+                meta: {position: {x: 671, y: 82}},
                 components: [
                     {
                         name: 'Multiplication Responder',
@@ -75,7 +75,7 @@ module.exports = {
             },
             {
                 name: 'Division Service',
-                meta: {position: {x: 20, y: 80}},
+                meta: {position: {x: 225, y: 443}},
                 components: [
                     {
                         name: 'Division Responder',
