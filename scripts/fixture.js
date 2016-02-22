@@ -72,10 +72,16 @@ function userFixture() {
  * @returns {Promise}
  */
 function createProject(raw, user) {
-    return ProjectService.create({
+    return ProjectService.
+        create({
             name: raw.name,
             owner: user._id
-        }).then(project => ProjectService.save(project._id, raw.project));
+        }).
+        then((project) => {
+            const gatewayService = _.find(project.services, service => service.name == 'Gateway');
+            if (gatewayService) raw.project.services.push(gatewayService);
+            return ProjectService.save(project._id, raw.project);
+        });
 }
 
 
