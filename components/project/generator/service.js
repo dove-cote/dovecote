@@ -17,7 +17,7 @@ class ServiceGenerator {
 
     run() {
         if (this.data.name == 'Gateway') {
-            debug(`Ignoring to generate "Getaway" named service, skipping`);
+            debug(`Ignoring to generate "Gateway" named service, skipping`);
             return Promise.resolve();
         }
 
