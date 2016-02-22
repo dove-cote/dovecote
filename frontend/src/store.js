@@ -719,6 +719,7 @@ var store = {
 
     updateComponent,
     getComponentById,
+    getServiceIndexByComponentId,
     connectComponents,
     setServicePosition,
     updateProject,

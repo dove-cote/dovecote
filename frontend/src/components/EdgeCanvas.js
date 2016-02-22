@@ -167,6 +167,7 @@ var EdgeCanvas = React.createClass({
                 componentRefs[colliding]
                     .getBoundingClientRect()
             );
+
             x2 = collidingRect.left;
             y2 = collidingRect.top;
         }
@@ -174,11 +175,13 @@ var EdgeCanvas = React.createClass({
         let x1 = sourceRect.left;
         let y1 = sourceRect.top;
 
-        let d = this.buildPath(x2, y2, x1, y1);
-            
-        return (
-            <path d={d} className={styles.edge} />
-        );
+        if (x2 && y2) {
+            let d = this.buildPath(x2, y2, x1, y1);
+                
+            return (
+                <path d={d} className={styles.edge} />
+            );
+        }
     },
 
     renderLine(source, target) {
