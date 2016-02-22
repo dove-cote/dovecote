@@ -703,6 +703,13 @@ const fetchUser = function () {
         url: URLS.me,
         success: function (data) {
             setUser(data);
+
+window.Intercom("boot", {
+  app_id: "lmps7kt9",
+  name: data.username,
+  email: data.email,
+  created_at: data.createdAt
+});
         },
         error: function () {
             setUser({});

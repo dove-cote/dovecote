@@ -10,6 +10,8 @@ var ProjectHandler = React.createClass({
     componentWillMount() {
         this.props.store.fetchProjectById(this.props.params.id);
         this.onSync = _.debounce(this.onSync, 500);
+
+        window.Intercom('update');
     },
 
     componentWillUnmount() {
