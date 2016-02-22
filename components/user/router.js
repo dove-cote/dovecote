@@ -108,6 +108,7 @@ router.post('/register', function(req, res, next) {
  * @returns {Promise}
  */
 function createProject(raw, user) {
+    raw = _.cloneDeep(raw);
     return ProjectService.
         create({
             name: raw.name,
