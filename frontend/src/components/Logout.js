@@ -15,7 +15,7 @@ var Logout = React.createClass({
     },
     render() {
         return <div className="">
-            logout
+            Please wait... Logging out
         </div>;
 
     }

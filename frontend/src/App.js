@@ -15,7 +15,7 @@ var UserInfo = React.createClass({
         var {email, username} = this.props.user;
         return (
           <div>
-            {username ? 
+            {username ?
               <div>{username} <a href='/logout'>Logout</a></div>
             : <div>Not logged in <a href='/login'>Login</a></div>}
           </div>
@@ -27,7 +27,11 @@ var UserInfo = React.createClass({
 var Header = React.createClass({
     navigate(event) {
         event.preventDefault();
-        browserHistory.push('/projects');
+        var user = store.getUser().toJS();
+        if (user.username) {
+            browserHistory.push('/projects');
+        }
+
     },
 
     render() {

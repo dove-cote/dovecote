@@ -7,6 +7,8 @@ const APIError = require('dovecote/lib/apierror');
 const fs = require('fs');
 const randomr = require('randomr');
 const Docker = require('dockerode-promise');
+const stream = require('stream');
+
 
 
 class DockerService {
@@ -47,6 +49,44 @@ class DockerService {
                         .then(data => {
                             console.log(data);
                         });
+            });
+        });
+    }
+
+
+    /**
+     * Gets last 100lines of log.
+     * @param {string} containerId
+     * @returns {Promise}
+     */
+    logs(containerId) {
+        return new Promise((resolve, reject) => {
+            let logs = '';
+            const container = this.docker.getContainer(containerId);
+            const logStream = new stream.PassThrough();
+            logStream.on('data', function(chunk) {
+                logs = logs + chunk;
+            });
+            logStream.on('end', function() {
+                resolve(logs);
+            });
+
+            container.logs({
+                follow: false,
+                stdout: true,
+                stderr: true,
+                tail: 100
+            }, function(err, stream) {
+                if (err) {
+                    console.log(`Could not get logs of ${containerId}`)
+                    return reject(new APIError(`Could not get logs of ${containerId}`, 500));
+                }
+
+                container.modem.demuxStream(stream, logStream, logStream);
+
+                stream.on('end', function() {
+                    logStream.end('!stop!');
+                });
             });
         });
     }
