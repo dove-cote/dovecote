@@ -6,6 +6,8 @@ import URLS from './urls';
 
 import {exportsLine} from './project_helpers';
 
+var mockDeployData = require('./deploy_answer');
+
 var services = [
         {
             name: "Stock Service",
@@ -95,6 +97,13 @@ var initialProjectSummaries = Immutable.fromJS({
 
 var initialUserData = fromJS({initialized: false, inProgress: false, data: {}, error: false});
 
+var initialProjectDeployment = Map({inProgress: false,
+                                    deployed: false,
+                                    continueAfterDeploy: false,
+                                    deployDetails: null,
+                                    error: false,
+                                    errorText: null});
+
 var _app = Map({
 
     palette: fromJS([
@@ -113,7 +122,7 @@ var _app = Map({
 
     projectCreation: Map({inProgress: false, error: false, errorText: null}),
 
-    projectDeployment: Map({inProgress: false, error: false, errorText: null})
+    projectDeployment: initialProjectDeployment
 
 
 });
@@ -549,22 +558,52 @@ const fetchProjectSummaries = function () {
     }
 };
 
+
+const continueAfterDeploy = function () {
+
+    var app = atom.getApp();
+
+    atom.swap(app.setIn(['projectDeployment', 'continueAfterDeploy'], true), false);
+};
+
+
+const resetProjectDeployment = function () {
+    var app = atom.getApp();
+
+    atom.swap(app.set('projectDeployment', initialProjectDeployment));
+
+};
+
 const deployProject = function (projectId) {
 
     var successFn = function (data) {
         console.log('project deployed');
         var app = atom.getApp();
 
-        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+        var newProjectDeployment = app.get('projectDeployment').merge(Map({inProgress: false, deployed: true, deployDetails: fromJS(data)}));
+        // debugger
+        atom.swap(app.set('projectDeployment', newProjectDeployment));
 
     };
 
 
-    var errorFn = function () {
+    var errorFn = function (data) {
         console.error('error deploying project');
 
         var app = atom.getApp();
-        atom.swap(app.setIn(['projectDeployment', 'inProgress'], false));
+
+        var errorText = '';
+
+        try {
+            errorText = data.responseJSON.error.message.replace('Error: ', '');
+        } catch (e) {
+
+        }
+        atom.swap(app.set('projectDeployment',
+                          initialProjectDeployment.merge(Map({inProgress: false,
+                                                              errorText: errorText,
+                                                              error: true,
+                                                              continueAfterDeploy: false}))));
 
     };
 
@@ -576,14 +615,23 @@ const deployProject = function (projectId) {
         return;
     }
 
-    atom.swap(app.setIn(['projectDeployment', 'inProgress'], true));
+    var newApp = app.setIn(['projectDeployment', 'inProgress'], true).setIn(['projectDeployment', 'continueAfterDeploy'], false);
+    atom.swap(newApp);
 
-    $.ajax({
-        method: 'POST',
-        url: URLS.deployProject.replace(':projectId', projectId),
-        success: successFn,
-        error: errorFn
-    });
+    var mockDeploy = false;
+
+    if (mockDeploy) {
+        setTimeout(function () {
+            successFn(mockDeployData);
+        }, 2000);
+    } else {
+        $.ajax({
+            method: 'POST',
+            url: URLS.deployProject.replace(':projectId', projectId),
+            success: successFn,
+            error: errorFn
+        });
+    }
 };
 
 const generateMockProjectData = function (id) {
@@ -692,6 +740,28 @@ const saveProject = function (project, callback) {
     });
 };
 
+const showTest = function () {
+    return atom.getApp().getIn(['projectDeployment', 'deployed']);
+};
+
+
+const deployURL = function () {
+    try {
+        return 'http://' +
+            atom.getApp().getIn(['projectDeployment', 'deployDetails', 'deploy', 'container', 'host']) + ':' +
+            atom.getApp().getIn(['projectDeployment', 'deployDetails', 'deploy', 'container', 'port']);
+    } catch (e) {
+        return '';
+    }
+};
+
+const test = function () {
+
+    window.open(deployURL());
+
+    console.log("going to test page");
+
+};
 
 var store = {
     getProjectDeployment,
@@ -723,8 +793,6 @@ var store = {
     connectComponents,
     setServicePosition,
     updateProject,
-    deployProject,
-
     fetchProjectSummaries,
     fetchUser,
     fetchProjectById,
@@ -732,12 +800,22 @@ var store = {
     createNewProject,
     saveProject,
 
+    // deploy
+
+    deployProject,
+    continueAfterDeploy,
+    resetProjectDeployment,
+
     // undo-redo stuff TODO clean up
     undo: atom.undo.bind(atom),
     redo: atom.redo.bind(atom),
     canUndo: atom.canUndo.bind(atom),
     canRedo: atom.canRedo.bind(atom),
     snapshotState,
+
+    // test
+    showTest,
+    test,
     // atom
 
     atom

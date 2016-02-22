@@ -51,6 +51,7 @@ var Toolbar = React.createClass({
                             title="Service name?" />
               <button className='pure-button pure-button-primary' onClick={this.toggleDialog}>+ Add a Service</button>
               <button className='pure-button' style={{marginLeft: 10}} onClick={this.toggleDeployDialog}>Deploy</button>
+              {this.props.showTest && <button className='pure-button' style={{marginLeft: 10}} onClick={this.props.onTest}>Test Service</button>}
 
             </div>
         );
@@ -128,7 +129,7 @@ var DesignView = React.createClass({
                          onComponentSelect={this.selectComponent} />
               </div>
               <div className={styles.toolbarArea}>
-                <Toolbar onAddService={this.addService} onDeploy={this.deploy}/>
+                <Toolbar onAddService={this.addService} onDeploy={this.deploy} showTest={store.showTest()} onTest={store.test}/>
               </div>
             </div>
         );

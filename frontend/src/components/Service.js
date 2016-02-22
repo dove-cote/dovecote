@@ -51,6 +51,7 @@ var ServiceItem = React.createClass({
                 {(this.state.isEditing && (
                     <ComponentDialog
                         isOpen={true}
+                        type={component.type}
                         component={component}
                         onSubmit={this.props.onUpdateComponent}
                         onClose={this.toggleState.bind(this, 'isEditing')} />
