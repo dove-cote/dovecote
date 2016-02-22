@@ -38,16 +38,6 @@ module.exports = {
                     }
                 ],
                 code: sources.stockServiceCode
-            },
-            {
-                name: 'Gateway',
-                meta: {position: {x: 10, y: 10}},
-                components: [
-                    {
-                        name: 'Gateway',
-                        type: 'sockend'
-                    }
-                ]
             }
         ]
     }

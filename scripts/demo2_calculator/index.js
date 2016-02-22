@@ -84,16 +84,6 @@ module.exports = {
                     }
                 ],
                 code: sources.divisionServiceCode
-            },
-            {
-                name: 'Gateway',
-                meta: {position: {x: 10, y: 10}},
-                components: [
-                    {
-                        name: 'Gateway',
-                        type: 'sockend'
-                    }
-                ]
             }
         ]
     }
