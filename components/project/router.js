@@ -12,6 +12,8 @@ const auth = require('dovecote/lib/middlewares/auth');
 const APIError = require('dovecote/lib/apierror');
 const ProjectService = require('dovecote/components/project/service');
 const MonitorRecord = require('dovecote/components/monitorrecord/model');
+const DockerService = require('dovecote/components/docker/service');
+
 
 
 router.get('/', auth.ensureAuthentication, function(req, res, next) {
@@ -91,6 +93,33 @@ router.get('/:projectId/status', auth.ensureAuthentication, function(req, res, n
             res.json(monitorRecord);
         })
         .catch(next);
+});
+
+
+
+router.get('/:projectId/logs', auth.ensureAuthentication, function(req, res, next) {
+    Project
+        .findOne({_id: req.params.projectId})
+        .exec()
+        .then(project => {
+            if (!project)
+                return next(new APIError('Project not found', 400));
+
+            if ((project.owner+'') != (''+req.user._id))
+                return next(new APIError('This is not your project', 401));
+
+            if (project.state != 'running')
+                return next(new APIError('Project is not running.', 400));
+
+            if (!_.isObject(project.deploy) || !_.isObject(project.deploy.container) || !project.deploy.container.id)
+                return next(new APIError('Opps something is wrong, please try again.', 500));
+
+            return DockerService
+                .logs(project.deploy.container.id)
+                .then(logs => res.send(logs))
+                .catch(next);
+
+        })
 });
 
 
