@@ -265,6 +265,8 @@ setInterval(function() {
         let modulesObj = {};
 
         this.serviceGenerators.forEach((generator) => {
+            if (!generator.parseResults) return;
+
             modulesObj = _.assign(modulesObj, generator.parseResults.requiredModules);
         });
 
