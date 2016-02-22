@@ -4,6 +4,7 @@ const _ = require('lodash');
 const async = require('async-q');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
+const debug = require('debug')('dovecote:components:service:service');
 const Service = require('dovecote/components/service/model');
 const ComponentService = require('dovecote/components/component/service');
 const APIError = require('dovecote/lib/apierror');
@@ -27,16 +28,22 @@ module.exports.upsert = function(service, projectId) {
     if (updateData.name)
         updateData.uniqueKey = serviceKey;
 
+    debug(`Will upsert ${service.components.length} components...`);
+
     return async
         .eachSeries(service.components, component => ComponentService.upsert(component, serviceKey))
         .then(components => {
             updateData.components = _.map(components, component => component._id);
+
+            debug(`Upserted ${service.components.length} components, checking service...`);
 
             if (service._id) {
                 let serviceId = service._id;
 
                 if (!(serviceId instanceof ObjectId))
                     serviceId = new ObjectId(serviceId);
+
+                debug(`Service has already id (${serviceId}), updating it...`);
 
                 return Service
                     .findOneAndUpdate(
@@ -46,6 +53,7 @@ module.exports.upsert = function(service, projectId) {
                     )
                     .exec();
             } else {
+                debug(`Creating new service...`);
                 const newservice = new Service(updateData);
                 return newservice.save();
             }

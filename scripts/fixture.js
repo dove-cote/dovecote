@@ -72,6 +72,8 @@ function userFixture() {
  * @returns {Promise}
  */
 function createProject(raw, user) {
+    raw = _.cloneDeep(raw);
+
     return ProjectService.
         create({
             name: raw.name,

@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
+const debug = require('debug')('dovecote:components:component:service');
 const Component = require('dovecote/components/component/model');
 const APIError = require('dovecote/lib/apierror');
 
@@ -17,6 +18,8 @@ module.exports.upsert = function(component, serviceKey) {
     if (!_.isObject(component))
         return Promise.reject(new APIError('component must be an object', 400));
 
+    debug(`Upserting component...`);
+
     const updateData = _.pick(component, ['name', 'type', 'namespace', 'external', 'key']);
 
     if (updateData.name)
@@ -28,6 +31,8 @@ module.exports.upsert = function(component, serviceKey) {
         if (!(componentId instanceof ObjectId))
             componentId = new ObjectId(componentId);
 
+        debug(`Component has already id (${componentId}), updating it...`);
+
         return Component
             .findOneAndUpdate(
                 {_id: componentId},
@@ -36,6 +41,7 @@ module.exports.upsert = function(component, serviceKey) {
             )
             .exec();
     } else {
+        debug(`Creating component...`);
         const newComponent = new Component(updateData);
         return newComponent.save();
     }

@@ -90,12 +90,13 @@ router.post('/register', function(req, res, next) {
             /**
              * Create demo projects
              */
-            return async
-                .eachSeries(demoProjects, project => createProject(project, user_))
-                .then(() => {
+            return async.
+                eachSeries(demoProjects, project => createProject(project, user_)).
+                then(() => {
                     const authenticate = passport.authenticate('local');
                     authenticate(req, res, () => res.json(user_.toSafeJSON()));
-                });
+                }).
+                catch(next);
         });
     })
 });
@@ -107,6 +108,7 @@ router.post('/register', function(req, res, next) {
  * @returns {Promise}
  */
 function createProject(raw, user) {
+    raw = _.cloneDeep(raw);
     return ProjectService.
         create({
             name: raw.name,
