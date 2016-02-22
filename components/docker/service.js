@@ -33,9 +33,9 @@ class DockerService {
      * @returns {Promise}
      */
     list() {
-        this.docker
-            .listContainers()
-            .then(containers => {
+        this.docker.
+            listContainers().
+            then(containers => {
                 containers.forEach(containerInfo => {
                     this.docker
                         .getContainer(containerInfo.Id)
@@ -59,8 +59,8 @@ class DockerService {
 
         const container = this.docker.getContainer(containerId);
 
-        return container.inspect()
-            .then(data => {
+        return container.inspect().
+            then(data => {
                 const port = data.NetworkSettings.Ports['80/tcp'][0].HostPort;
                 const containerIP = data.NetworkSettings.IPAddress;
                 const state = data.State;
@@ -70,9 +70,9 @@ class DockerService {
                 debug(`Container with id ${containerId} was found`);
                 debug(`Stopiing container...`);
 
-                return container
-                    .stop()
-                    .then(() => {
+                return container.
+                    stop().
+                    then(() => {
                         debug(`Deleting container ${containerId}`);
                         return container.remove();
                     });
@@ -91,26 +91,27 @@ class DockerService {
         const nodeVersion = process.env.DOCKER_NODE_VERSION || '4.2.2'
 
         debug(`Creating docker container from ${sourceDir}`);
-        return this.docker
-            .createContainer({
+        return this.docker.
+            createContainer({
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
                     `APP=pm2.json`,
                     `DOVECOTE_USER=${ownerId}`,
                     `DOVECOTE_PROJECT=${projectId}`
                 ]
-            })
-            .then(container => {
+            }).
+            then(container => {
                 const containerId = container.$subject.id;
                 debug(`Container created id=${containerId}.`);
-                return container
-                    .start({
+                return container.
+                    start({
                         Binds: [`${sourceDir}:/app`],
-                        PublishAllPorts: true
-                    })
-                    .then(response2 => {
-                        return container.inspect()
-                            .then(data => {
+                        PublishAllPorts: true,
+                        Links: [`mongo:mongo`]
+                    }).
+                    then(response2 => {
+                        return container.inspect().
+                            then(data => {
                                 const port = data.NetworkSettings.Ports['80/tcp'][0].HostPort;
                                 const containerIP = data.NetworkSettings.IPAddress;
                                 const state = data.State;
