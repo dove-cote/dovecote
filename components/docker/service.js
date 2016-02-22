@@ -31,6 +31,10 @@ class DockerService {
         }
 
         this.docker = new Docker(options);
+
+        this.period = 15000; //in msec
+        this.maxUptime = 30; //in sec
+        setTimeout(() => this.list(), this.period);
     }
 
 
@@ -39,18 +43,37 @@ class DockerService {
      * @returns {Promise}
      */
     list() {
-        this.docker.
+        return this.docker.
             listContainers().
+            then(containers => async.mapSeries(containers, container => this.docker.getContainer(container.Id).inspect())).
             then(containers => {
-                containers.forEach(containerInfo => {
-                    this.docker
-                        .getContainer(containerInfo.Id)
-                        .inspect()
-                        .then(data => {
-                            console.log(data);
-                        });
+                const now = Date.now();
+
+                const toBeClosed = _.filter(containers, container => {
+                    const image = container.Config.Image;
+                    if (image.indexOf('mertdogar/node-pm2') == -1)
+                        return;
+
+                    const uptimeInSec = Math.floor((now - new Date(container.State.StartedAt).getTime()) / 1000);
+                    return uptimeInSec > 60 * this.maxUptime;
+                });
+
+                if (!toBeClosed.length)
+                    return;
+
+                console.log(`There are ${toBeClosed.length} old containers, terminating...`);
+
+                const containerIds = _.map(toBeClosed, container => container.Id);
+                return async
+                    .eachSeries(containerIds, id => this.terminate(id))
+                    .then(() => {
+                        console.log('terminated');
+                    });
+            }).
+            catch(err => console.log('Err at docker timer', err)).
+            then(() => {
+                setTimeout(() => this.list(), this.period);
             });
-        });
     }
 
 
