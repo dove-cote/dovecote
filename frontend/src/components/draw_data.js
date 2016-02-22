@@ -1,7 +1,7 @@
 import d3 from 'd3';
 
 export default function drawData(data, container) {
-    var diameter = 640,
+    var diameter = 900,
         radius = diameter / 2,
         innerRadius = radius - 120;
 

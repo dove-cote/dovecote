@@ -9,14 +9,16 @@
                 "PORT"      : 80,
                 "DOCKER_NODE_VERSION": "5.6.0",
                 "DEPLOY_HOST": "169.45.231.138",
-                "DOCKER_HOST": "localhost"
+                "DOCKER_HOST": "localhost",
+                "DOVECOTE_MONGO": "mongodb://172.17.0.1/dovecote"
             },
             "env_digitalocean": {
                 "NODE_ENV"  : "production",
                 "PORT"      : 80,
                 "DOCKER_NODE_VERSION": "5.6.0",
                 "DEPLOY_HOST": "cloud.dove-cote.co",
-                "DOCKER_HOST": "localhost"
+                "DOCKER_HOST": "localhost",
+                "DOVECOTE_MONGO": "mongodb://172.17.0.1/dovecote"
             }
         }
     ]
