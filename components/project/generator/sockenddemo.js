@@ -172,7 +172,7 @@ var ${camelCaseName}Request = { // fill in your request object
 var ${camelCaseName}Callback = function(args) { // fill in your callback
     console.log.apply(console, arguments);
 };
-${namespace.namespace}.emit("${camelCaseName}", ${camelCaseName}Request, ${camelCaseName}Callback);
+${namespace.namespace}.emit("${eventName}", ${camelCaseName}Request, ${camelCaseName}Callback);
 `
         }).join('\n\n    ');
         var emitsComment = '';

@@ -97,7 +97,12 @@ function register(req, res, next) {
                 eachSeries(demoProjects, project => createProject(project, user_)).
                 then(() => {
                     const authenticate = passport.authenticate('local');
-                    authenticate(req, res, () => res.json(user_.toSafeJSON()));
+                    authenticate(req, res, () => {
+                        if (req.accepts('html'))
+                            return res.redirect('/projects');
+
+                        res.json(user_.toSafeJSON());
+                    });
                 }).
                 catch(next);
         });
