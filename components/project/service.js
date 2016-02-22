@@ -222,7 +222,7 @@ module.exports.deploy = function(projectId, ownerId) {
                         });
                 }).
                 then(() => {
-                    const generator = new SockendDemoGenerator(project.deploy);
+                    const generator = new SockendDemoGenerator(project);
                     return generator.run();
                 }).
                 then(() => get(projectId, ownerId));
