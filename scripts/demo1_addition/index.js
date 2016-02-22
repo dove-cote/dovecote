@@ -16,16 +16,6 @@ module.exports = {
                     }
                 ],
                 code: sources.additionServiceCode
-            },
-            {
-                name: 'Gateway',
-                meta: {position: {x: 10, y: 10}},
-                components: [
-                    {
-                        name: 'Gateway',
-                        type: 'sockend'
-                    }
-                ]
             }
         ]
     }
