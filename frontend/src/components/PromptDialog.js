@@ -6,18 +6,21 @@ import _ from 'lodash';
 import styles from './PromptDialog.module.css';
 
 var PromptDialog = React.createClass({
+    getDefaultProps() {
+        return {
+            width: 500,
+            height: 120
+        };
+    },
+
     getInitialState() {
         return {
             text: null
         };
     },
 
-    componentDidUpdate() {
-      _.defer(() => {
-        if (this.inputElement) {
-          this.inputElement.focus();
-        }
-      }); 
+    onChange(event) {
+        this.setState({text: event.target.value})
     },
 
     onSubmit(event) {
@@ -32,34 +35,34 @@ var PromptDialog = React.createClass({
     },
 
     render() {
+        let {height, width} = this.props;
         return (
-          <Modal
+            <Modal
               isOpen={this.props.isOpen}
               onRequestClose={this.props.onClose}
               style={{
                 content: {
-                    width: 500,
-                    height: 110,
+                    width,
+                    height,
                     top: '50%',
                     left: '50%',
-                    marginTop: -100,
-                    marginLeft: -250
+                    marginTop: -(height / 2),
+                    marginLeft: -(width / 2)
                 }
               }}>
-            <h1 className={styles.title}>
-              {this.props.title}
-            </h1>
-            <form onSubmit={this.onSubmit}
-                  className={styles.form}>
-              <input type="text"
-                     className={styles.input}
-                     ref={(ref) => this.inputElement = ref}
-                     onChange={(e) => this.setState({text: e.target.value})}
-                     value={this.state.text} />
-               <input type="submit"
-                      className={cx('pure-button pure-button-primary', styles.submit)}
-                      value="Continue" />
-            </form>
+                <h1 className={styles.title}>
+                  {this.props.title}
+                </h1>
+                <form onSubmit={this.onSubmit} className={styles.form}>
+                    <input type="text" className={styles.input}
+                         ref={(ref) => this.inputElement = ref}
+                         onChange={this.onChange} 
+                         value={this.state.text || this.props.default} />
+                    {this.props.children}
+                    <input type="submit"
+                           value="Continue"
+                           className={cx('pure-button pure-button-primary', styles.submit)} />
+                </form>
           </Modal>
       );
     }

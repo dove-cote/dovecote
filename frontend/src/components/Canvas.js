@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {default as UUID} from "node-uuid";
 
 import Service from './Service';
-import PromptDialog from './PromptDialog';
+import ComponentDialog from './ComponentDialog';
 import EdgeCanvas from './EdgeCanvas';
 import styles from './Canvas.module.css';
 
@@ -129,14 +129,16 @@ var Canvas = React.createClass({
         });
     },
 
-    createNewComponent(name) {
+    createNewComponent({name, isExternal, namespace}) {
         if (name) {
             this.props.store.addComponent(
                 this.props.project._id,
                 this.state.droppedServiceId,
                 {
                     type: this.state.droppedComponent,
-                    name
+                    external: isExternal,
+                    name,
+                    namespace
                 }
             );
 
@@ -256,12 +258,12 @@ var Canvas = React.createClass({
                         onMouseDown={this.startDrag.bind(this, index)}
                         key={index}
                         onConnectorDrawingStarted={this.onConnectorDrawingStarted} />)}
-
-                <PromptDialog
-                    title="Enter a component name"
-                    isOpen={this.state.showComponentCreationDialog}
-                    onSubmit={this.createNewComponent}
-                    onClose={this.toggleState.bind(this, 'showComponentCreationDialog')} />
+                {this.state.showComponentCreationDialog && (
+                    <ComponentDialog
+                        isOpen={this.state.showComponentCreationDialog}
+                        onSubmit={this.createNewComponent}
+                        onClose={this.toggleState.bind(this, 'showComponentCreationDialog')} />
+                )}
             </div>
         );
     }

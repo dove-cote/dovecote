@@ -32,6 +32,7 @@ var EdgeCanvas = React.createClass({
             let connected = _.filter(components, (component) => {
                 return (
                           component._id !== _id  // avoid self-link
+                      &&  component.key          // skip falsy keys
                       &&  component.key === key
                 )
             });
@@ -125,15 +126,14 @@ var EdgeCanvas = React.createClass({
             'Give a name for that connection.',
             componentKey
         );
-
-        if (name) {
-            store.connectComponents(
-                project._id,
-                source,
-                target,
-                name
-            );
-        }
+        
+        store.connectComponents(
+            project._id,
+            source,
+            target,
+            name
+        );
+        
     },
 
     buildPath(x1, y1, x2, y2) {
