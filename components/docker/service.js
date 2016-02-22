@@ -106,8 +106,7 @@ class DockerService {
                 return container.
                     start({
                         Binds: [`${sourceDir}:/app`],
-                        PublishAllPorts: true,
-                        Links: [`mongo:mongo`]
+                        PublishAllPorts: true
                     }).
                     then(response2 => {
                         return container.inspect().
@@ -119,7 +118,8 @@ class DockerService {
                                     id: containerId,
                                     state,
                                     containerIP,
-                                    port
+                                    port,
+                                    host: process.env.DEPLOY_HOST || 'localhost'
                                 };
                             })
 
