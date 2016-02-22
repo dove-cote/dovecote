@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import {default as UUID} from "node-uuid";
+import Immutable from 'immutable';
 
 import Service from './Service';
 import ComponentDialog from './ComponentDialog';
 import EdgeCanvas from './EdgeCanvas';
 import styles from './Canvas.module.css';
+
+const {fromJS, Map, List} = Immutable;
 
 var Canvas = React.createClass({
     getInitialState() {
@@ -212,9 +215,7 @@ var Canvas = React.createClass({
         
         let serviceIndex = (
             store.getServiceIndexByComponentId(
-                store.getProjectById(
-                    project._id
-                ), 
+                fromJS(project), 
                 droppedComponentId
             )
         );
