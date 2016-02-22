@@ -46,13 +46,7 @@ multicastSchema.statics.release = function(ip) {
             {project: null, active: false},
             {new: true}
         )
-        .exec()
-        .then(multicast => {
-            if (!multicast)
-                throw new Error('Could not find record');
-
-            return multicast.ip;
-        });
+        .exec();
 }
 
 
