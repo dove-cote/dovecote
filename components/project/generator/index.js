@@ -6,6 +6,7 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 const mkdirp = require('mkdirp');
 const debug = require('debug')('dovecote:components:project:generator');
+const ncp = require('ncp').ncp;
 const ServiceGenerator = require('dovecote/components/project/generator/service');
 const CommonGenerator = require('dovecote/components/project/generator/common');
 
@@ -22,25 +23,34 @@ class ProjectGenerator {
 
     run() {
         debug(`Start generating ${this.data.name}...`);
-        return this.
-            createTargetFolder().
+        return Promise.all([
+                this.createFolder(this.options.targetFolder),
+                this.createFolder(`${this.options.targetFolder}/services`),
+                this.createFolder(`${this.options.targetFolder}/node_modules`)
+            ]).
             then(() => this.generateServices()).
             then(() => this.generateCommonFiles()).
             then(() => this.generateSockendService()).
+            then(() => Promise.all([
+                this.copyNodeModule('socket.io'),
+                this.copyNodeModule('cote'),
+                this.copyNodeModule('mongoose'),
+                this.copyNodeModule('lodash')
+            ])).
             then(() => this.runNpmInstall()).
             then(() => this.createReport());
     }
 
 
-    createTargetFolder() {
+    createFolder(path_) {
         return new Promise((resolve, reject) => {
-            mkdirp(this.options.targetFolder + '/services', (err) => {
+            mkdirp(path_, (err) => {
                 if (err) {
-                    debug(`Cannot create target folder: ${this.options.targetFolder}`);
+                    debug(`Cannot create folder: ${path_}`);
                     return reject(err);
                 }
 
-                debug(`Created target folder: ${this.options.targetFolder}`);
+                debug(`Created folder: ${path_}`);
                 resolve();
             });
         })
@@ -300,6 +310,23 @@ setInterval(function() {
         };
 
         return report;
+    }
+
+
+    copyNodeModule(moduleName) {
+        debug(`Copying node module ${moduleName}...`);
+        return new Promise((resolve, reject) => {
+            const target = `${this.options.targetFolder}/node_modules/${moduleName}`;
+            ncp(`./node_modules/${moduleName}`, target, (err) => {
+                if (err) {
+                    debug(`Cannot copied ${moduleName} -> ${target}`, err);
+                    return reject(err);
+                }
+
+                debug(`Copied ${moduleName} -> ${target}`);
+                resolve();
+            });
+        });
     }
 }
 

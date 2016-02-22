@@ -51,6 +51,8 @@ class CommonGenerator {
             "license": "ISC",
             "dependencies": {
                 "cote": "^0.8.1",
+                "lodash": "^4.5.0",
+                "mongoose": "^4.4.4",
                 "socket.io": "^1.4.5"
             }
         };

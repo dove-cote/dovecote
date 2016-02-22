@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const debug = require('debug')('sockenddemo');
+const debug = require('debug')('dovecote:components:project:generator:sockenddemo');
 
 
 class SockendDemoGenerator {
