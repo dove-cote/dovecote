@@ -43,8 +43,10 @@ var ServiceItem = React.createClass({
                   {component.name}
                 </div>
                 
-                <div className={`${styles.connector} connector`}
-                     onMouseDown={this.props.onConnectorDrawingStarted} />
+                {allowModifications && (
+                    <div className={`${styles.connector} connector`}
+                     onMouseDown={this.props.onConnectorDrawingStarted} /> 
+                )}
                 
                 {(this.state.isEditing && (
                     <ComponentDialog

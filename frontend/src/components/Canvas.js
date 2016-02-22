@@ -101,7 +101,6 @@ var Canvas = React.createClass({
         let difference = this.getDifference(event);
         
         if (difference.x || difference.y) {
-            console.log('stop drag')
             this.props.onSync();
             this.props.store.snapshotState();
         }
@@ -181,6 +180,10 @@ var Canvas = React.createClass({
         });
     },
 
+    serviceAllowingModifications(service) {
+        return service.name !== 'Gateway';
+    },
+
     buildEdgeName(source, target) {
         let {store, project} = this.props;
         
@@ -205,15 +208,31 @@ var Canvas = React.createClass({
 
     onConnectorDropped(droppedComponentId) {
         let {connectingComponentId} = this.state;
-            
-        if (droppedComponentId) {
+        let {store, project} = this.props;
+        
+        let serviceIndex = (
+            store.getServiceIndexByComponentId(
+                store.getProjectById(
+                    project._id
+                ), 
+                droppedComponentId
+            )
+        );
+
+        let service = project.services[serviceIndex];
+
+        let isAllowed = (
+            this.serviceAllowingModifications(service)
+        );
+
+        if (droppedComponentId && isAllowed) {
             let edgeName = (
                 this.buildEdgeName(connectingComponentId, 
                                    droppedComponentId)
             );
 
-            this.props.store.connectComponents(
-                this.props.project._id,
+            store.connectComponents(
+                project._id,
                 connectingComponentId,
                 droppedComponentId,
                 edgeName
