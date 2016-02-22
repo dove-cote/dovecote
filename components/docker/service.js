@@ -12,11 +12,15 @@ const Docker = require('dockerode-promise');
 class DockerService {
     constructor() {
         let options = {
-            host: process.env.DOCKER_HOST,
-            port: 2376
+            socketPath: '/var/run/docker.sock'
         };
 
         if (process.env.DOCKER_CERT_DIR) {
+            options = {
+                host: process.env.DOCKER_HOST,
+                port: 2376
+            };
+
             options = _.assign(options, {
                 ca: fs.readFileSync(`${process.env.DOCKER_CERT_DIR}/ca.pem`),
                 cert: fs.readFileSync(`${process.env.DOCKER_CERT_DIR}/cert.pem`),
@@ -103,12 +107,17 @@ class DockerService {
             then(container => {
                 const containerId = container.$subject.id;
                 debug(`Container created id=${containerId}.`);
+
+                const startOptions = {
+                    Binds: [`${sourceDir}:/app`],
+                    PublishAllPorts: true
+                };
+
+                if (process.env.DOCKER_CERT_DIR)
+                    startOptions.Links = [`mongo:mongo`];
+
                 return container.
-                    start({
-                        Binds: [`${sourceDir}:/app`],
-                        PublishAllPorts: true,
-                        Links: [`mongo:mongo`]
-                    }).
+                    start(startOptions).
                     then(response2 => {
                         return container.inspect().
                             then(data => {
@@ -119,7 +128,8 @@ class DockerService {
                                     id: containerId,
                                     state,
                                     containerIP,
-                                    port
+                                    port,
+                                    host: process.env.DEPLOY_HOST || 'localhost'
                                 };
                             })
 

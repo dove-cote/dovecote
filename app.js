@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var expressSession = require('express-session');
+var FileStore = require('session-file-store')(expressSession);
 
 require('dovecote/lib/mongo');
 var User = require('dovecote/components/user/model');
@@ -56,6 +57,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 app.use(expressSession({
+    store: new FileStore({ path: '../preserved/sessions', ttl: 24 * 3600 }),
     resave: true,
     saveUninitialized: true,
     secret: process.env.SESSION_SECRET || 'myRandomAndSecretKey'

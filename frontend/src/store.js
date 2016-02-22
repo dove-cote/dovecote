@@ -425,6 +425,18 @@ const connectComponents = (projectId, sourceId, targetId, key) => {
     triggerChange();
 };
 
+const updateComponent = (projectId, serviceIndex, componentIndex, changes) => {
+    updateProject(
+        getProjectById(projectId)
+        .updateIn(
+            ['services', serviceIndex, 'components', componentIndex],
+            (component) => component.merge(changes)
+        )
+    );
+
+    triggerChange();
+};
+
 var getApp = function () {
     return atom.getApp();
 };
@@ -705,6 +717,7 @@ var store = {
     addListener,
     removeListener,
 
+    updateComponent,
     getComponentById,
     connectComponents,
     setServicePosition,

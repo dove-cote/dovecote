@@ -126,9 +126,18 @@ function stopProject(project) {
         }).
         then(() => {
             debug(`Setting ${project._id}'s state as "terminated"`);
-            project.state = 'terminated';
-            project.deploy = undefined;
-            return project.save();
+
+            return MulticastService.
+                release(project.multicastIP_)
+                .catch(err => {
+                    console.log('Multicast record could not found.');
+                });
+                then(() => {
+                    project.state = 'terminated';
+                    project.deploy = undefined;
+                    project.multicastIP_ = undefined;
+                    return project.save();
+                });
         });
 }
 

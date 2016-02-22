@@ -8,26 +8,51 @@ import classNames from 'classnames';
 import 'brace/mode/javascript';
 import 'brace/theme/tomorrow_night';
 
+import ComponentDialog from './ComponentDialog';
 import styles from './Service.module.css';
 import Icon from './Icon';
 
 require('./Service.less');
 
 var ServiceItem = React.createClass({
+    getInitialState() {
+        return {
+            isEditing: false
+        };
+    },
+
+    toggleState(key) {
+        this.setState({
+            [key]: !this.state[key]
+        });
+    },
+
     render() {
         let {component, onRender, handleRename, handleRemove, allowModifications} = this.props;
         let {_id: id} = component;
         return (
             <li className={classNames(styles.component, 'service-item', 'cf')}
-                ref={(ref) => id && onRender(id, ref)}>
+                ref={(ref) => id && onRender(id, ref)}
+                onDoubleClick={allowModifications && this.toggleState.bind(this, 'isEditing')}>
+                
                 {allowModifications && <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>}
+                
                 <Icon icon={component.type} size={20} />
-                <div onDoubleClick={allowModifications && handleRename}
-                     className={classNames('name', styles.componentLabel)}>
+                
+                <div className={classNames('name', styles.componentLabel)}>
                   {component.name}
                 </div>
+                
                 <div className={`${styles.connector} connector`}
                      onMouseDown={this.props.onConnectorDrawingStarted} />
+                
+                {(this.state.isEditing && (
+                    <ComponentDialog
+                        isOpen={true}
+                        component={component}
+                        onSubmit={this.props.onUpdateComponent}
+                        onClose={this.toggleState.bind(this, 'isEditing')} />
+                ))}
             </li>
         );
     }
@@ -167,8 +192,25 @@ var Service = React.createClass({
         this.setState({fullScreen: true});
     },
 
+    onUpdateComponent(index, serviceIndex,
+                     {name, isExternal, namespace}) {
+        
+        let {projectId} = this.props;
+
+        this.props.store.updateComponent(
+            projectId, 
+            serviceIndex,
+            index,
+            {
+                name,
+                namespace,
+                external: isExternal
+            }
+        );
+    },
+
     renderComponent(component, index) {
-        let {serviceIndex, onConnectorDrawingStarted} = this.props;
+        let {serviceIndex, onConnectorDrawingStarted, store} = this.props;
 
         var allowModifications = this.props.service.name !== 'Gateway';
 
@@ -179,7 +221,9 @@ var Service = React.createClass({
 
         return (
             <ServiceItem
+                store={store}
                 key={index}
+                onUpdateComponent={this.onUpdateComponent.bind(this, index, serviceIndex)}
                 allowModifications={allowModifications}
                 serviceIndex={serviceIndex}
                 componentIndex={index}

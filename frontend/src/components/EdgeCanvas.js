@@ -32,6 +32,7 @@ var EdgeCanvas = React.createClass({
             let connected = _.filter(components, (component) => {
                 return (
                           component._id !== _id  // avoid self-link
+                      &&  component.key          // skip falsy keys
                       &&  component.key === key
                 )
             });
@@ -56,14 +57,14 @@ var EdgeCanvas = React.createClass({
         }
     },
 
-    isCollides(x1, y1, x2, y2, radius=30) {
+    isCollides(x1, y1, x2, y2, radius=20) {
         let xd = x1 - x2;
         let yd = y1 - y2;
         let wt = radius * 2;
         return (xd * xd + yd * yd <= wt * wt);
     },
 
-    getDroppedComponent() {
+    getCollidingComponent() {
         let refs = this.props.componentRefs;
         let {connectingPoint} = this.state;
 
@@ -103,7 +104,7 @@ var EdgeCanvas = React.createClass({
     },
 
     onMouseUp() {
-        let droppedComponent = this.getDroppedComponent();
+        let droppedComponent = this.getCollidingComponent();
 
         this.props.onConnectorDropped(droppedComponent);
 
@@ -125,15 +126,14 @@ var EdgeCanvas = React.createClass({
             'Give a name for that connection.',
             componentKey
         );
-
-        if (name) {
-            store.connectComponents(
-                project._id,
-                source,
-                target,
-                name
-            );
-        }
+        
+        store.connectComponents(
+            project._id,
+            source,
+            target,
+            name
+        );
+        
     },
 
     buildPath(x1, y1, x2, y2) {
@@ -151,22 +151,31 @@ var EdgeCanvas = React.createClass({
     renderDrawingConnector(componentId) {
         let {connectingComponentId, componentRefs} = this.props;
         let {connectingPoint} = this.state;
+        let colliding = this.getCollidingComponent();
+        
 
         let sourceRect = (
             componentRefs[connectingComponentId]
                 .getBoundingClientRect()
         );
+
+        let x2 = connectingPoint.x || x1, 
+            y2 = connectingPoint.y || y1;
+
+        if (colliding) {
+            let collidingRect = (
+                componentRefs[colliding]
+                    .getBoundingClientRect()
+            );
+            x2 = collidingRect.left;
+            y2 = collidingRect.top;
+        }
         
         let x1 = sourceRect.left;
         let y1 = sourceRect.top;
 
-        let d = this.buildPath(
-            connectingPoint.x || x1, 
-            connectingPoint.y || y1,
-            x1, 
-            y1
-        );
-        
+        let d = this.buildPath(x2, y2, x1, y1);
+            
         return (
             <path d={d} className={styles.edge} />
         );

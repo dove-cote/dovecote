@@ -49,7 +49,6 @@ router.put('/:projectId', auth.ensureAuthentication, function(req, res, next) {
     ProjectService
         .save(projectId, req.body.project)
         .then(project => {
-            console.log('project created', project);
             return Project
                 .findOne({_id: projectId})
                 .populate({
