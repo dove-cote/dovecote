@@ -48,8 +48,7 @@ class SockendDemoGenerator {
     <title>Title</title>
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="https://dove-cote.co/assets/css/styles.css"/>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/monokai.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
     <style>
         body {
             background: #0097A7;
@@ -66,6 +65,16 @@ class SockendDemoGenerator {
         }
         code {
             padding: 0 30px;
+        }
+
+        #editor {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 600px;
+            width: 950px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -94,9 +103,11 @@ class SockendDemoGenerator {
 </div>
 <div>
 </div>
-
-
-<script>hljs.initHighlightingOnLoad();</script>
+<script>
+var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+    </script>
 </body>
 </html>
 `;
@@ -167,15 +178,14 @@ ${namespace.namespace}.emit("${eventName}", ${eventName}Request, ${eventName}Cal
 
         return `
 <h2>Tests</h2>
-<pre>
-<code class="javascript">
+<p>You can edit the code below as you wish, and copy & paste in the console to see how it works.</p>
+<div id="editor">
 // This line is already executed for you and variable ${namespace.namespace} is available in the console!
 var ${namespace.namespace} = io.connect("${url}");
 
 // Type the following lines, fill in the details according to your specs and watch it just work!
 ${emits}
-</code>
-</pre>
+</div>
 <script>
 var ${namespace.namespace} = io.connect("${url}");
 </script>
