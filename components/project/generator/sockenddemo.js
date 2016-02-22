@@ -67,7 +67,7 @@ class SockendDemoGenerator {
             padding: 0 30px;
         }
 
-        #editor {
+        .editor {
             top: 0;
             right: 0;
             bottom: 0;
@@ -103,11 +103,6 @@ class SockendDemoGenerator {
 </div>
 <div>
 </div>
-<script>
-var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
-    </script>
 </body>
 </html>
 `;
@@ -140,7 +135,10 @@ var editor = ace.edit("editor");
 
         const url = `http://${host}:${port}`;
 
-        const uniqueNamespaces = _.uniq(this.namespaces);
+        var namespaces = _.filter(this.namespaces, function(namespace) {
+            return namespace && namespace.respondsTo && namespace.respondsTo[namespace.componentName] && namespace.respondsTo[namespace.componentName].length;
+        });
+        const uniqueNamespaces = _.uniqBy(namespaces, 'namespace');
 
         return uniqueNamespaces.map(namespace => {
             const test = this.generateTests(namespace);
@@ -152,43 +150,56 @@ var editor = ace.edit("editor");
     </div>
 </li>
 `;
-        });
+        }).join('');
     }
 
     generateTests(namespace) {
+        console.log('generate tests for namespace', namespace);
         const host = process.env.DEPLOY_HOST || 'localhost';
         const port = this.data.deploy.container.port;
 
         const url = `http://${host}:${port}/${namespace.namespace}`;
-
         const eventNames = namespace.respondsTo[namespace.componentName];
 
         const emits = eventNames.map(eventName => {
+            var camelCaseName = _.camelCase(eventName);
+
             return `
 // Tests for event "${eventName}"
-var ${eventName}Request = { // fill in your request object
+var ${camelCaseName}Request = { // fill in your request object
 
 };
-var ${eventName}Callback = function(args) { // fill in your callback
+var ${camelCaseName}Callback = function(args) { // fill in your callback
     console.log.apply(console, arguments);
 };
-${namespace.namespace}.emit("${eventName}", ${eventName}Request, ${eventName}Callback);
+${namespace.namespace}.emit("${camelCaseName}", ${camelCaseName}Request, ${camelCaseName}Callback);
 `
         }).join('\n\n    ');
+        var emitsComment = '';
+
+        if (eventNames && eventNames.length > 0) {
+            emitsComment = '// Type the following lines, fill in the details according to your specs and watch it just work!';
+        } else return '';
 
         return `
 <h2>Tests</h2>
 <p>You can edit the code below as you wish, and copy & paste in the console to see how it works.</p>
-<div id="editor">
+<div id="editor${namespace.namespace}" class="editor">
 // This line is already executed for you and variable ${namespace.namespace} is available in the console!
 var ${namespace.namespace} = io.connect("${url}");
 
-// Type the following lines, fill in the details according to your specs and watch it just work!
+${emitsComment}
 ${emits}
 </div>
 <script>
 var ${namespace.namespace} = io.connect("${url}");
 </script>
+<script>
+    var editor = ace.edit("editor${namespace.namespace}");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+</script>
+
 `;
     }
 }
