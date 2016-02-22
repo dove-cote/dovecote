@@ -12,7 +12,8 @@ var catalogResponder = new cote.Responder({
 });
 
 var stockRequester = new cote.Requester({
-    name: 'Stock Requester'
+    name: 'Stock Requester',
+    key: 'stock'
 });
 
 var products = {

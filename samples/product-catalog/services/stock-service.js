@@ -1,7 +1,8 @@
 var cote = require('cote', {multicast: '239.1.1.1'});
 
 var stockResponder = new cote.Responder({
-    name: 'Stock Responder'
+    name: 'Stock Responder',
+    key: 'stock'
 });
 
 var stock = {
