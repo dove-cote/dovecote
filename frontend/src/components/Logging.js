@@ -4,18 +4,21 @@ import $ from 'jquery';
 var Logging = React.createClass({
 
     getInitialState() {
-        return {data: "Lorem ipsum"};
+        return {data: ""};
     },
 
-    componentDidMount() {
-        this._interval = setInterval(function () {
+    fetchLogs: function () {
             $.ajax({
                 url: '/api/projects/' + this.props.projectId + '/logs',
                 success: function (data) {
                     this.setState({data: String(data)});
                 }.bind(this)
             })
-        }.bind(this), 5000);
+    },
+
+    componentDidMount() {
+        this.fetchLogs();
+        this._interval = setInterval(this.fetchLogs, 5000);
     },
 
     componentWillUnmount() {
