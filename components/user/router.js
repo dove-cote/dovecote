@@ -40,9 +40,24 @@ router.get('/me', auth.ensureAuthentication, function(req, res, next) {
 
 
 router.post('/register', function(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next(new Error(`You've been already registered!`));
+    }
+
+    const isAnonymous = _.keys(req.query).indexOf('anonymous') > -1;
+
+    if (isAnonymous) {
+        const randomStr = Math.random().toString(36).substring(2, 8);
+        const username = `anonymous-${randomStr}`;
+        req.body.username = username;
+        req.body.email = `${username}@dove-cote.co`;
+        req.body.password = Math.random().toString(36).substring(2, 16);
+    }
+
     const rawUser = {
         username: req.body.username,
-        email: req.body.email
+        email: req.body.email,
+        password: req.body.password
     };
 
     // Validation stuff
@@ -52,11 +67,11 @@ router.post('/register', function(req, res, next) {
     if (!_.isString(rawUser.email) || !validator.isEmail(rawUser.email))
         return next(new Error('Invalid or missing email'));
 
-    if (!_.isString(req.body.password) || req.body.password.trim().length == 0)
+    if (!_.isString(rawUser.password) || rawUser.password.trim().length == 0)
         return next(new Error('Invalid or missing password'));
 
     const user = new User(rawUser);
-    user.setPassword(req.body.password);
+    user.setPassword(rawUser.password);
 
     // Check whether email or username is taken
     User.findOne({
@@ -71,11 +86,12 @@ router.post('/register', function(req, res, next) {
         user.save((err, user_) => {
             if (err) return next(err);
 
+
             /**
              * Create demo projects
              */
             return async
-                .eachSeries(demoProjects, project => createProject(project, user))
+                .eachSeries(demoProjects, project => createProject(project, user_))
                 .then(() => {
                     const authenticate = passport.authenticate('local');
                     authenticate(req, res, () => res.json(user_.toSafeJSON()));
