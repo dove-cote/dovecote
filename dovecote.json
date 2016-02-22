@@ -15,7 +15,7 @@
                 "NODE_ENV"  : "production",
                 "PORT"      : 80,
                 "DOCKER_NODE_VERSION": "5.6.0",
-                "DEPLOY_HOST": "198.199.113.175",
+                "DEPLOY_HOST": "cloud.dove-cote.co",
                 "DOCKER_HOST": "localhost"
             }
         }
