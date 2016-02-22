@@ -12,6 +12,10 @@ var ProjectHandler = React.createClass({
         this.onSync = _.debounce(this.onSync, 500);
     },
 
+    componentWillUnmount() {
+        this.props.store.resetProjectDeployment();
+    },
+
     fillReadonlyComponentFields(currentService, receivedService) {
         let mutated = false;
 
@@ -32,7 +36,7 @@ var ProjectHandler = React.createClass({
     fillReadonlyServiceFields(currentProject, receivedProject) {
         let project = currentProject.toJS();
         let mutated = false;
-        
+
         project.services.forEach((service, index) => {
             let receivedService = receivedProject.services[index];
             if (!service._id) {
