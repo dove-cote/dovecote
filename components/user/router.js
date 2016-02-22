@@ -39,14 +39,17 @@ router.get('/me', auth.ensureAuthentication, function(req, res, next) {
 });
 
 
-router.post('/register', function(req, res, next) {
+router.post('/register', register);
+router.get('/register', register);
+
+function register(req, res, next) {
     if (req.isAuthenticated()) {
         return next(new Error(`You've been already registered!`));
     }
 
     const isAnonymous = _.keys(req.query).indexOf('anonymous') > -1;
 
-    if (isAnonymous) {
+    if (req.method == 'GET' && isAnonymous) {
         const randomStr = Math.random().toString(36).substring(2, 8);
         const username = `anonymous-${randomStr}`;
         req.body.username = username;
@@ -99,7 +102,7 @@ router.post('/register', function(req, res, next) {
                 catch(next);
         });
     })
-});
+}
 
 
 /**

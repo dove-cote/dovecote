@@ -158,13 +158,15 @@ class DockerService {
         const nodeVersion = process.env.DOCKER_NODE_VERSION || '4.2.2'
 
         debug(`Creating docker container from ${sourceDir}`);
+        const mongoUrl = process.env.DOVECOTE_MONGO || 'mongodb://mongo/dovecote';
         return this.docker.
             createContainer({
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
                     `APP=pm2.json`,
                     `DOVECOTE_USER=${ownerId}`,
-                    `DOVECOTE_PROJECT=${projectId}`
+                    `DOVECOTE_PROJECT=${projectId}`,
+                    `DOVECOTE_MONGO=${mongoUrl}`
                 ]
             }).
             then(container => {
