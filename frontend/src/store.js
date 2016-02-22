@@ -243,7 +243,9 @@ const addCode = function (projectId, serviceId, code, pushToHistory=true) {
     var isValidCode = (code.indexOf(expectedLine) > -1);
 
     if (isValidCode) {
-       updateProject(project.setIn(['services', serviceId, 'code'], code), pushToHistory);
+        project = project.setIn(['services', serviceId, 'code'], code)
+        updateProject(project, pushToHistory);
+        saveProject(project);
     }
 
 };

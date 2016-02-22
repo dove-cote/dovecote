@@ -34,20 +34,20 @@ var ServiceItem = React.createClass({
             <li className={classNames(styles.component, 'service-item', 'cf')}
                 ref={(ref) => id && onRender(id, ref)}
                 onDoubleClick={allowModifications && this.toggleState.bind(this, 'isEditing')}>
-                
+
                 {allowModifications && <button className='pure-button remove-service-item' onClick={handleRemove}>X</button>}
-                
+
                 <Icon icon={component.type} size={20} />
-                
+
                 <div className={classNames('name', styles.componentLabel)}>
                   {component.name}
                 </div>
-                
+
                 {allowModifications && (
                     <div className={`${styles.connector} connector`}
-                     onMouseDown={this.props.onConnectorDrawingStarted} /> 
+                     onMouseDown={this.props.onConnectorDrawingStarted} />
                 )}
-                
+
                 {(this.state.isEditing && (
                     <ComponentDialog
                         isOpen={true}
@@ -137,9 +137,9 @@ var Service = React.createClass({
 
     updateCode(code) {
         //debugger
-        console.log("update code called");
+        // console.log("update code called");
         this.props.store.addCode(this.props.projectId, this.props.serviceId, code);
-        console.log('updating code');
+        // console.log('updating code');
     },
 
     handleRemoveService() {
@@ -197,11 +197,11 @@ var Service = React.createClass({
 
     onUpdateComponent(index, serviceIndex,
                      {name, isExternal, namespace}) {
-        
+
         let {projectId} = this.props;
 
         this.props.store.updateComponent(
-            projectId, 
+            projectId,
             serviceIndex,
             index,
             {
