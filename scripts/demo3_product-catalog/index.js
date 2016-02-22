@@ -23,6 +23,7 @@ module.exports = {
                     {
                         name: 'Stock Requester',
                         type: 'req',
+                        key: 'stock',
                         external: false
                     }
                 ],
@@ -34,6 +35,7 @@ module.exports = {
                 components: [
                     {
                         name: 'Stock Responder',
+                        key: 'stock',
                         type: 'res'
                     }
                 ],
