@@ -22,13 +22,19 @@ const SockendDemoGenerator = require('dovecote/components/project/generator/sock
  * @returns {Promise}
  */
 module.exports.create = function(rawProject) {
-    if (!_.isObject(rawProject))
+    debug(`Creating project ${rawProject.name}...`);
+
+    if (!_.isObject(rawProject)) {
+        debug(`Could not create project, invalid project (${rawProject.name})`);
         return Promise.reject(new APIError('project must be an object', 400));
+    }
 
     const project = new Project(_.pick(rawProject, ['name', 'owner']));
     return project.
         save().
         then(project => {
+            debug(`Project created (${rawProject.name}), upserting gateway service...`);
+
             return ServiceService.upsert({
                 name: 'Gateway',
                 meta: {position: {x: 10, y: 10}},
@@ -39,6 +45,7 @@ module.exports.create = function(rawProject) {
                     }
                 ]}, project._id).
                 then(service => {
+                    debug(`Service created: ${service.name}`);
                     project.services.push(service._id);
                     return project.save();
                 });
@@ -53,6 +60,7 @@ module.exports.create = function(rawProject) {
  * @returns {Promise}
  */
 const get = function(projectId, ownerId) {
+    debug(`Gettin project ${projectId} with owner ${ownerId}`);
     return Project.
         findOne({owner: ownerId, _id: projectId}).
         populate({
@@ -87,18 +95,28 @@ module.exports.list = list;
  * @returns {Promise}
  */
 module.exports.save = function(projectId, rawProject) {
-    if (!_.isObject(rawProject))
+    debug(`Saving project ${projectId}...`);
+
+    if (!_.isObject(rawProject)) {
+        debug(`Could not save project ${projectId}, invalid data`);
         return Promise.reject(new APIError('project must be an object', 400));
+    }
 
     const rawServices = rawProject.services;
-    if (!_.isArray(rawServices))
+    if (!_.isArray(rawServices)) {
+        debug(`Could not save project ${projectId}, invalid services array`)
         return Promise.reject(new APIError('project.services must be an array', 400));
+    }
+
+    debug(`Will upsert ${rawServices.length} services...`);
 
     return async.
         eachSeries(rawServices, service => ServiceService.upsert(service, projectId)).
-        then(services => {
+        then((services) => {
             const updateData = _.pick(rawProject, ['name']);
             updateData.services = _.map(services, service => service._id);
+
+            debug(`Upserted ${rawServices.length} services, updating project ${projectId}...`);
 
             return Project.
                 findOneAndUpdate(
