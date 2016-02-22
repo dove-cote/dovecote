@@ -56,18 +56,20 @@ var CircleGraph = React.createClass({
 		return x;
 	},
 
-    componentDidMount() {
-        this._interval = setInterval(function () {
-            $.ajax({
-                url: '/api/projects/' + this.props.projectId + '/status',
-                success: function (data) {
-                    this.setState({data: String(data)});
-                    this.drawData();
-                }.bind(this)
-            })
-        }.bind(this), 5000);
-        this.drawData();
+    fetchData: function () {
+        $.ajax({
+            url: '/api/projects/' + this.props.projectId + '/status',
+            success: function (data) {
+                this.setState({data: String(data)});
+                this.drawData();
+            }.bind(this)
+        })
+    },
 
+    componentDidMount() {
+        this._interval = setInterval(this.fetchData, 5000);
+        this.fetchData();
+        this.drawData();
     },
 
     getInitialState() {
