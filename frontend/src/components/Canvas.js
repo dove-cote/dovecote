@@ -282,6 +282,7 @@ var Canvas = React.createClass({
                     <ComponentDialog
                         isOpen={this.state.showComponentCreationDialog}
                         onSubmit={this.createNewComponent}
+                        type={this.state.droppedComponent}
                         onClose={this.toggleState.bind(this, 'showComponentCreationDialog')} />
                 )}
             </div>

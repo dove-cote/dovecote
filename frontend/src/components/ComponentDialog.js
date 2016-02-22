@@ -45,31 +45,41 @@ var ComponentDialog = React.createClass({
 
     render() {
     	let {isExternal, namespace} = this.state;
-        return (
+    	let {type} = this.props;
+
+    	let showNamespaceField = (
+    		   type === 'res'
+    		|| type === 'pub'
+    	);
+
+    	return (
 			<PromptDialog
-				height={isExternal? 170: 140}
+				height={showNamespaceField? isExternal? 170 : 150: 115}
 				title="Enter a component name"
 				default={this.state.name}
 				isOpen={this.props.isOpen}
 				onClose={this.props.onClose}
 				onSubmit={this.onSubmit}>
-				<label style={{paddingTop: 10, display: 'block'}}>
-					Is external?
-					<input type="checkbox"
-					   style={{marginLeft: 5}}
-					   checked={isExternal}
-					   onChange={this.toggleExternalValue} />
-				</label>
-				
-				<label style={{paddingTop: 5, 
-					           display: 'block'}}>
-					{isExternal && (
-						<input type="text"
-						   onChange={this.onNamespaceChange}
-						   placeholder={'Namespace'}
-						   value={namespace} />
-					)}
-				</label>
+				{showNamespaceField && (
+					<div>
+						<label style={{paddingTop: 10, display: 'block'}}>
+							Is external?
+							<input type="checkbox"
+							   style={{marginLeft: 5}}
+							   checked={isExternal}
+							   onChange={this.toggleExternalValue} />
+						</label>
+						<label style={{paddingTop: 5, 
+							           display: 'block'}}>
+							{isExternal && (
+								<input type="text"
+								   onChange={this.onNamespaceChange}
+								   placeholder={'Namespace'}
+								   value={namespace} />
+							)}
+						</label>
+					</div>
+				)}
 			</PromptDialog>
       );
     }

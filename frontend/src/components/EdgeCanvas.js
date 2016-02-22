@@ -23,16 +23,16 @@ var EdgeCanvas = React.createClass({
                     services, 'components'
                 )
             )
-        ).map(
-            ({_id, key}) => ({_id, key})
         );
 
-        components.forEach(({_id, key}) => {
-
+        components.forEach(({_id, key, external}) => {
             let connected = _.filter(components, (component) => {
+                let isGateway = (
+                    component.name === 'Gateway' && external
+                );
                 return (
                           component._id !== _id  // avoid self-link
-                      &&  component.key          // skip falsy keys
+                      &&  (component.key || isGateway)
                       &&  component.key === key
                 )
             });
