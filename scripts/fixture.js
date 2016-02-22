@@ -19,12 +19,11 @@ const resetDB = !!~process.argv.indexOf('--reset');
  * @returns {Promise}
  */
 function reset() {
-    return User
-        .remove()
-        .then(() => Multicast.remove())
-        .then(() => Service.remove())
-        .then(() => Component.remove())
-        .then(() => Project.remove());
+    return User.remove().
+        then(() => Multicast.remove()).
+        then(() => Service.remove()).
+        then(() => Component.remove()).
+        then(() => Project.remove());
 }
 
 /**
@@ -73,12 +72,10 @@ function userFixture() {
  * @returns {Promise}
  */
 function createProject(raw, user) {
-    return ProjectService
-        .create({
+    return ProjectService.create({
             name: raw.name,
             owner: user._id
-        })
-        .then(project => ProjectService.save(project._id, raw.project));
+        }).then(project => ProjectService.save(project._id, raw.project));
 }
 
 
