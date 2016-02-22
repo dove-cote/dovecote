@@ -35,6 +35,8 @@ class ProjectGenerator {
                 this.copyNodeModule('socket.io'),
                 this.copyNodeModule('cote'),
                 this.copyNodeModule('mongoose'),
+                this.copyNodeModule('debug'),
+                this.copyNodeModule('mkdirp'),
                 this.copyNodeModule('lodash')
             ])).
             then(() => this.runNpmInstall()).

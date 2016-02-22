@@ -11,6 +11,7 @@ const Component = require('dovecote/components/component/model');
 const auth = require('dovecote/lib/middlewares/auth');
 const APIError = require('dovecote/lib/apierror');
 const ProjectService = require('dovecote/components/project/service');
+const MonitorRecord = require('dovecote/components/monitorrecord/model');
 
 
 router.get('/', auth.ensureAuthentication, function(req, res, next) {
@@ -75,7 +76,21 @@ router.put('/:projectId', auth.ensureAuthentication, function(req, res, next) {
 router.post('/:projectId/deploy', auth.ensureAuthentication, function(req, res, next) {
     ProjectService
         .deploy(req.params.projectId, req.user._id)
-        .then(() => res.status(200).end())
+        .then(project => res.json(project))
+        .catch(next);
+});
+
+
+
+router.get('/:projectId/status', auth.ensureAuthentication, function(req, res, next) {
+    // TODO: Add owner check
+    MonitorRecord
+        .findOne({project: req.params.projectId})
+        .exec()
+        .then(monitorRecord => {
+            if (!monitorRecord) return res.status(404).end();
+            res.json(monitorRecord);
+        })
         .catch(next);
 });
 
