@@ -4,7 +4,7 @@ import $ from 'jquery';
 var Logging = React.createClass({
 
     getInitialState() {
-        return {data: ""};
+        return {data: ``};
     },
 
     fetchLogs: function () {
@@ -26,9 +26,9 @@ var Logging = React.createClass({
     },
 
     render() {
-        return <div className='pure-u-1-3' style={{overflow: 'scroll'}}>
+        return <div className='pure-u-1-3' style={{overflow: 'auto', background: '#efefef'}}>
             <h2>Project Logs</h2>
-            <pre>{this.state.data}</pre>
+            <pre style={{padding: 3}}>{this.state.data}</pre>
         </div>;
 
     }

@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 import CircleGraph from './CircleGraph';
 import Logging from './Logging';
-
+import $ from 'jquery';
 
 
 
 var MonitorView = React.createClass({
+
+    componentDidMount() {
+        $('#root').addClass('allowScroll');
+    },
+
+    componentWillUnmount() {
+        $('#root').removeClass('allowScroll');
+
+    },
 
 	render() {
         return (
