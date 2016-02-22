@@ -33,7 +33,9 @@ class ProjectGenerator {
             then(() => this.generateSockendService()).
             then(() => Promise.all([
                 this.copyNodeModule('socket.io'),
-                this.copyNodeModule('cote')
+                this.copyNodeModule('cote'),
+                this.copyNodeModule('mongoose'),
+                this.copyNodeModule('lodash')
             ])).
             then(() => this.runNpmInstall()).
             then(() => this.createReport());
