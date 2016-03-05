@@ -173,8 +173,10 @@ class DockerService {
                 const containerId = container.$subject.id;
                 debug(`Container created id=${containerId}.`);
 
+                var pathPrefix = process.env.SOURCE_DIR_PREFIX ? process.env.SOURCE_DIR_PREFIX : '';
+
                 const startOptions = {
-                    Binds: [`${sourceDir}:/app`],
+                    Binds: [`${pathPrefix}${sourceDir}:/app`],
                     PublishAllPorts: true
                 };
 
