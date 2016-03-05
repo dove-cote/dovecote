@@ -178,8 +178,8 @@ class DockerService {
                     PublishAllPorts: true
                 };
 
-                if (process.env.DOCKER_CERT_DIR)
-                    startOptions.Links = [`mongo:mongo`];
+                if (process.env.DOCKER_CERT_DIR || process.env.DOCKER_MONGO_LINK)
+                    startOptions.Links = [process.env.DOCKER_MONGO_LINK || `mongo:mongo`];
 
                 return container.
                     start(startOptions).
