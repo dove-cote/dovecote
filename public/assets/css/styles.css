@@ -183,6 +183,19 @@ header .btn a:hover {
   font-weight: 300;
   margin-bottom: 0;
 }
+
+@media(max-width: 640px) {
+  .section-heading h1 {
+    font-size: 40px;
+  }
+}
+
+@media(max-width: 480px) {
+  .section-heading h1 {
+    font-size: 30px;
+  }
+}
+
 .section-heading p {
   font-size: 25px;
   color: #636363;
