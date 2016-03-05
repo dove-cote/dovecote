@@ -18,6 +18,8 @@
                 "DOCKER_NODE_VERSION": "5.6.0",
                 "DEPLOY_HOST": "cloud.dove-cote.co",
                 "DOCKER_HOST": "localhost",
+                "DOCKER_MONGO_LINK": "",
+                "SOURCE_DIR_PREFIX": "",
                 "DOVECOTE_MONGO": "mongodb://172.17.0.1/dovecote"
             }
         }
