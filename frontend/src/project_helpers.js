@@ -12,7 +12,7 @@ function exportsLine(service) {
     });
 
     var convertedComponentNames = componentNames.map(convertComponentName);
-    return 'module.exports = function (' + convertedComponentNames.join(', ') + ') {\n';
+    return 'module.exports = function(' + convertedComponentNames.join(', ') + ') {\n';
 
 };
 
