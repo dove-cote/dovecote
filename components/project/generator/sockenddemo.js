@@ -32,7 +32,7 @@ class SockendDemoGenerator {
 
 
     generateIndex() {
-        const host = process.env.DEPLOY_HOST || 'localhost';
+        const host = this.data.deploy.container.host;
         const port = this.data.deploy.container.port;
         const url = `http://${host}:${port}`;
 
@@ -130,7 +130,7 @@ class SockendDemoGenerator {
     }
 
     generateEndpoints() {
-        const host = process.env.DEPLOY_HOST || 'localhost';
+        const host = this.data.deploy.container.host;
         const port = this.data.deploy.container.port;
 
         const url = `http://${host}:${port}`;
@@ -155,7 +155,7 @@ class SockendDemoGenerator {
 
     generateTests(namespace) {
         console.log('generate tests for namespace', namespace);
-        const host = process.env.DEPLOY_HOST || 'localhost';
+        const host = this.data.deploy.container.host;
         const port = this.data.deploy.container.port;
 
         const url = `http://${host}:${port}/${namespace.namespace}`;

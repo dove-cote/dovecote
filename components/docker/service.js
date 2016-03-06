@@ -128,7 +128,7 @@ class DockerService {
 
         return container.inspect().
             then(data => {
-                const port = data.NetworkSettings.Ports['80/tcp'][0].HostPort;
+                const port = process.env.SUBDOMAINS ? 80 : data.NetworkSettings.Ports['80/tcp'][0].HostPort;
                 const containerIP = data.NetworkSettings.IPAddress;
                 const state = data.State;
 
@@ -164,6 +164,7 @@ class DockerService {
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
                     `APP=pm2.json`,
+                    `VIRTUAL_HOST=${projectId}`,
                     `DOVECOTE_USER=${ownerId}`,
                     `DOVECOTE_PROJECT=${projectId}`,
                     `DOVECOTE_MONGO=${mongoUrl}`
@@ -176,9 +177,11 @@ class DockerService {
                 var pathPrefix = process.env.SOURCE_DIR_PREFIX ? process.env.SOURCE_DIR_PREFIX : '';
 
                 const startOptions = {
-                    Binds: [`${pathPrefix}${sourceDir}:/app`],
-                    PublishAllPorts: true
+                    Binds: [`${pathPrefix}${sourceDir}:/app`]
                 };
+
+                if (!process.env.SUBDOMAINS)
+                    startOptions.PublishAllPorts = true;
 
                 if (process.env.DOCKER_CERT_DIR || process.env.DOCKER_MONGO_LINK)
                     startOptions.Links = [process.env.DOCKER_MONGO_LINK || `mongo:mongo`];
@@ -188,7 +191,7 @@ class DockerService {
                     then(response2 => {
                         return container.inspect().
                             then(data => {
-                                const port = data.NetworkSettings.Ports['80/tcp'][0].HostPort;
+                                const port = process.env.SUBDOMAINS ? 80 : data.NetworkSettings.Ports['80/tcp'][0].HostPort;
                                 const containerIP = data.NetworkSettings.IPAddress;
                                 const state = data.State;
                                 return {
@@ -196,7 +199,7 @@ class DockerService {
                                     state,
                                     containerIP,
                                     port,
-                                    host: process.env.DEPLOY_HOST || 'localhost'
+                                    host: process.env.SUBDOMAINS ? `${projectId}.dove-cote.co` : (process.env.DEPLOY_HOST || 'localhost')
                                 };
                             })
 
