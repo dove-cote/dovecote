@@ -164,7 +164,7 @@ class DockerService {
                 Image: `mertdogar/node-pm2:${nodeVersion}`,
                 Env: [
                     `APP=pm2.json`,
-                    `VIRTUAL_HOST=${projectId}`,
+                    `VIRTUAL_HOST=${projectId}.dove-cote.co`,
                     `DOVECOTE_USER=${ownerId}`,
                     `DOVECOTE_PROJECT=${projectId}`,
                     `DOVECOTE_MONGO=${mongoUrl}`
